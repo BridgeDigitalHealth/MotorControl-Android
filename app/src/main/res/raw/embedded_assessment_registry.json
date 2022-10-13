@@ -1,0 +1,47 @@
+[
+  {
+    "type": "MotorControlModuleInfo",
+    "assessments": [
+      {
+        "type": "transformableAssessment",
+        "identifier": "sampleId",
+        "title": "Sample Assessment",
+        "subtitle": "Subtitle",
+        "detail": "Some text. This is a test.",
+        "resourceName": "sample_assessment"
+      },
+      {
+        "type": "transformableAssessment",
+        "identifier": "sampleWrapperId",
+        "title": "Wrapped Assessment",
+        "subtitle": "Subtitle",
+        "detail": "Some text. This is a test.",
+        "resourceName": "sample_wrapper_assessment"
+      },
+      {
+        "type": "transformableAssessment",
+        "identifier": "tremor",
+        "title": "Tremor Assessment",
+        "subtitle": "Subtitle",
+        "detail": "Some text. This is a test.",
+        "resourceName": "tremor"
+      },
+      {
+        "type": "transformableAssessment",
+        "identifier": "kinetic_tremor",
+        "title": "Kinetic Tremor Assessment",
+        "subtitle": "Subtitle",
+        "detail": "Some text. This is a test.",
+        "resourceName": "kinetic_tremor"
+      },
+      {
+        "type": "transformableAssessment",
+        "identifier": "tapping",
+        "title": "Finger Tapping Assessment",
+        "subtitle": "Subtitle",
+        "detail": "Some text. This is a test.",
+        "resourceName": "finger_tapping"
+      }
+    ]
+  }
+]
