@@ -49,6 +49,8 @@ open class TwoHandNavigator(node: NodeContainer): Navigator {
         }
         val swapHands: Boolean = (0..1).random() == 1
         val tempNodesList = node.children.toMutableList()
+
+        // This assumes that the two hands are next to each other in the tempNodesList
         val firstHandIndex = tempNodesList.indexOfFirst { it.hand() != null }
         if(firstHandIndex == -1) {
             throw NoHandFoundException("No hands were found")
@@ -125,7 +127,8 @@ open class TwoHandNavigator(node: NodeContainer): Navigator {
     }
 
     private fun previousNode(currentNode: Node?): Node? {
-        if(currentNode == null || isCompleted(currentNode)) {
+        // Return null if currentNode is null or is at/passed the hand section steps
+        if(currentNode == null || isCompleted(currentNode) || currentNode.hand() != null) {
             return null
         }
         val currentNodeIndex = nodes.indexOfFirst { it.identifier == currentNode.identifier }
@@ -153,7 +156,7 @@ fun Node.hand(): HandSelection? {
     }
 }
 
-fun <T> MutableList<T>.swap(index1: Int, index2: Int){
+fun <T> MutableList<T>.swap(index1: Int, index2: Int) {
     val tmp = this[index1]
     this[index1] = this[index2]
     this[index2] = tmp

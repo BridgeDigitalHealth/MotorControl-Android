@@ -20,6 +20,9 @@ val motorControlNodeSerializersModule = SerializersModule {
         subclass(TremorStepObject::class)
         subclass(TappingStepObject::class)
     }
+    polymorphic(Assessment::class) {
+        subclass(TwoHandAssessmentObject::class)
+    }
 }
 
 @Serializable

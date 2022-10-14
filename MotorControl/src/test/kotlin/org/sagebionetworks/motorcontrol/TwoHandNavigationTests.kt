@@ -1,3 +1,5 @@
+package org.sagebionetworks.motorcontrol
+
 import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
 import org.junit.Test
@@ -172,10 +174,10 @@ class ExampleUnitTest: NavigationTestHelper() {
         assertTrue(navigator is TwoHandNavigator)
 
         val point = navigator.nodeBefore(nodeC, assessmentObject.createResult())
-        assertTrue(point.node?.identifier == "right" || point.node?.identifier == "stepB")
+        assertNull(point.node)
         assertEquals(NavigationPoint.Direction.Backward, point.direction)
         val point2 = navigator.nodeBefore(nodeD, assessmentObject.createResult())
-        assertTrue(point2.node?.identifier == "left" || point2.node?.identifier == "stepB")
+        assertNull(point2.node)
         assertEquals(NavigationPoint.Direction.Backward, point2.direction)
 
         val result = point.branchResult
