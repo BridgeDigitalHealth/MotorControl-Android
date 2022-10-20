@@ -6,11 +6,17 @@ plugins {
 
 android {
     namespace = "org.sagebionetworks.motorcontrol"
-    compileSdk = 32
-
+    compileSdk = 33
+    buildFeatures {
+        compose = true
+    }
+    buildFeatures.viewBinding = true
+    composeOptions {
+        kotlinCompilerExtensionVersion = "1.2.0"
+    }
     defaultConfig {
         minSdk = 21
-        targetSdk = 32
+        targetSdk = 33
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles("consumer-rules.pro")

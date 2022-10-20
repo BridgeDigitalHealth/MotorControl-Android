@@ -10,6 +10,7 @@ import org.sagebionetworks.assessmentmodel.presentation.AssessmentFragment
 import org.sagebionetworks.assessmentmodel.presentation.AssessmentFragmentProvider
 import org.sagebionetworks.assessmentmodel.resourcemanagement.FileLoader
 import org.sagebionetworks.assessmentmodel.serialization.FileLoaderAndroid
+import org.sagebionetworks.motorcontrol.presentation.MotorControlAssessmentFragment
 
 val appModule = module {
 
@@ -29,7 +30,7 @@ val appModule = module {
     single<AssessmentFragmentProvider?> {
         object : AssessmentFragmentProvider {
             override fun fragmentFor(branchNode: BranchNode): AssessmentFragment {
-                return AssessmentFragment()
+                return MotorControlAssessmentFragment()
             }
         }}
 

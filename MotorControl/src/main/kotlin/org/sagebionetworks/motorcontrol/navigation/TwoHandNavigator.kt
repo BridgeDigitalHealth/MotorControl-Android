@@ -150,6 +150,11 @@ enum class HandSelection {
 
 fun Node.hand(): HandSelection? {
     return try {
+        /**
+        If this node's identifier is left or right then we are interested in hand selection for the
+        navigator to handle skipping hand sections correctly. Otherwise, we can always just keep
+        navigating forward.
+        */
         HandSelection.valueOf(this.identifier.uppercase())
     } catch (exception: Exception) {
         null
