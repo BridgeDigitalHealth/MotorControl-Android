@@ -13,7 +13,6 @@ import org.sagebionetworks.assessmentmodel.CountdownStep
 import org.sagebionetworks.assessmentmodel.presentation.StepFragment
 import org.sagebionetworks.assessmentmodel.presentation.databinding.ComposeQuestionStepFragmentBinding
 import org.sagebionetworks.assessmentmodel.presentation.ui.theme.SageSurveyTheme
-import kotlin.math.ceil
 
 open class CountdownStepFragment: StepFragment() {
 
@@ -34,13 +33,11 @@ open class CountdownStepFragment: StepFragment() {
         val hideClose = true
         binding.questionContent.setContent {
             //TODO: Need to figure out theming with compose -nbrown 2/17/22
-            val countdown: MutableState<Int> = remember { mutableStateOf(step.duration.toInt()) }
-            object: CountDownTimer((step.duration * 1000).toLong(), 1000) {
+            val countdown: MutableState<Long> = remember { mutableStateOf(step.duration.toLong()) }
+            object: CountDownTimer((step.duration * 1000).toLong(), 10) {
                 override fun onTick(millisUntilFinished: Long) {
                     // Prevents countdown from instantly decrementing
-                    if (ceil((millisUntilFinished.toDouble() / 1000)) != step.duration) {
-                        countdown.value -= 1
-                    }
+                    countdown.value = millisUntilFinished
                 }
                 override fun onFinish() {
                     this.cancel()
