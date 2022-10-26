@@ -17,7 +17,6 @@ class AnimationTimer(frames: Int,
         override fun onFinish() {
             this.cancel()
         }
-
     }.start()
 
     fun stop() {

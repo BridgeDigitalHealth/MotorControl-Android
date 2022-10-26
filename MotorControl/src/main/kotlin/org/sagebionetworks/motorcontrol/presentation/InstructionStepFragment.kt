@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import org.sagebionetworks.assessmentmodel.ButtonAction
 import org.sagebionetworks.motorcontrol.R
@@ -46,19 +47,18 @@ open class InstructionStepFragment: StepFragment() {
         val drawable = step.imageInfo?.loadDrawable(requireContext())
         val drawables = ArrayList<Drawable>()
         val animatedImageInfo = step.imageInfo as? AnimatedImage
-        val currentImage: MutableState<Int> = mutableStateOf(0)
+        val animationIndex: MutableState<Int> = mutableStateOf(0)
         animatedImageInfo?.let { imageInfo ->
             for (animatedImage in imageInfo.imageNames) {
-                val fetchable = FetchableImage(animatedImage).loadDrawable(requireContext())
-                fetchable?.let {
-                    drawables.add(fetchable)
+                FetchableImage(animatedImage).loadDrawable(requireContext())?.let {
+                    drawables.add(it)
                 }
             }
             animationTimer = AnimationTimer(
-                animatedImageInfo.imageNames.size,
-                animatedImageInfo.animationDuration,
-                animatedImageInfo.animationRepeatCount,
-                currentImage
+                imageInfo.imageNames.size,
+                imageInfo.animationDuration,
+                imageInfo.animationRepeatCount,
+                animationIndex
             )
         }
         val tint = step.imageInfo?.tint ?: false
@@ -80,7 +80,7 @@ open class InstructionStepFragment: StepFragment() {
                         assessmentViewModel = assessmentViewModel,
                         image = if(drawables.isEmpty()) drawable else null,
                         animations = drawables,
-                        currentImage = currentImage,
+                        animationIndex = animationIndex,
                         flippedImage = stepViewModel.nodeState.parent?.node?.hand()
                                 == HandSelection.RIGHT,
                         imageTintColor = if (tint) {

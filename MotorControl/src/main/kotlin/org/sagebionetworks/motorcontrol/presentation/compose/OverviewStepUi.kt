@@ -1,6 +1,5 @@
 package org.sagebionetworks.motorcontrol.presentation.compose
 
-import org.sagebionetworks.assessmentmodel.presentation.compose.BlackButton
 import android.graphics.drawable.Drawable
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -27,68 +26,81 @@ internal fun OverviewStepUi(
     modifier: Modifier = Modifier,
     image: Drawable?,
     animations: ArrayList<Drawable>,
-    currentImage: MutableState<Int>,
+    animationIndex: MutableState<Int>,
     imageTintColor: Color?,
     title: String?,
     detail: String?,
-    icons: List<Drawable>,
+    icons: List<Pair<Drawable?, String?>>,
     nextButtonText: String,
     next:()->Unit,
     close:()->Unit,
-    hideClose: Boolean = false,
     ) {
     Box {
-        Column(modifier = modifier.background(BackgroundGray)) {
+        Column(modifier = Modifier.background(BackgroundGray)) {
             Column(
-                modifier = modifier
+                modifier = Modifier
                     .fillMaxSize()
                     .verticalScroll(rememberScrollState(0), reverseScrolling = true)
-                    .weight(1f, false)) {
+                    .weight(1f, false)
+            ) {
                 if (image != null) {
                     SingleImageUi(
                         image = image,
-                        imageModifier = modifier.fillMaxSize(),
-                        imageTintColor = imageTintColor)
+                        surveyTint = Color(0xFF8FD6FF),
+                        imageModifier = Modifier
+                            .fillMaxSize()
+                            .background(Color.Cyan),
+                        imageTintColor = imageTintColor
+                    )
                 }
                 if (animations.isNotEmpty()) {
                     AnimationImageUi(
                         animations = animations,
-                        currentImage = currentImage,
+                        surveyTint = Color(0xFF8FD6FF),
+                        currentImage = animationIndex,
                         imageTintColor = imageTintColor,
-                        imageModifier = modifier.fillMaxSize()
+                        imageModifier = Modifier
+                            .fillMaxSize()
+                            .background(Color.Cyan)
                     )
                 }
                 StepBodyTextUi(title, detail, modifier)
-                if(icons.isNotEmpty()) {
+                if (icons.isNotEmpty()) {
                     Text(
                         text = stringResource(R.string.icon_header),
                         style = iconHeaderText,
                         textAlign = TextAlign.Center,
-                        modifier = modifier
+                        modifier = Modifier
                             .fillMaxWidth()
                             .padding(bottom = 30.dp)
                     )
-                    Row(horizontalArrangement = Arrangement.Center) {
-                        for(icon in icons) {
+                    Row(
+                        modifier = modifier.padding(bottom = 15.dp),
+                        horizontalArrangement = Arrangement.Center) {
+                        for (icon in icons) {
                             Column(
-                                modifier = modifier
+                                modifier = Modifier
                                     .padding(horizontal = 15.dp)
                                     .weight(1f, fill = false),
                                 horizontalAlignment = Alignment.CenterHorizontally
                             ) {
-                                SingleImageUi(
-                                    image = icon,
-                                    imageModifier = modifier.padding(bottom = 15.dp),
-                                    imageTintColor = imageTintColor
-                                )
-                                Text(
-                                    // TODO: Add icon title here
-                                    text = "LONG TEXT THAT NEEDS TO WRAP AROUND",
-                                    style = iconTitleText,
-                                    textAlign = TextAlign.Center,
-                                    modifier = modifier
-                                        .fillMaxWidth()
-                                )
+                                icon.first?.let {
+                                    SingleImageUi(
+                                        image = it,
+                                        imageModifier = Modifier.padding(bottom = 20.dp),
+                                        imageTintColor = imageTintColor
+                                    )
+                                }
+                                icon.second?.let {
+                                    Text(
+                                        text = it,
+                                        style = iconTitleText,
+                                        textAlign = TextAlign.Center,
+                                        modifier = modifier
+                                            .fillMaxWidth()
+                                            .padding(bottom = 10.dp)
+                                    )
+                                }
                             }
                         }
                     }
@@ -100,9 +112,7 @@ internal fun OverviewStepUi(
                 backEnabled = false
             )
         }
-        if (!hideClose) {
-            CloseTopBar(onCloseClicked = close)
-        }
+        CloseTopBar(onCloseClicked = close)
     }
 }
 
@@ -113,14 +123,13 @@ private fun OverviewStepPreview() {
         OverviewStepUi(
             image = null,
             animations = ArrayList(),
-            currentImage = mutableStateOf(0),
+            animationIndex = mutableStateOf(0),
             imageTintColor = null,
             title = "Title",
             detail = "Details",
             icons = listOf(),
             nextButtonText = stringResource(R.string.start),
             next = {},
-            close = {},
-            hideClose = false)
+            close = {})
     }
 }

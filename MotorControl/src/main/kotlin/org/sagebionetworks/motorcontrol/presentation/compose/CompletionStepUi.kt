@@ -31,13 +31,13 @@ internal fun CompletionStepUi(
         modifier = modifier
             .fillMaxHeight()
             .fillMaxWidth()
-            .background(BackgroundGray),
+            .background(BackgroundGray)
     ) {
         Column(
             modifier = modifier
                 .fillMaxHeight()
                 .fillMaxWidth()
-                .padding(32.dp),
+                .padding(32.dp)
         ) {
             Spacer(modifier = Modifier.weight(1f))
             Box {
@@ -46,8 +46,7 @@ internal fun CompletionStepUi(
                     Card(
                         modifier = Modifier.background(color = SageWhite),
                         shape = RoundedCornerShape(0.dp),
-                        elevation = 4.dp
-                    ) {
+                        elevation = 4.dp) {
                         Column {
                             Spacer(modifier = Modifier.height(64.dp))
                             title?.let { title ->
@@ -98,6 +97,11 @@ internal fun CompletionStepUi(
 @Composable
 private fun CompletionStepPreview() {
     SageSurveyTheme {
-        CompletionStepUi(title = "Well done!", detail = "Thank you for being part of our study.", nextButtonText = stringResource(R.string.exit), next = {})
+        CompletionStepUi(
+            title = "Well done!", 
+            detail = "Thank you for being part of our study.", 
+            nextButtonText = stringResource(R.string.exit), 
+            next = {}
+        )
     }
 }

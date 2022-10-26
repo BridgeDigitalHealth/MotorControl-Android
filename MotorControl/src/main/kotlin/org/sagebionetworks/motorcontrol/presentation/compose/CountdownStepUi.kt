@@ -26,10 +26,7 @@ internal fun CountdownStepUi(
     countdown: MutableState<Long>,
     timer: CountDownTimer?
 ) {
-    Column(
-        modifier = modifier
-            .background(BackgroundGray)
-    ) {
+    Column(modifier = Modifier.background(BackgroundGray)) {
         val openDialog = remember { mutableStateOf(false) }
         assessmentViewModel?.let {
             PauseScreenDialog(
@@ -50,7 +47,7 @@ internal fun CountdownStepUi(
             showSkip = false
         )
         Column(
-            modifier = modifier
+            modifier = Modifier
                 .fillMaxHeight()
                 .fillMaxWidth()
                 .padding(32.dp)

@@ -59,5 +59,4 @@ open class CountdownStepFragment: StepFragment() {
         super.onDestroyView()
         _binding = null
     }
-
 }

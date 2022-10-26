@@ -17,7 +17,7 @@ fun StepBodyTextUi(title: String?, detail: String?, modifier: Modifier) {
             text = it,
             style = titleText,
             textAlign = TextAlign.Center,
-            modifier = modifier
+            modifier = Modifier
                 .fillMaxWidth()
                 .padding(all = 20.dp)
         )
@@ -27,7 +27,7 @@ fun StepBodyTextUi(title: String?, detail: String?, modifier: Modifier) {
             text = it,
             style = detailText,
             textAlign = TextAlign.Center,
-            modifier = modifier
+            modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 20.dp)
                 .padding(bottom = 20.dp)

@@ -19,11 +19,13 @@ fun MotorControlBottomNavigation(
     backEnabled: Boolean = true,
     nextEnabled: Boolean = true
 ) {
-    Row(modifier = Modifier
-        .padding(top = 10.dp, bottom = 10.dp)
-        .padding(horizontal = 20.dp)
-        .fillMaxWidth()) {
-        if(backEnabled) {
+    Row(
+        modifier = Modifier
+            .padding(top = 10.dp, bottom = 10.dp)
+            .padding(horizontal = 20.dp)
+            .fillMaxWidth()
+    ) {
+        if (backEnabled) {
             WhiteBackButton(onClick = onBackClicked)
         }
         Spacer(modifier = Modifier.weight(1f))

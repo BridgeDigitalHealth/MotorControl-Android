@@ -26,41 +26,43 @@ internal fun InstructionStepUi(
     assessmentViewModel: AssessmentViewModel?,
     image: Drawable?,
     animations: ArrayList<Drawable>,
-    currentImage: MutableState<Int>,
+    animationIndex: MutableState<Int>,
     flippedImage: Boolean,
     imageTintColor: Color?,
     title: String?,
     detail: String?,
-    nextButtonText: String,
-) {
+    nextButtonText: String) {
     val imageModifier = if (flippedImage) {
-        modifier
+        Modifier
             .fillMaxSize()
             .scale(-1F, 1F)
     } else {
-        modifier.fillMaxSize()
+        Modifier.fillMaxSize()
     }
     Box {
-        Column(modifier = modifier
-            .background(BackgroundGray)
-        ) {
+        Column(modifier = Modifier.background(BackgroundGray)) {
             Column(
-                modifier = modifier
+                modifier = Modifier
                     .fillMaxSize()
                     .verticalScroll(rememberScrollState())
-                    .weight(1f, false)) {
+                    .weight(1f, false)
+            ) {
                 if (image != null) {
                     SingleImageUi(
                         image = image,
+                        surveyTint = Color(0xFF8FD6FF),
                         imageModifier = imageModifier,
-                        imageTintColor = imageTintColor)
+                        imageTintColor = imageTintColor
+                    )
                 }
                 if (animations.isNotEmpty()) {
                     AnimationImageUi(
                         animations = animations,
-                        currentImage = currentImage,
+                        surveyTint = Color(0xFF8FD6FF),
+                        currentImage = animationIndex,
                         imageTintColor = imageTintColor,
-                        imageModifier = imageModifier)
+                        imageModifier = imageModifier
+                    )
                 }
                 StepBodyTextUi(title, detail, modifier)
             }
@@ -68,8 +70,7 @@ internal fun InstructionStepUi(
                 onBackClicked = { assessmentViewModel?.goBackward() },
                 onNextClicked = { assessmentViewModel?.goForward() },
                 nextText = nextButtonText,
-                backEnabled = assessmentViewModel?.assessmentNodeState?.allowBackNavigation() == true,
-            )
+                backEnabled = assessmentViewModel?.assessmentNodeState?.allowBackNavigation() == true,)
         }
         val openDialog = remember { mutableStateOf(false) }
         assessmentViewModel?.let {
@@ -97,11 +98,12 @@ private fun InstructionStepPreview() {
             assessmentViewModel = null,
             image = null,
             animations = ArrayList(),
-            currentImage = mutableStateOf(0),
+            animationIndex = mutableStateOf(0),
             flippedImage = false,
             imageTintColor = null,
             title = "Title",
             detail = "Details",
-            nextButtonText = stringResource(R.string.start))
+            nextButtonText = stringResource(R.string.start)
+        )
     }
 }
