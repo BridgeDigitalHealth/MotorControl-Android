@@ -9,6 +9,7 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.res.stringResource
+import org.sagebionetworks.assessmentmodel.ButtonAction
 import org.sagebionetworks.motorcontrol.R
 import org.sagebionetworks.assessmentmodel.CompletionStep
 import org.sagebionetworks.assessmentmodel.ContentNodeStep
@@ -33,7 +34,7 @@ open class InstructionStepFragment: StepFragment() {
 
     private lateinit var step: ContentNodeStep
 
-    private lateinit var animationTimer: AnimationTimer
+    private var animationTimer: AnimationTimer? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -56,36 +57,27 @@ open class InstructionStepFragment: StepFragment() {
             animationTimer = AnimationTimer(
                 animatedImageInfo.imageNames.size,
                 animatedImageInfo.animationDuration,
-                animatedImageInfo.animationRepeatCount ?: 1000,
+                animatedImageInfo.animationRepeatCount,
                 currentImage
             )
         }
         val tint = step.imageInfo?.tint ?: false
-        var hideClose = false
-        val buttonTextResource = when (step) {
-            is OverviewStep -> {
-                R.string.start
-            }
-            is CompletionStep -> {
-                hideClose = true
-                R.string.exit
-            }
-            else -> {
-                R.string.next
-            }
-        }
-        binding.questionContent.setContent {
+        val buttonTextResource = stepViewModel.nodeState.node
+            .buttonMap[ButtonAction.valueOf("goForward")]?.buttonTitle
+        
+    binding.questionContent.setContent {
             //TODO: Need to figure out theming with compose -nbrown 2/17/22
             SageSurveyTheme {
                 if (step is CompletionStep) {
                     CompletionStepUi(
                         title = step.title ?: getString(R.string.well_done),
                         detail = step.detail ?: getString(R.string.thank_you_for),
-                        nextButtonText = stringResource(buttonTextResource),
+                        nextButtonText = stringResource(R.string.exit),
                         next = { assessmentViewModel.goForward() }
                     )
                 } else {
                     InstructionStepUi(
+                        assessmentViewModel = assessmentViewModel,
                         image = if(drawables.isEmpty()) drawable else null,
                         animations = drawables,
                         currentImage = currentImage,
@@ -100,21 +92,7 @@ open class InstructionStepFragment: StepFragment() {
                             stepViewModel.nodeState.parent?.node?.hand()?.name ?: ""),
                         detail = step.detail?.replace("%@",
                             stepViewModel.nodeState.parent?.node?.hand()?.name ?: ""),
-                        nextButtonText = stringResource(R.string.next),
-                        next = {
-                            assessmentViewModel.goForward()
-                            this.animationTimer.stop()
-                        },
-                        previousButtonText = stringResource(R.string.back),
-                        previous = {
-                            assessmentViewModel.goBackward()
-                            this.animationTimer.stop()
-                        },
-                        close = {
-                            assessmentViewModel.cancel()
-                            this.animationTimer.stop()
-                        },
-                        hideClose = hideClose
+                        nextButtonText = buttonTextResource ?: stringResource(R.string.next),
                     )
                 }
             }
@@ -123,8 +101,8 @@ open class InstructionStepFragment: StepFragment() {
     }
 
     override fun onDestroyView() {
+        animationTimer?.stop()
         super.onDestroyView()
         _binding = null
     }
-
 }

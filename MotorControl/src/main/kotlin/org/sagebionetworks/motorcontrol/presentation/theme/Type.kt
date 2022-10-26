@@ -22,9 +22,14 @@ val fonts = FontFamily(
         fontWeight = FontWeight.Normal,
         fontSize = 22.sp
     )
-    val iconText = TextStyle(
+    val iconHeaderText = TextStyle(
         fontFamily = fonts,
         fontWeight = FontWeight.Bold,
+        fontSize = 20.sp
+    )
+    val iconTitleText = TextStyle(
+        fontFamily = fonts,
+        fontWeight = FontWeight.Normal,
         fontSize = 20.sp
     )
     val titleText = TextStyle(

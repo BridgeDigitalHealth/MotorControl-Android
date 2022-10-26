@@ -28,7 +28,7 @@ open class OverviewStepFragment: StepFragment() {
 
     private lateinit var step: OverviewStepObject
 
-    private lateinit var animationTimer: AnimationTimer
+    private var animationTimer: AnimationTimer? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -51,7 +51,7 @@ open class OverviewStepFragment: StepFragment() {
             animationTimer = AnimationTimer(
                 animatedImageInfo.imageNames.size,
                 animatedImageInfo.animationDuration,
-                animatedImageInfo.animationRepeatCount ?: 1000,
+                animatedImageInfo.animationRepeatCount,
                 currentImage
             )
         }
@@ -80,11 +80,9 @@ open class OverviewStepFragment: StepFragment() {
                     nextButtonText = stringResource(R.string.start),
                     next = {
                         assessmentViewModel.goForward()
-                        this.animationTimer.stop()
                     },
                     close = {
                         assessmentViewModel.cancel()
-                        this.animationTimer.stop()
                     },
                     hideClose = hideClose
                 )
@@ -94,6 +92,7 @@ open class OverviewStepFragment: StepFragment() {
     }
 
     override fun onDestroyView() {
+        animationTimer?.stop()
         super.onDestroyView()
         _binding = null
     }

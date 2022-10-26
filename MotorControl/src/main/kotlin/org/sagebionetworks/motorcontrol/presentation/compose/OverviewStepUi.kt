@@ -2,7 +2,6 @@ package org.sagebionetworks.motorcontrol.presentation.compose
 
 import org.sagebionetworks.assessmentmodel.presentation.compose.BlackButton
 import android.graphics.drawable.Drawable
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -11,15 +10,13 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.google.accompanist.drawablepainter.rememberDrawablePainter
 import org.sagebionetworks.motorcontrol.R
 import org.sagebionetworks.assessmentmodel.presentation.compose.CloseTopBar
 import org.sagebionetworks.assessmentmodel.presentation.ui.theme.*
@@ -61,62 +58,48 @@ internal fun OverviewStepUi(
                         imageModifier = modifier.fillMaxSize()
                     )
                 }
-                title?.let { title ->
-                    Text(
-                        text = title,
-                        style = titleText,
-                        textAlign = TextAlign.Center,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(all = 20.dp)
-                    )
-                }
-                detail?.let { detail ->
-                    Text(
-                        text = detail,
-                        style = detailText,
-                        textAlign = TextAlign.Center,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 20.dp)
-                            .padding(bottom = 20.dp)
-                    )
-                }
+                StepBodyTextUi(title, detail, modifier)
                 if(icons.isNotEmpty()) {
                     Text(
                         text = stringResource(R.string.icon_header),
-                        style = iconText,
+                        style = iconHeaderText,
                         textAlign = TextAlign.Center,
-                        modifier = Modifier
+                        modifier = modifier
                             .fillMaxWidth()
-                            .padding(all = 20.dp)
+                            .padding(bottom = 30.dp)
                     )
-                    Row {
-                        Spacer(modifier = Modifier.weight(1f))
+                    Row(horizontalArrangement = Arrangement.Center) {
                         for(icon in icons) {
-                            Image(
-                                painter = rememberDrawablePainter(drawable = icon),
-                                contentDescription = null,
-                                colorFilter = if (imageTintColor != null) {
-                                    ColorFilter.tint(
-                                        color = imageTintColor,
-                                        blendMode = BlendMode.Modulate
-                                    )
-                                } else {
-                                    null
-                                }
-                            )
+                            Column(
+                                modifier = modifier
+                                    .padding(horizontal = 15.dp)
+                                    .weight(1f, fill = false),
+                                horizontalAlignment = Alignment.CenterHorizontally
+                            ) {
+                                SingleImageUi(
+                                    image = icon,
+                                    imageModifier = modifier.padding(bottom = 15.dp),
+                                    imageTintColor = imageTintColor
+                                )
+                                Text(
+                                    // TODO: Add icon title here
+                                    text = "LONG TEXT THAT NEEDS TO WRAP AROUND",
+                                    style = iconTitleText,
+                                    textAlign = TextAlign.Center,
+                                    modifier = modifier
+                                        .fillMaxWidth()
+                                )
+                            }
                         }
-                        Spacer(modifier = Modifier.weight(1f))
                     }
                 }
             }
             Row {
-                Spacer(modifier = Modifier.weight(1f))
+                Spacer(modifier = modifier.weight(1f))
                 BlackButton(
                     onClick = next,
                     text = nextButtonText,
-                    modifier = modifier.padding(vertical = 10.dp)
+                    modifier = modifier.padding(vertical = 10.dp, horizontal = 10.dp)
                 )
             }
         }
