@@ -13,7 +13,6 @@ import org.sagebionetworks.assessmentmodel.ButtonAction
 import org.sagebionetworks.motorcontrol.R
 import org.sagebionetworks.assessmentmodel.CompletionStep
 import org.sagebionetworks.assessmentmodel.ContentNodeStep
-import org.sagebionetworks.assessmentmodel.OverviewStep
 import org.sagebionetworks.assessmentmodel.presentation.StepFragment
 import org.sagebionetworks.assessmentmodel.presentation.databinding.ComposeQuestionStepFragmentBinding
 import org.sagebionetworks.assessmentmodel.presentation.ui.theme.SageSurveyTheme
@@ -52,7 +51,8 @@ open class InstructionStepFragment: StepFragment() {
             for (animatedImage in imageInfo.imageNames) {
                 val fetchable = FetchableImage(animatedImage).loadDrawable(requireContext())
                 fetchable?.let {
-                    drawables.add(fetchable) }
+                    drawables.add(fetchable)
+                }
             }
             animationTimer = AnimationTimer(
                 animatedImageInfo.imageNames.size,
@@ -64,7 +64,7 @@ open class InstructionStepFragment: StepFragment() {
         val tint = step.imageInfo?.tint ?: false
         val buttonTextResource = stepViewModel.nodeState.node
             .buttonMap[ButtonAction.valueOf("goForward")]?.buttonTitle
-        
+
     binding.questionContent.setContent {
             //TODO: Need to figure out theming with compose -nbrown 2/17/22
             SageSurveyTheme {

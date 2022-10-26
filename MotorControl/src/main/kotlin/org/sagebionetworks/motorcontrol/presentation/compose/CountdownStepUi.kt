@@ -1,6 +1,6 @@
 package org.sagebionetworks.motorcontrol.presentation.compose
 
-import org.sagebionetworks.assessmentmodel.presentation.compose.CloseTopBar
+import android.os.CountDownTimer
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.Text
@@ -12,24 +12,43 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import org.sagebionetworks.assessmentmodel.presentation.AssessmentViewModel
+import org.sagebionetworks.assessmentmodel.presentation.compose.PauseScreenDialog
+import org.sagebionetworks.assessmentmodel.presentation.compose.PauseTopBar
 import org.sagebionetworks.assessmentmodel.presentation.ui.theme.*
 import org.sagebionetworks.motorcontrol.R
 
 @Composable
 internal fun CountdownStepUi(
     modifier: Modifier = Modifier,
+    assessmentViewModel: AssessmentViewModel?,
     duration: Double,
     countdown: MutableState<Long>,
-    close: ()->Unit,
-    hideClose: Boolean = true,
+    timer: CountDownTimer?
 ) {
     Column(
         modifier = modifier
             .background(BackgroundGray)
     ) {
-        if (!hideClose) {
-            CloseTopBar(onCloseClicked = close)
+        val openDialog = remember { mutableStateOf(false) }
+        assessmentViewModel?.let {
+            PauseScreenDialog(
+                showDialog = openDialog.value,
+                assessmentViewModel = it,
+            ) {
+                openDialog.value = false
+                timer?.start()
+            }
         }
+        PauseTopBar(
+            onPauseClicked = {
+                openDialog.value = true
+                countdown.value = duration.toLong() * 1000
+                timer?.cancel()
+            },
+            onSkipClicked = { assessmentViewModel?.skip() },
+            showSkip = false
+        )
         Column(
             modifier = modifier
                 .fillMaxHeight()
@@ -57,9 +76,10 @@ internal fun CountdownStepUi(
 private fun InstructionStepPreview() {
     SageSurveyTheme {
         CountdownStepUi(
+            assessmentViewModel = null,
             duration = 5.0,
             countdown = mutableStateOf(5),
-            close = {},
-            hideClose = true)
+            timer = null
+        )
     }
 }

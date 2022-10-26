@@ -30,13 +30,11 @@ open class CountdownStepFragment: StepFragment() {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
         _binding = ComposeQuestionStepFragmentBinding.inflate(layoutInflater, container, false)
-        val hideClose = true
         binding.questionContent.setContent {
             //TODO: Need to figure out theming with compose -nbrown 2/17/22
             val countdown: MutableState<Long> = remember { mutableStateOf(step.duration.toLong()) }
-            object: CountDownTimer((step.duration * 1000).toLong(), 10) {
+            val timer = object: CountDownTimer((step.duration * 1000).toLong(), 10) {
                 override fun onTick(millisUntilFinished: Long) {
-                    // Prevents countdown from instantly decrementing
                     countdown.value = millisUntilFinished
                 }
                 override fun onFinish() {
@@ -47,10 +45,10 @@ open class CountdownStepFragment: StepFragment() {
 
             SageSurveyTheme {
                 CountdownStepUi(
+                    assessmentViewModel = assessmentViewModel,
                     duration = step.duration,
                     countdown = countdown,
-                    close = { assessmentViewModel.cancel() },
-                    hideClose = hideClose
+                    timer = timer
                 )
             }
         }
