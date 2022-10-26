@@ -94,14 +94,11 @@ internal fun OverviewStepUi(
                     }
                 }
             }
-            Row {
-                Spacer(modifier = modifier.weight(1f))
-                BlackButton(
-                    onClick = next,
-                    text = nextButtonText,
-                    modifier = modifier.padding(vertical = 10.dp, horizontal = 10.dp)
-                )
-            }
+            MotorControlBottomNavigation(
+                onNextClicked = next,
+                nextText = nextButtonText,
+                backEnabled = false
+            )
         }
         if (!hideClose) {
             CloseTopBar(onCloseClicked = close)
