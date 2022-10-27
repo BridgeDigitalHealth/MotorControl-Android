@@ -44,7 +44,6 @@ import org.sagebionetworks.assessmentmodel.JsonModuleInfo
 import org.sagebionetworks.assessmentmodel.TransformableAssessment
 import org.sagebionetworks.assessmentmodel.resourcemanagement.ResourceInfo
 import org.sagebionetworks.assessmentmodel.serialization.*
-import org.sagebionetworks.assessmentmodel.survey.answerTypeSerializersModule
 import kotlinx.serialization.modules.polymorphic
 import kotlinx.serialization.modules.subclass
 
