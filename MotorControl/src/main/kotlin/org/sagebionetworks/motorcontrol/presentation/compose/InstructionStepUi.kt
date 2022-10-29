@@ -47,9 +47,12 @@ import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import org.sagebionetworks.assessmentmodel.presentation.AssessmentViewModel
 import org.sagebionetworks.assessmentmodel.presentation.R
-import org.sagebionetworks.assessmentmodel.presentation.compose.*
+import org.sagebionetworks.assessmentmodel.presentation.compose.BottomNavigation
+import org.sagebionetworks.assessmentmodel.presentation.compose.PauseScreenDialog
+import org.sagebionetworks.assessmentmodel.presentation.compose.PauseTopBar
 import org.sagebionetworks.assessmentmodel.presentation.ui.theme.*
 
 @Composable
@@ -98,11 +101,15 @@ internal fun InstructionStepUi(
                 }
                 StepBodyTextUi(title, detail, modifier)
             }
-            MotorControlBottomNavigation(
-                onBackClicked = { assessmentViewModel?.goBackward() },
-                onNextClicked = { assessmentViewModel?.goForward() },
-                nextText = nextButtonText,
-                backEnabled = assessmentViewModel?.assessmentNodeState?.allowBackNavigation() == true,)
+            Box(modifier = Modifier.padding(horizontal = 20.dp)) {
+                BottomNavigation(
+                    onBackClicked = { assessmentViewModel?.goBackward() },
+                    onNextClicked = { assessmentViewModel?.goForward() },
+                    nextText = nextButtonText,
+                    backEnabled = false,
+                    backVisible = assessmentViewModel?.assessmentNodeState?.allowBackNavigation() == true
+                )
+            }
         }
         val openDialog = remember { mutableStateOf(false) }
         assessmentViewModel?.let {

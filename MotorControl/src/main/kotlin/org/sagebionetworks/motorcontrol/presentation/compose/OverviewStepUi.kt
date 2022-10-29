@@ -50,6 +50,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import org.sagebionetworks.motorcontrol.R
+import org.sagebionetworks.assessmentmodel.presentation.compose.BottomNavigation
 import org.sagebionetworks.assessmentmodel.presentation.compose.CloseTopBar
 import org.sagebionetworks.assessmentmodel.presentation.ui.theme.*
 import org.sagebionetworks.motorcontrol.presentation.theme.*
@@ -139,11 +140,15 @@ internal fun OverviewStepUi(
                     }
                 }
             }
-            MotorControlBottomNavigation(
-                onNextClicked = next,
-                nextText = nextButtonText,
-                backEnabled = false
-            )
+            Box(modifier = Modifier.padding(horizontal = 20.dp)) {
+                BottomNavigation(
+                    onBackClicked = {},
+                    onNextClicked = next,
+                    nextText = nextButtonText,
+                    backEnabled = false,
+                    backVisible = false
+                )
+            }
         }
         CloseTopBar(onCloseClicked = close)
     }
