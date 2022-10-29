@@ -102,12 +102,13 @@ internal fun InstructionStepUi(
                 StepBodyTextUi(title, detail, modifier)
             }
             Box(modifier = Modifier.padding(horizontal = 20.dp)) {
+                val backEnabled = assessmentViewModel?.assessmentNodeState?.allowBackNavigation() == true
                 BottomNavigation(
                     onBackClicked = { assessmentViewModel?.goBackward() },
                     onNextClicked = { assessmentViewModel?.goForward() },
                     nextText = nextButtonText,
-                    backEnabled = false,
-                    backVisible = assessmentViewModel?.assessmentNodeState?.allowBackNavigation() == true
+                    backEnabled = backEnabled,
+                    backVisible = backEnabled
                 )
             }
         }
