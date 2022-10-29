@@ -66,6 +66,7 @@ internal fun CountdownStepUi(
                 showDialog = openDialog.value,
                 assessmentViewModel = it,
             ) {
+                countdown.value = duration.toLong() * 1000
                 openDialog.value = false
                 timer?.start()
             }
@@ -73,7 +74,6 @@ internal fun CountdownStepUi(
         PauseTopBar(
             onPauseClicked = {
                 openDialog.value = true
-                countdown.value = duration.toLong() * 1000
                 timer?.cancel()
             },
             onSkipClicked = { assessmentViewModel?.skip() },
