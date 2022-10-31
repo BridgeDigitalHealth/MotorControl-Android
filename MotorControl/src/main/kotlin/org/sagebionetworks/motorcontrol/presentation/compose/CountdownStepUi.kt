@@ -57,7 +57,7 @@ internal fun CountdownStepUi(
     assessmentViewModel: AssessmentViewModel?,
     duration: Double,
     countdown: MutableState<Long>,
-    timer: CountDownTimer?
+    timer: StepTimer?
 ) {
     Column(modifier = Modifier.background(BackgroundGray)) {
         val openDialog = remember { mutableStateOf(false) }
@@ -68,13 +68,13 @@ internal fun CountdownStepUi(
             ) {
                 countdown.value = duration.toLong() * 1000
                 openDialog.value = false
-                timer?.start()
+                timer?.startTimer()
             }
         }
         PauseTopBar(
             onPauseClicked = {
                 openDialog.value = true
-                timer?.cancel()
+                timer?.stopTimer()
             },
             onSkipClicked = { assessmentViewModel?.skip() },
             showSkip = false

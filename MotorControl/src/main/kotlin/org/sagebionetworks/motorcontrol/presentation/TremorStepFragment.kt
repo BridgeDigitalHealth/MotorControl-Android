@@ -51,6 +51,7 @@ import org.sagebionetworks.assessmentmodel.presentation.ui.theme.SageSurveyTheme
 import org.sagebionetworks.assessmentmodel.serialization.loadDrawable
 import org.sagebionetworks.motorcontrol.navigation.HandSelection
 import org.sagebionetworks.motorcontrol.navigation.hand
+import org.sagebionetworks.motorcontrol.presentation.compose.StepTimer
 import org.sagebionetworks.motorcontrol.presentation.compose.TremorStepUi
 import org.sagebionetworks.motorcontrol.serialization.TremorStepObject
 
@@ -62,7 +63,7 @@ open class TremorStepFragment: StepFragment() {
 
     private lateinit var step: TremorStepObject
 
-    private var timer: CountDownTimer? = null
+    private var timer: StepTimer? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -76,16 +77,11 @@ open class TremorStepFragment: StepFragment() {
         val tint = step.imageInfo?.tint ?: false
         binding.questionContent.setContent {
             val countdown: MutableState<Long> = remember { mutableStateOf(step.duration.toLong()) }
-            timer = object: CountDownTimer((step.duration * 1000).toLong(), 10) {
-                override fun onTick(millisUntilFinished: Long) {
-                    countdown.value = millisUntilFinished
-                }
-                override fun onFinish() {
-                    this.cancel()
-                    assessmentViewModel.goForward()
-                }
-            }.start()
-
+            timer = StepTimer(
+                countdown,
+                step.duration,
+                assessmentViewModel::goForward
+            )
             SageSurveyTheme {
                 TremorStepUi(
                     assessmentViewModel = assessmentViewModel,
@@ -108,7 +104,7 @@ open class TremorStepFragment: StepFragment() {
     }
 
     override fun onDestroyView() {
-        timer?.cancel()
+        timer?.stopTimer()
         super.onDestroyView()
         _binding = null
     }

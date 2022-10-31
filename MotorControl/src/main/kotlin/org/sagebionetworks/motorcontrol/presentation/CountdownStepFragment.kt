@@ -46,6 +46,7 @@ import org.sagebionetworks.assessmentmodel.CountdownStep
 import org.sagebionetworks.assessmentmodel.presentation.StepFragment
 import org.sagebionetworks.assessmentmodel.presentation.databinding.ComposeQuestionStepFragmentBinding
 import org.sagebionetworks.assessmentmodel.presentation.ui.theme.SageSurveyTheme
+import org.sagebionetworks.motorcontrol.presentation.compose.StepTimer
 
 open class CountdownStepFragment: StepFragment() {
 
@@ -55,7 +56,7 @@ open class CountdownStepFragment: StepFragment() {
 
     private lateinit var step: CountdownStep
 
-    private var timer: CountDownTimer? = null
+    private var timer: StepTimer? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -67,16 +68,11 @@ open class CountdownStepFragment: StepFragment() {
         _binding = ComposeQuestionStepFragmentBinding.inflate(layoutInflater, container, false)
         binding.questionContent.setContent {
             val countdown: MutableState<Long> = remember { mutableStateOf(step.duration.toLong()) }
-            timer = object: CountDownTimer((step.duration * 1000).toLong(), 10) {
-                override fun onTick(millisUntilFinished: Long) {
-                    countdown.value = millisUntilFinished
-                }
-                override fun onFinish() {
-                    this.cancel()
-                    assessmentViewModel.goForward()
-                }
-            }.start()
-
+            timer = StepTimer(
+                countdown,
+                step.duration,
+                assessmentViewModel::goForward
+            )
             SageSurveyTheme {
                 CountdownStepUi(
                     assessmentViewModel = assessmentViewModel,
@@ -90,7 +86,7 @@ open class CountdownStepFragment: StepFragment() {
     }
 
     override fun onDestroyView() {
-        timer?.cancel()
+        timer?.stopTimer()
         super.onDestroyView()
         _binding = null
     }
