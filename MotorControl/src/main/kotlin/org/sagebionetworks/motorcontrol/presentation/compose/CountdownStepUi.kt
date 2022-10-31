@@ -68,7 +68,6 @@ internal fun CountdownStepUi(
             ) {
                 countdown.value = duration.toLong() * 1000
                 openDialog.value = false
-                timer?.startTimer()
             }
         }
         PauseTopBar(

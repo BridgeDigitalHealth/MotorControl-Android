@@ -80,7 +80,8 @@ internal fun TremorStepUi(
                         image = image,
                         surveyTint = Color(0xFF8FD6FF),
                         imageModifier = imageModifier,
-                        imageTintColor = imageTintColor)
+                        imageTintColor = imageTintColor,
+                        alpha = 0.5F)
                 }
                 Column {
                     val openDialog = remember { mutableStateOf(false) }
@@ -97,7 +98,9 @@ internal fun TremorStepUi(
                         onSkipClicked = { assessmentViewModel?.skip() },
                         showSkip = false
                     )
-                    StepBodyTextUi(instruction, null, modifier)
+                    Box(Modifier.padding(vertical = 10.dp)) {
+                        StepBodyTextUi(instruction, null, modifier)
+                    }
                     CountdownDial(duration = duration, countdown = countdown)
                 }
             }
