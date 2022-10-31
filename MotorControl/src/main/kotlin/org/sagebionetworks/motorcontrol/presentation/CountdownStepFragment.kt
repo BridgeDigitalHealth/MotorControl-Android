@@ -55,6 +55,8 @@ open class CountdownStepFragment: StepFragment() {
 
     private lateinit var step: CountdownStep
 
+    private var timer: CountDownTimer? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         step = nodeState.node as CountdownStep
@@ -64,9 +66,8 @@ open class CountdownStepFragment: StepFragment() {
                               savedInstanceState: Bundle?): View? {
         _binding = ComposeQuestionStepFragmentBinding.inflate(layoutInflater, container, false)
         binding.questionContent.setContent {
-            //TODO: Need to figure out theming with compose -nbrown 2/17/22
             val countdown: MutableState<Long> = remember { mutableStateOf(step.duration.toLong()) }
-            val timer = object: CountDownTimer((step.duration * 1000).toLong(), 10) {
+            timer = object: CountDownTimer((step.duration * 1000).toLong(), 10) {
                 override fun onTick(millisUntilFinished: Long) {
                     countdown.value = millisUntilFinished
                 }
@@ -89,6 +90,7 @@ open class CountdownStepFragment: StepFragment() {
     }
 
     override fun onDestroyView() {
+        timer?.cancel()
         super.onDestroyView()
         _binding = null
     }
