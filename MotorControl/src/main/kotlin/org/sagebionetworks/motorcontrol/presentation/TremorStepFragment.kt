@@ -34,7 +34,6 @@
 package org.sagebionetworks.motorcontrol.presentation
 
 import android.os.Bundle
-import android.os.CountDownTimer
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -42,9 +41,6 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.ui.graphics.Color
-import org.sagebionetworks.motorcontrol.presentation.compose.CountdownStepUi
-import org.sagebionetworks.assessmentmodel.CountdownStep
 import org.sagebionetworks.assessmentmodel.presentation.StepFragment
 import org.sagebionetworks.assessmentmodel.presentation.databinding.ComposeQuestionStepFragmentBinding
 import org.sagebionetworks.assessmentmodel.presentation.ui.theme.SageSurveyTheme
@@ -82,6 +78,7 @@ open class TremorStepFragment: StepFragment() {
                 step.duration,
                 assessmentViewModel::goForward
             )
+            timer?.startTimer()
             SageSurveyTheme {
                 TremorStepUi(
                     assessmentViewModel = assessmentViewModel,
@@ -93,6 +90,7 @@ open class TremorStepFragment: StepFragment() {
                     } else {
                         null
                     },
+                    timer = timer,
                     instruction = step.title?.replace("%@",
                         stepViewModel.nodeState.parent?.node?.hand()?.name ?: ""),
                     duration = step.duration,

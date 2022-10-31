@@ -50,7 +50,11 @@ class StepTimer(val countdown: MutableState<Long>,
                 this.cancel()
                 finished()
             }
-        }.start()
+        }
+    }
+
+    fun startTimer() {
+        timer?.start()
     }
 
     fun stopTimer() {

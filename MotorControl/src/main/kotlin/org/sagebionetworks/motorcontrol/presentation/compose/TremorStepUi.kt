@@ -62,6 +62,7 @@ internal fun TremorStepUi(
     image: Drawable?,
     flippedImage: Boolean,
     imageTintColor: Color?,
+    timer: StepTimer?,
     instruction: String?,
     duration: Double,
     countdown: MutableState<Long>) {
@@ -90,11 +91,16 @@ internal fun TremorStepUi(
                             showDialog = openDialog.value,
                             assessmentViewModel = it,
                         ) {
+                            countdown.value = duration.toLong()
+                            timer?.startTimer()
                             openDialog.value = false
                         }
                     }
                     PauseTopBar(
-                        onPauseClicked = { openDialog.value = true },
+                        onPauseClicked = {
+                            openDialog.value = true
+                            timer?.stopTimer()
+                        },
                         onSkipClicked = { assessmentViewModel?.skip() },
                         showSkip = false
                     )
@@ -118,6 +124,7 @@ private fun InstructionStepPreview() {
             image = null,
             flippedImage = false,
             imageTintColor = null,
+            timer = null,
             instruction = "",
             duration = 5.0,
             countdown = mutableStateOf(5)

@@ -73,6 +73,7 @@ open class CountdownStepFragment: StepFragment() {
                 step.duration,
                 assessmentViewModel::goForward
             )
+            timer?.startTimer()
             SageSurveyTheme {
                 CountdownStepUi(
                     assessmentViewModel = assessmentViewModel,
