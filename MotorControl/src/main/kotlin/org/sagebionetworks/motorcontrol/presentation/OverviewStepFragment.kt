@@ -98,7 +98,6 @@ open class OverviewStepFragment: StepFragment() {
         val buttonTextResource = stepViewModel.nodeState.node
             .buttonMap[ButtonAction.valueOf("goForward")]?.buttonTitle
         binding.questionContent.setContent {
-            //TODO: Need to figure out theming with compose -nbrown 2/17/22
             SageSurveyTheme {
                 OverviewStepUi(
                     image = if (drawables.isEmpty()) drawable else null,

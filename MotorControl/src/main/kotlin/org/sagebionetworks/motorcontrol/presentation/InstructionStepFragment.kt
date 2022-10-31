@@ -98,7 +98,6 @@ open class InstructionStepFragment: StepFragment() {
             .buttonMap[ButtonAction.valueOf("goForward")]?.buttonTitle
 
     binding.questionContent.setContent {
-            //TODO: Need to figure out theming with compose -nbrown 2/17/22
             SageSurveyTheme {
                 if (step is CompletionStep) {
                     CompletionStepUi(
