@@ -1,5 +1,5 @@
 //
-//  Serialization.kt
+//  MotorControlAssessmentFragment.kt
 //
 //
 //  Copyright © 2022 Sage Bionetworks. All rights reserved.
@@ -31,47 +31,24 @@
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
 
-package org.sagebionetworks.motorcontrol.serialization
+package org.sagebionetworks.motorcontrol.presentation
 
-import kotlinx.serialization.SerialName
-import kotlinx.serialization.Serializable
-import kotlinx.serialization.Transient
-import kotlinx.serialization.json.Json
-import kotlinx.serialization.modules.SerializersModule
-import kotlinx.serialization.modules.plus
-import org.sagebionetworks.assessmentmodel.EmbeddedJsonModuleInfo
-import org.sagebionetworks.assessmentmodel.JsonModuleInfo
-import org.sagebionetworks.assessmentmodel.TransformableAssessment
-import org.sagebionetworks.assessmentmodel.resourcemanagement.ResourceInfo
-import org.sagebionetworks.assessmentmodel.serialization.*
-import kotlinx.serialization.modules.polymorphic
-import kotlinx.serialization.modules.subclass
+import androidx.fragment.app.Fragment
+import org.sagebionetworks.assessmentmodel.*
+import org.sagebionetworks.assessmentmodel.presentation.AssessmentFragment
+import org.sagebionetworks.assessmentmodel.presentation.DebugStepFragment
+import org.sagebionetworks.assessmentmodel.presentation.SurveyQuestionStepFragment
+import org.sagebionetworks.assessmentmodel.survey.Question
 
-val motorControlModuleInfoSerializersModule = SerializersModule {
-    polymorphic(JsonModuleInfo::class) {
-        subclass(MotorControlModuleInfoObject::class)
-    }
-}
-
-@Serializable
-@SerialName("MotorControlModuleInfo")
-data class MotorControlModuleInfoObject(
-    override val assessments: List<TransformableAssessment>,
-    override var packageName: String? = null,
-    override val bundleIdentifier: String? = null): ResourceInfo, EmbeddedJsonModuleInfo {
-
-    override val resourceInfo: ResourceInfo
-        get() = this
-    override val jsonCoder: Json
-        get() {
-            return Json {
-                serializersModule = motorControlNodeSerializersModule +
-                        Serialization.SerializersModule.default
-                ignoreUnknownKeys = true
-                isLenient = true
-            }
+class MotorControlAssessmentFragment: AssessmentFragment() {
+    override fun getFragmentForStep(step: Step): Fragment {
+        return when (step) {
+            is Question -> SurveyQuestionStepFragment()
+            is CountdownStep -> CountdownStepFragment()
+            is OverviewStep -> OverviewStepFragment()
+            is InstructionStep -> InstructionStepFragment()
+            is CompletionStep -> InstructionStepFragment()
+            else -> DebugStepFragment()
         }
-
-    @Transient
-    override var decoderBundle: Any? = null
+    }
 }

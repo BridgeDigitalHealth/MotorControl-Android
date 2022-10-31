@@ -1,5 +1,5 @@
 //
-//  Serialization.kt
+//  CountdownDial.kt
 //
 //
 //  Copyright © 2022 Sage Bionetworks. All rights reserved.
@@ -31,47 +31,45 @@
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
 
-package org.sagebionetworks.motorcontrol.serialization
+package org.sagebionetworks.motorcontrol.presentation.compose
 
-import kotlinx.serialization.SerialName
-import kotlinx.serialization.Serializable
-import kotlinx.serialization.Transient
-import kotlinx.serialization.json.Json
-import kotlinx.serialization.modules.SerializersModule
-import kotlinx.serialization.modules.plus
-import org.sagebionetworks.assessmentmodel.EmbeddedJsonModuleInfo
-import org.sagebionetworks.assessmentmodel.JsonModuleInfo
-import org.sagebionetworks.assessmentmodel.TransformableAssessment
-import org.sagebionetworks.assessmentmodel.resourcemanagement.ResourceInfo
-import org.sagebionetworks.assessmentmodel.serialization.*
-import kotlinx.serialization.modules.polymorphic
-import kotlinx.serialization.modules.subclass
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.size
+import androidx.compose.material.CircularProgressIndicator
+import androidx.compose.material.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.scale
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import kotlin.math.ceil
 
-val motorControlModuleInfoSerializersModule = SerializersModule {
-    polymorphic(JsonModuleInfo::class) {
-        subclass(MotorControlModuleInfoObject::class)
+@Composable
+fun CountdownDial(
+    duration: Double,
+    countdown: MutableState<Long>
+) {
+    Box(contentAlignment = Alignment.Center) {
+        CircularProgressIndicator(
+            progress = (countdown.value / (duration * 1000)).toFloat(),
+            color = Color.Black,
+            strokeWidth = 7.dp,
+            modifier = Modifier
+                .size(200.dp)
+                .align(Alignment.Center)
+                .scale(scaleX = -1f, scaleY = 1f)
+        )
+        Text(
+            text = ceil((countdown.value.toDouble() / 1000)).toInt().toString(),
+            textAlign = TextAlign.Center,
+            fontSize = 75.sp,
+            modifier = Modifier
+                .fillMaxWidth()
+        )
     }
-}
-
-@Serializable
-@SerialName("MotorControlModuleInfo")
-data class MotorControlModuleInfoObject(
-    override val assessments: List<TransformableAssessment>,
-    override var packageName: String? = null,
-    override val bundleIdentifier: String? = null): ResourceInfo, EmbeddedJsonModuleInfo {
-
-    override val resourceInfo: ResourceInfo
-        get() = this
-    override val jsonCoder: Json
-        get() {
-            return Json {
-                serializersModule = motorControlNodeSerializersModule +
-                        Serialization.SerializersModule.default
-                ignoreUnknownKeys = true
-                isLenient = true
-            }
-        }
-
-    @Transient
-    override var decoderBundle: Any? = null
 }

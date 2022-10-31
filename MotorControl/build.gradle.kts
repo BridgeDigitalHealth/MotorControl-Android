@@ -6,11 +6,17 @@ plugins {
 
 android {
     namespace = "org.sagebionetworks.motorcontrol"
-    compileSdk = 32
-
+    compileSdk = 33
+    buildFeatures {
+        compose = true
+    }
+    buildFeatures.viewBinding = true
+    composeOptions {
+        kotlinCompilerExtensionVersion = "1.2.0"
+    }
     defaultConfig {
         minSdk = 21
-        targetSdk = 32
+        targetSdk = 33
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles("consumer-rules.pro")
@@ -49,6 +55,7 @@ dependencies {
     implementation("io.insert-koin:koin-android:3.2.2")
     implementation("com.google.android.material:material:1.6.1")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.4.0")
+    implementation("com.google.accompanist:accompanist-drawablepainter:0.16.0")
 
     testImplementation("junit:junit:4.13.2")
 

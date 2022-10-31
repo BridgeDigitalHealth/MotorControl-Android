@@ -1,5 +1,5 @@
 //
-//  Serialization.kt
+//  AnimationTimer.kt
 //
 //
 //  Copyright © 2022 Sage Bionetworks. All rights reserved.
@@ -31,47 +31,28 @@
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
 
-package org.sagebionetworks.motorcontrol.serialization
+package org.sagebionetworks.motorcontrol.presentation.compose
 
-import kotlinx.serialization.SerialName
-import kotlinx.serialization.Serializable
-import kotlinx.serialization.Transient
-import kotlinx.serialization.json.Json
-import kotlinx.serialization.modules.SerializersModule
-import kotlinx.serialization.modules.plus
-import org.sagebionetworks.assessmentmodel.EmbeddedJsonModuleInfo
-import org.sagebionetworks.assessmentmodel.JsonModuleInfo
-import org.sagebionetworks.assessmentmodel.TransformableAssessment
-import org.sagebionetworks.assessmentmodel.resourcemanagement.ResourceInfo
-import org.sagebionetworks.assessmentmodel.serialization.*
-import kotlinx.serialization.modules.polymorphic
-import kotlinx.serialization.modules.subclass
+import android.os.CountDownTimer
+import androidx.compose.runtime.MutableState
 
-val motorControlModuleInfoSerializersModule = SerializersModule {
-    polymorphic(JsonModuleInfo::class) {
-        subclass(MotorControlModuleInfoObject::class)
-    }
-}
-
-@Serializable
-@SerialName("MotorControlModuleInfo")
-data class MotorControlModuleInfoObject(
-    override val assessments: List<TransformableAssessment>,
-    override var packageName: String? = null,
-    override val bundleIdentifier: String? = null): ResourceInfo, EmbeddedJsonModuleInfo {
-
-    override val resourceInfo: ResourceInfo
-        get() = this
-    override val jsonCoder: Json
-        get() {
-            return Json {
-                serializersModule = motorControlNodeSerializersModule +
-                        Serialization.SerializersModule.default
-                ignoreUnknownKeys = true
-                isLenient = true
-            }
+class AnimationTimer(frames: Int,
+                     duration: Double,
+                     repeatCount: Int?,
+                     currentImage: MutableState<Int>) {
+    private val intervalLength = ((duration * 1000) / frames).toLong()
+    private val timer = object: CountDownTimer(((repeatCount ?: 1000) * frames * intervalLength)
+        , intervalLength) {
+        override fun onTick(millisUntilFinished: Long) {
+            currentImage.value = (currentImage.value + 1) % frames
         }
 
-    @Transient
-    override var decoderBundle: Any? = null
+        override fun onFinish() {
+            this.cancel()
+        }
+    }.start()
+
+    fun stop() {
+        timer.cancel()
+    }
 }

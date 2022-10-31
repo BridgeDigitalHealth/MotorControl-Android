@@ -1,5 +1,5 @@
 //
-//  Serialization.kt
+//  Type.kt
 //
 //
 //  Copyright © 2022 Sage Bionetworks. All rights reserved.
@@ -31,47 +31,42 @@
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
 
-package org.sagebionetworks.motorcontrol.serialization
+package org.sagebionetworks.motorcontrol.presentation.theme
 
-import kotlinx.serialization.SerialName
-import kotlinx.serialization.Serializable
-import kotlinx.serialization.Transient
-import kotlinx.serialization.json.Json
-import kotlinx.serialization.modules.SerializersModule
-import kotlinx.serialization.modules.plus
-import org.sagebionetworks.assessmentmodel.EmbeddedJsonModuleInfo
-import org.sagebionetworks.assessmentmodel.JsonModuleInfo
-import org.sagebionetworks.assessmentmodel.TransformableAssessment
-import org.sagebionetworks.assessmentmodel.resourcemanagement.ResourceInfo
-import org.sagebionetworks.assessmentmodel.serialization.*
-import kotlinx.serialization.modules.polymorphic
-import kotlinx.serialization.modules.subclass
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontStyle
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.sp
+import org.sagebionetworks.motorcontrol.R
 
-val motorControlModuleInfoSerializersModule = SerializersModule {
-    polymorphic(JsonModuleInfo::class) {
-        subclass(MotorControlModuleInfoObject::class)
-    }
-}
+val fonts = FontFamily(
+    Font(R.font.lato_bold, weight = FontWeight.SemiBold, style = FontStyle.Normal),
+    Font(R.font.lato_bold_italic, weight = FontWeight.SemiBold, style = FontStyle.Italic),
+    Font(R.font.lato_italic, weight = FontWeight.Normal, style = FontStyle.Italic),
+    Font(R.font.lato_light, weight = FontWeight.Light, style = FontStyle.Normal),
+    Font(R.font.lato_light_italic, weight = FontWeight.Light, style = FontStyle.Italic),
+    Font(R.font.lato_regular, weight = FontWeight.Normal, style = FontStyle.Normal),
+)
 
-@Serializable
-@SerialName("MotorControlModuleInfo")
-data class MotorControlModuleInfoObject(
-    override val assessments: List<TransformableAssessment>,
-    override var packageName: String? = null,
-    override val bundleIdentifier: String? = null): ResourceInfo, EmbeddedJsonModuleInfo {
-
-    override val resourceInfo: ResourceInfo
-        get() = this
-    override val jsonCoder: Json
-        get() {
-            return Json {
-                serializersModule = motorControlNodeSerializersModule +
-                        Serialization.SerializersModule.default
-                ignoreUnknownKeys = true
-                isLenient = true
-            }
-        }
-
-    @Transient
-    override var decoderBundle: Any? = null
-}
+    val detailText = TextStyle(
+        fontFamily = fonts,
+        fontWeight = FontWeight.Normal,
+        fontSize = 22.sp
+    )
+    val iconHeaderText = TextStyle(
+        fontFamily = fonts,
+        fontWeight = FontWeight.Bold,
+        fontSize = 20.sp
+    )
+    val iconTitleText = TextStyle(
+        fontFamily = fonts,
+        fontWeight = FontWeight.Normal,
+        fontSize = 20.sp
+    )
+    val titleText = TextStyle(
+        fontFamily = fonts,
+        fontWeight = FontWeight.Normal,
+        fontSize = 36.sp
+    )
