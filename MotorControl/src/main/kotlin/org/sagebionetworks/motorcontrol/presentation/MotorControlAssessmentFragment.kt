@@ -39,14 +39,16 @@ import org.sagebionetworks.assessmentmodel.presentation.AssessmentFragment
 import org.sagebionetworks.assessmentmodel.presentation.DebugStepFragment
 import org.sagebionetworks.assessmentmodel.presentation.SurveyQuestionStepFragment
 import org.sagebionetworks.assessmentmodel.survey.Question
+import org.sagebionetworks.motorcontrol.serialization.TremorStepObject
 
 class MotorControlAssessmentFragment: AssessmentFragment() {
     override fun getFragmentForStep(step: Step): Fragment {
         return when (step) {
-            is Question -> SurveyQuestionStepFragment()
-            is CountdownStep -> CountdownStepFragment()
             is OverviewStep -> OverviewStepFragment()
+            is Question -> SurveyQuestionStepFragment()
             is InstructionStep -> InstructionStepFragment()
+            is CountdownStep -> CountdownStepFragment()
+            is TremorStepObject -> TremorStepFragment()
             is CompletionStep -> InstructionStepFragment()
             else -> DebugStepFragment()
         }
