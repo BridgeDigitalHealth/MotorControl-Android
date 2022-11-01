@@ -43,8 +43,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import org.sagebionetworks.assessmentmodel.presentation.AssessmentViewModel
-import org.sagebionetworks.assessmentmodel.presentation.compose.PauseScreenDialog
-import org.sagebionetworks.assessmentmodel.presentation.compose.PauseTopBar
 import org.sagebionetworks.assessmentmodel.presentation.ui.theme.*
 import org.sagebionetworks.motorcontrol.R
 import org.sagebionetworks.motorcontrol.presentation.theme.countdownBeginText
@@ -57,25 +55,13 @@ internal fun CountdownStepUi(
     timer: StepTimer?
 ) {
     Column(modifier = Modifier.background(BackgroundGray)) {
-        val openDialog = remember { mutableStateOf(false) }
-        assessmentViewModel?.let {
-            PauseScreenDialog(
-                showDialog = openDialog.value,
-                assessmentViewModel = it,
-            ) {
-                countdown.value = duration.toLong() * 1000
-                timer?.startTimer()
-                openDialog.value = false
-            }
+        MotorControlPauseUi(
+            assessmentViewModel = assessmentViewModel,
+            timer = timer
+        ) {
+            countdown.value = duration.toLong() * 1000
+            timer?.startTimer()
         }
-        PauseTopBar(
-            onPauseClicked = {
-                openDialog.value = true
-                timer?.stopTimer()
-            },
-            onSkipClicked = { assessmentViewModel?.skip() },
-            showSkip = false
-        )
         Column(
             modifier = Modifier
                 .fillMaxHeight()

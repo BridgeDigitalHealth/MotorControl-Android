@@ -39,7 +39,6 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
@@ -48,8 +47,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import org.sagebionetworks.motorcontrol.R
 import org.sagebionetworks.assessmentmodel.presentation.AssessmentViewModel
-import org.sagebionetworks.assessmentmodel.presentation.compose.PauseScreenDialog
-import org.sagebionetworks.assessmentmodel.presentation.compose.PauseTopBar
 import org.sagebionetworks.assessmentmodel.presentation.ui.theme.*
 import org.sagebionetworks.motorcontrol.presentation.theme.ImageBackgroundColor
 
@@ -71,7 +68,10 @@ internal fun TremorStepUi(
     } else {
         Modifier.fillMaxSize()
     }
-    Box(modifier = Modifier.fillMaxHeight().background(BackgroundGray)) {
+    Box(modifier = Modifier
+        .fillMaxHeight()
+        .background(BackgroundGray)
+    ) {
         if (image != null) {
             SingleImageUi(
                 image = image,
@@ -81,25 +81,13 @@ internal fun TremorStepUi(
                 alpha = 0.5F)
         }
         Column {
-            val openDialog = remember { mutableStateOf(false) }
-            assessmentViewModel?.let {
-                PauseScreenDialog(
-                    showDialog = openDialog.value,
-                    assessmentViewModel = it,
-                ) {
-                    countdown.value = duration.toLong() * 1000 // multiply for milliseconds
-                    timer?.startTimer()
-                    openDialog.value = false
-                }
+            MotorControlPauseUi(
+                assessmentViewModel = assessmentViewModel,
+                timer = timer
+            ) {
+                countdown.value = duration.toLong() * 1000 // multiply for milliseconds
+                timer?.startTimer()
             }
-            PauseTopBar(
-                onPauseClicked = {
-                    openDialog.value = true
-                    timer?.stopTimer()
-                },
-                onSkipClicked = { assessmentViewModel?.skip() },
-                showSkip = false
-            )
             Box(Modifier.padding(vertical = 10.dp)) {
                 StepBodyTextUi(instruction, null, modifier)
             }

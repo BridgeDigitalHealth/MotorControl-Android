@@ -42,7 +42,6 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
@@ -51,8 +50,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import org.sagebionetworks.motorcontrol.R
 import org.sagebionetworks.assessmentmodel.presentation.AssessmentViewModel
-import org.sagebionetworks.assessmentmodel.presentation.compose.PauseScreenDialog
-import org.sagebionetworks.assessmentmodel.presentation.compose.PauseTopBar
 import org.sagebionetworks.assessmentmodel.presentation.ui.theme.*
 import org.sagebionetworks.motorcontrol.presentation.theme.*
 
@@ -73,7 +70,10 @@ internal fun TappingStepUi(
     } else {
         Modifier.fillMaxSize()
     }
-    Box(modifier = Modifier.fillMaxHeight().background(BackgroundGray)) {
+    Box(modifier = Modifier
+        .fillMaxHeight()
+        .background(BackgroundGray)
+    ) {
         if (image != null) {
             SingleImageUi(
                 image = image,
@@ -83,25 +83,13 @@ internal fun TappingStepUi(
                 alpha = 0.5F)
         }
         Column {
-            val openDialog = remember { mutableStateOf(false) }
-            assessmentViewModel?.let {
-                PauseScreenDialog(
-                    showDialog = openDialog.value,
-                    assessmentViewModel = it
-                ) {
-                    countdown.value = duration.toLong() * 1000 // multiply for milliseconds
-                    timer?.startTimer()
-                    openDialog.value = false
-                }
+            MotorControlPauseUi(
+                assessmentViewModel = assessmentViewModel,
+                timer = timer
+            ) {
+                countdown.value = duration.toLong() * 1000 // multiply for milliseconds
+                timer?.startTimer()
             }
-            PauseTopBar(
-                onPauseClicked = {
-                    openDialog.value = true
-                    timer?.stopTimer()
-                },
-                onSkipClicked = { assessmentViewModel?.skip() },
-                showSkip = false
-            )
             Spacer(modifier = Modifier.weight(1F))
             CountdownDial(
                 duration = duration,
@@ -127,12 +115,12 @@ internal fun TappingStepUi(
 
 @Composable
 private fun TapButton(
-    onClick: () -> Unit,
+    onTap: () -> Unit,
 ) {
     val tapButtonSize = 100.dp
     val tapButtonVerticalPad = 48.dp
     Button(
-        onClick = onClick,
+        onClick = onTap,
         modifier = Modifier
             .padding(vertical = tapButtonVerticalPad)
             .size(tapButtonSize),

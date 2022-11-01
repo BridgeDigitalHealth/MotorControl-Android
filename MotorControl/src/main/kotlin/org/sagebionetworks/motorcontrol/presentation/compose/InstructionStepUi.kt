@@ -41,7 +41,6 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
@@ -51,8 +50,6 @@ import androidx.compose.ui.unit.dp
 import org.sagebionetworks.assessmentmodel.presentation.AssessmentViewModel
 import org.sagebionetworks.assessmentmodel.presentation.R
 import org.sagebionetworks.assessmentmodel.presentation.compose.BottomNavigation
-import org.sagebionetworks.assessmentmodel.presentation.compose.PauseScreenDialog
-import org.sagebionetworks.assessmentmodel.presentation.compose.PauseTopBar
 import org.sagebionetworks.assessmentmodel.presentation.ui.theme.*
 import org.sagebionetworks.motorcontrol.presentation.theme.ImageBackgroundColor
 
@@ -94,7 +91,7 @@ internal fun InstructionStepUi(
                 if (animations.isNotEmpty()) {
                     AnimationImageUi(
                         animations = animations,
-                        surveyTint = Color(0xFF8FD6FF),
+                        surveyTint = ImageBackgroundColor,
                         currentImage = animationIndex,
                         imageTintColor = imageTintColor,
                         imageModifier = imageModifier
@@ -113,20 +110,7 @@ internal fun InstructionStepUi(
                 )
             }
         }
-        val openDialog = remember { mutableStateOf(false) }
-        assessmentViewModel?.let {
-            PauseScreenDialog(
-                showDialog = openDialog.value,
-                assessmentViewModel = it,
-            ) {
-                openDialog.value = false
-            }
-        }
-        PauseTopBar(
-            onPauseClicked = { openDialog.value = true },
-            onSkipClicked = { assessmentViewModel?.skip() },
-            showSkip = false
-        )
+        MotorControlPauseUi(assessmentViewModel = assessmentViewModel)
     }
 }
 

@@ -100,15 +100,7 @@ internal fun OverviewStepUi(
                 }
                 StepBodyTextUi(title, detail, modifier)
                 if (icons.isNotEmpty()) {
-                    Text(
-                        text = stringResource(R.string.icon_header),
-                        style = iconHeaderText,
-                        textAlign = TextAlign.Center,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(bottom = 30.dp)
-                    )
-                    IconsRow(icons = icons, imageTintColor = imageTintColor)
+                    IconsUi(icons = icons, imageTintColor = imageTintColor)
                 }
             }
             Box(modifier = Modifier.padding(horizontal = 20.dp)) {
@@ -126,10 +118,18 @@ internal fun OverviewStepUi(
 }
 
 @Composable
-private fun IconsRow(
+private fun IconsUi(
     icons: List<Pair<Drawable?, String?>>,
     imageTintColor: Color?
 ) {
+    Text(
+        text = stringResource(R.string.icon_header),
+        style = iconHeaderText,
+        textAlign = TextAlign.Center,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(bottom = 30.dp)
+    )
     Row(
         modifier = Modifier.padding(bottom = 15.dp),
         horizontalArrangement = Arrangement.Center) {
