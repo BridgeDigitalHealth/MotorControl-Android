@@ -54,6 +54,7 @@ import org.sagebionetworks.assessmentmodel.presentation.compose.BottomNavigation
 import org.sagebionetworks.assessmentmodel.presentation.compose.PauseScreenDialog
 import org.sagebionetworks.assessmentmodel.presentation.compose.PauseTopBar
 import org.sagebionetworks.assessmentmodel.presentation.ui.theme.*
+import org.sagebionetworks.motorcontrol.presentation.theme.ImageBackgroundColor
 
 @Composable
 internal fun InstructionStepUi(
@@ -85,7 +86,7 @@ internal fun InstructionStepUi(
                 if (image != null) {
                     SingleImageUi(
                         image = image,
-                        surveyTint = Color(0xFF8FD6FF),
+                        surveyTint = ImageBackgroundColor,
                         imageModifier = imageModifier,
                         imageTintColor = imageTintColor
                     )

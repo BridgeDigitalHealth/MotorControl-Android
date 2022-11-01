@@ -67,7 +67,7 @@ open class CountdownStepFragment: StepFragment() {
                               savedInstanceState: Bundle?): View? {
         _binding = ComposeQuestionStepFragmentBinding.inflate(layoutInflater, container, false)
         binding.questionContent.setContent {
-            val countdown: MutableState<Long> = remember { mutableStateOf(step.duration.toLong()) }
+            val countdown: MutableState<Long> = remember { mutableStateOf(step.duration.toLong() * 1000) }
             timer = StepTimer(
                 countdown,
                 step.duration,

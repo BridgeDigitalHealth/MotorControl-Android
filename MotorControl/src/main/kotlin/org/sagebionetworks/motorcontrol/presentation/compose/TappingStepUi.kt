@@ -54,7 +54,7 @@ import org.sagebionetworks.assessmentmodel.presentation.AssessmentViewModel
 import org.sagebionetworks.assessmentmodel.presentation.compose.PauseScreenDialog
 import org.sagebionetworks.assessmentmodel.presentation.compose.PauseTopBar
 import org.sagebionetworks.assessmentmodel.presentation.ui.theme.*
-import org.sagebionetworks.motorcontrol.presentation.theme.tapButtonText
+import org.sagebionetworks.motorcontrol.presentation.theme.*
 
 @Composable
 internal fun TappingStepUi(
@@ -73,84 +73,78 @@ internal fun TappingStepUi(
     } else {
         Modifier.fillMaxSize()
     }
-    Box {
-        Column(modifier = Modifier.background(BackgroundGray)) {
-            Box(modifier = Modifier.fillMaxHeight()) {
-                if (image != null) {
-                    SingleImageUi(
-                        image = image,
-                        surveyTint = Color(0xFF8FD6FF),
-                        imageModifier = imageModifier,
-                        imageTintColor = imageTintColor,
-                        alpha = 0.5F)
+    Box(modifier = Modifier.fillMaxHeight().background(BackgroundGray)) {
+        if (image != null) {
+            SingleImageUi(
+                image = image,
+                surveyTint = ImageBackgroundColor,
+                imageModifier = imageModifier,
+                imageTintColor = imageTintColor,
+                alpha = 0.5F)
+        }
+        Column {
+            val openDialog = remember { mutableStateOf(false) }
+            assessmentViewModel?.let {
+                PauseScreenDialog(
+                    showDialog = openDialog.value,
+                    assessmentViewModel = it
+                ) {
+                    countdown.value = duration.toLong() * 1000 // multiply for milliseconds
+                    timer?.startTimer()
+                    openDialog.value = false
                 }
-                Column {
-                    val openDialog = remember { mutableStateOf(false) }
-                    assessmentViewModel?.let {
-                        PauseScreenDialog(
-                            showDialog = openDialog.value,
-                            assessmentViewModel = it
-                        ) {
-                            countdown.value = duration.toLong()
-                            timer?.startTimer()
-                            openDialog.value = false
-                        }
-                    }
-                    val tapButtonSize = 100.dp
-                    val tapButtonVerticalPad = 48.dp
-                    PauseTopBar(
-                        onPauseClicked = {
-                            openDialog.value = true
-                            timer?.stopTimer()
-                        },
-                        onSkipClicked = { assessmentViewModel?.skip() },
-                        showSkip = false
-                    )
-                    Spacer(modifier = Modifier.weight(1F))
-                    CountdownDial(
-                        duration = duration,
-                        countdown = countdown,
-                        dialNumber = tapCount,
-                        dialSubText = stringResource(id = R.string.tap_count)
-                    )
-                    Spacer(modifier = Modifier.weight(1F))
-                    Row {
-                        Spacer(modifier = Modifier.weight(1F))
-                        Button(
-                            onClick = { tapCount.value += 1 },
-                            modifier = Modifier
-                                .padding(vertical = tapButtonVerticalPad)
-                                .size(tapButtonSize),
-                            shape = CircleShape
-                        ) {
-                            Text(
-                                text = stringResource(id = R.string.tap_button),
-                                color = Color.Black,
-                                style = tapButtonText
-                            )
-                        }
-                        Spacer(modifier = Modifier.weight(1F))
-                        Button(
-                            onClick = { tapCount.value += 1 },
-                            modifier = Modifier
-                                .padding(vertical = tapButtonVerticalPad)
-                                .size(tapButtonSize),
-                            shape = CircleShape
-                        ) {
-                            Text(
-                                text = stringResource(id = R.string.tap_button),
-                                color = Color.Black,
-                                style = tapButtonText
-                            )
-                        }
-                        Spacer(modifier = Modifier.weight(1F))
-                    }
+            }
+            PauseTopBar(
+                onPauseClicked = {
+                    openDialog.value = true
+                    timer?.stopTimer()
+                },
+                onSkipClicked = { assessmentViewModel?.skip() },
+                showSkip = false
+            )
+            Spacer(modifier = Modifier.weight(1F))
+            CountdownDial(
+                duration = duration,
+                countdown = countdown,
+                dialNumber = tapCount,
+                dialSubText = stringResource(id = R.string.tap_count)
+            )
+            Spacer(modifier = Modifier.weight(1F))
+            Row {
+                Spacer(modifier = Modifier.weight(1F))
+                TapButton {
+                    tapCount.value += 1
                 }
+                Spacer(modifier = Modifier.weight(1F))
+                TapButton {
+                    tapCount.value += 1
+                }
+                Spacer(modifier = Modifier.weight(1F))
             }
         }
     }
 }
 
+@Composable
+private fun TapButton(
+    onClick: () -> Unit,
+) {
+    val tapButtonSize = 100.dp
+    val tapButtonVerticalPad = 48.dp
+    Button(
+        onClick = onClick,
+        modifier = Modifier
+            .padding(vertical = tapButtonVerticalPad)
+            .size(tapButtonSize),
+        shape = CircleShape,
+    ) {
+        Text(
+            text = stringResource(id = R.string.tap_button),
+            color = Color.Black,
+            style = tapButtonText
+        )
+    }
+}
 
 @Preview
 @Composable

@@ -72,7 +72,7 @@ open class TappingStepFragment: StepFragment() {
         val drawable = step.imageInfo?.loadDrawable(requireContext())
         val tint = step.imageInfo?.tint ?: false
         binding.questionContent.setContent {
-            val countdown: MutableState<Long> = remember { mutableStateOf(step.duration.toLong()) }
+            val countdown: MutableState<Long> = remember { mutableStateOf(step.duration.toLong() * 1000) }
             val tapCount: MutableState<Int> = remember { mutableStateOf(0) }
             timer = StepTimer(
                 countdown,

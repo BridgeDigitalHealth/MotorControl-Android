@@ -72,7 +72,7 @@ open class TremorStepFragment: StepFragment() {
         val drawable = step.imageInfo?.loadDrawable(requireContext())
         val tint = step.imageInfo?.tint ?: false
         binding.questionContent.setContent {
-            val countdown: MutableState<Long> = remember { mutableStateOf(step.duration.toLong()) }
+            val countdown: MutableState<Long> = remember { mutableStateOf(step.duration.toLong() * 1000) }
             timer = StepTimer(
                 countdown,
                 step.duration,

@@ -50,9 +50,8 @@ import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import org.sagebionetworks.motorcontrol.presentation.theme.dialSecondaryText
-import org.sagebionetworks.motorcontrol.presentation.theme.dialText
+import org.sagebionetworks.assessmentmodel.presentation.ui.theme.BackgroundGray
+import org.sagebionetworks.motorcontrol.presentation.theme.*
 import kotlin.math.ceil
 
 @Composable
@@ -61,7 +60,7 @@ fun CountdownDial(
     countdown: MutableState<Long>,
     dialNumber: MutableState<Int>? = null,
     dialSubText: String? = null,
-    backgroundColor: Color = Color.White
+    backgroundColor: Color = BackgroundGray
 ) {
     Box(contentAlignment = Alignment.Center) {
         CircularProgressIndicator(

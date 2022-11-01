@@ -51,6 +51,7 @@ import org.sagebionetworks.assessmentmodel.presentation.AssessmentViewModel
 import org.sagebionetworks.assessmentmodel.presentation.compose.PauseScreenDialog
 import org.sagebionetworks.assessmentmodel.presentation.compose.PauseTopBar
 import org.sagebionetworks.assessmentmodel.presentation.ui.theme.*
+import org.sagebionetworks.motorcontrol.presentation.theme.ImageBackgroundColor
 
 @Composable
 internal fun TremorStepUi(
@@ -70,46 +71,42 @@ internal fun TremorStepUi(
     } else {
         Modifier.fillMaxSize()
     }
-    Box {
-        Column(modifier = Modifier.background(BackgroundGray)) {
-            Box(modifier = Modifier.fillMaxHeight()) {
-                if (image != null) {
-                    SingleImageUi(
-                        image = image,
-                        surveyTint = Color(0xFF8FD6FF),
-                        imageModifier = imageModifier,
-                        imageTintColor = imageTintColor,
-                        alpha = 0.5F)
-                }
-                Column {
-                    val openDialog = remember { mutableStateOf(false) }
-                    assessmentViewModel?.let {
-                        PauseScreenDialog(
-                            showDialog = openDialog.value,
-                            assessmentViewModel = it,
-                        ) {
-                            countdown.value = duration.toLong()
-                            timer?.startTimer()
-                            openDialog.value = false
-                        }
-                    }
-                    PauseTopBar(
-                        onPauseClicked = {
-                            openDialog.value = true
-                            timer?.stopTimer()
-                        },
-                        onSkipClicked = { assessmentViewModel?.skip() },
-                        showSkip = false
-                    )
-                    Box(Modifier.padding(vertical = 10.dp)) {
-                        StepBodyTextUi(instruction, null, modifier)
-                    }
-                    CountdownDial(
-                        duration = duration,
-                        countdown = countdown,
-                        dialSubText = stringResource(id = R.string.seconds))
+    Box(modifier = Modifier.fillMaxHeight().background(BackgroundGray)) {
+        if (image != null) {
+            SingleImageUi(
+                image = image,
+                surveyTint = ImageBackgroundColor,
+                imageModifier = imageModifier,
+                imageTintColor = imageTintColor,
+                alpha = 0.5F)
+        }
+        Column {
+            val openDialog = remember { mutableStateOf(false) }
+            assessmentViewModel?.let {
+                PauseScreenDialog(
+                    showDialog = openDialog.value,
+                    assessmentViewModel = it,
+                ) {
+                    countdown.value = duration.toLong() * 1000 // multiply for milliseconds
+                    timer?.startTimer()
+                    openDialog.value = false
                 }
             }
+            PauseTopBar(
+                onPauseClicked = {
+                    openDialog.value = true
+                    timer?.stopTimer()
+                },
+                onSkipClicked = { assessmentViewModel?.skip() },
+                showSkip = false
+            )
+            Box(Modifier.padding(vertical = 10.dp)) {
+                StepBodyTextUi(instruction, null, modifier)
+            }
+            CountdownDial(
+                duration = duration,
+                countdown = countdown,
+                dialSubText = stringResource(id = R.string.seconds))
         }
     }
 }

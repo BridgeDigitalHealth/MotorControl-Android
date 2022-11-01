@@ -33,18 +33,15 @@
 
 package org.sagebionetworks.motorcontrol.presentation.compose
 
-import android.os.CountDownTimer
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import org.sagebionetworks.assessmentmodel.presentation.AssessmentViewModel
 import org.sagebionetworks.assessmentmodel.presentation.compose.PauseScreenDialog
 import org.sagebionetworks.assessmentmodel.presentation.compose.PauseTopBar
@@ -67,6 +64,7 @@ internal fun CountdownStepUi(
                 assessmentViewModel = it,
             ) {
                 countdown.value = duration.toLong() * 1000
+                timer?.startTimer()
                 openDialog.value = false
             }
         }
