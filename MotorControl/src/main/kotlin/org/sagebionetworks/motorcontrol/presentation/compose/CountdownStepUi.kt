@@ -59,7 +59,7 @@ internal fun CountdownStepUi(
             assessmentViewModel = assessmentViewModel,
             timer = timer
         ) {
-            countdown.value = duration.toLong() * 1000
+            countdown.value = (duration * 1000).toLong() // Resets countdown to initial value
             timer?.startTimer()
         }
         Column(

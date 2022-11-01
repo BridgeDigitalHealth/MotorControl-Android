@@ -87,8 +87,7 @@ internal fun TappingStepUi(
                 assessmentViewModel = assessmentViewModel,
                 timer = timer
             ) {
-                countdown.value = duration.toLong() * 1000 // multiply for milliseconds
-                timer?.startTimer()
+                timer?.startTimer(restartsOnPause = false)
             }
             Spacer(modifier = Modifier.weight(1F))
             CountdownDial(

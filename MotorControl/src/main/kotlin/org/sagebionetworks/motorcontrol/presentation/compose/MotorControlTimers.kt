@@ -37,12 +37,17 @@ import android.os.CountDownTimer
 import androidx.compose.runtime.MutableState
 
 class StepTimer(val countdown: MutableState<Long>,
-                val duration: Double,
+                val stepDuration: Double,
                 val finished: () -> Unit) {
     var timer: CountDownTimer? = null
 
-    init {
-        timer = object: CountDownTimer((duration * 1000).toLong(), 10) {
+    fun startTimer(restartsOnPause: Boolean = true) {
+        val countdownDuration = if (restartsOnPause) {
+            stepDuration * 1000
+        } else {
+            countdown.value
+        }
+        timer = object: CountDownTimer(countdownDuration.toLong(), 10) {
             override fun onTick(millisUntilFinished: Long) {
                 countdown.value = millisUntilFinished
             }
@@ -51,9 +56,6 @@ class StepTimer(val countdown: MutableState<Long>,
                 finished()
             }
         }
-    }
-
-    fun startTimer() {
         timer?.start()
     }
 

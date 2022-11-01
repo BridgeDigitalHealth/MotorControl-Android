@@ -85,7 +85,7 @@ internal fun TremorStepUi(
                 assessmentViewModel = assessmentViewModel,
                 timer = timer
             ) {
-                countdown.value = duration.toLong() * 1000 // multiply for milliseconds
+                countdown.value = (duration * 1000).toLong() // Resets countdown to initial value
                 timer?.startTimer()
             }
             Box(Modifier.padding(vertical = 10.dp)) {
