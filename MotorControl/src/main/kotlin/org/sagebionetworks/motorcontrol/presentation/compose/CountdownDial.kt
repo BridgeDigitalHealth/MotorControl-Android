@@ -35,6 +35,7 @@ package org.sagebionetworks.motorcontrol.presentation.compose
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
@@ -50,12 +51,16 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import org.sagebionetworks.motorcontrol.presentation.theme.dialSecondaryText
+import org.sagebionetworks.motorcontrol.presentation.theme.dialText
 import kotlin.math.ceil
 
 @Composable
 fun CountdownDial(
     duration: Double,
     countdown: MutableState<Long>,
+    dialNumber: MutableState<Int>? = null,
+    dialSubText: String? = null,
     backgroundColor: Color = Color.White
 ) {
     Box(contentAlignment = Alignment.Center) {
@@ -70,11 +75,21 @@ fun CountdownDial(
                 .clip(CircleShape)
                 .background(backgroundColor)
         )
-        Text(
-            text = ceil((countdown.value.toDouble() / 1000)).toInt().toString(),
-            textAlign = TextAlign.Center,
-            fontSize = 75.sp,
-            modifier = Modifier.fillMaxWidth()
-        )
+        Column {
+            Text(
+                text = dialNumber?.value?.toString() ?: ceil((countdown.value.toDouble() / 1000)).toInt().toString(),
+                textAlign = TextAlign.Center,
+                style = dialText,
+                modifier = Modifier.fillMaxWidth()
+            )
+            dialSubText?.let {
+                Text(
+                    text = dialSubText,
+                    textAlign = TextAlign.Center,
+                    style = dialSecondaryText,
+                    modifier = Modifier.fillMaxWidth()
+                )
+            }
+        }
     }
 }

@@ -39,6 +39,7 @@ import org.sagebionetworks.assessmentmodel.presentation.AssessmentFragment
 import org.sagebionetworks.assessmentmodel.presentation.DebugStepFragment
 import org.sagebionetworks.assessmentmodel.presentation.SurveyQuestionStepFragment
 import org.sagebionetworks.assessmentmodel.survey.Question
+import org.sagebionetworks.motorcontrol.serialization.TappingStepObject
 import org.sagebionetworks.motorcontrol.serialization.TremorStepObject
 
 class MotorControlAssessmentFragment: AssessmentFragment() {
@@ -49,6 +50,7 @@ class MotorControlAssessmentFragment: AssessmentFragment() {
             is InstructionStep -> InstructionStepFragment()
             is CountdownStep -> CountdownStepFragment()
             is TremorStepObject -> TremorStepFragment()
+            is TappingStepObject -> TappingStepFragment()
             is CompletionStep -> InstructionStepFragment()
             else -> DebugStepFragment()
         }

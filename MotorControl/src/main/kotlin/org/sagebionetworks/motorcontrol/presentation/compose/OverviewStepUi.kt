@@ -109,7 +109,7 @@ internal fun OverviewStepUi(
                             .padding(bottom = 30.dp)
                     )
                     Row(
-                        modifier = modifier.padding(bottom = 15.dp),
+                        modifier = Modifier.padding(bottom = 15.dp),
                         horizontalArrangement = Arrangement.Center) {
                         for (icon in icons) {
                             Column(
@@ -130,7 +130,7 @@ internal fun OverviewStepUi(
                                         text = it,
                                         style = iconTitleText,
                                         textAlign = TextAlign.Center,
-                                        modifier = modifier
+                                        modifier = Modifier
                                             .fillMaxWidth()
                                             .padding(bottom = 10.dp)
                                     )

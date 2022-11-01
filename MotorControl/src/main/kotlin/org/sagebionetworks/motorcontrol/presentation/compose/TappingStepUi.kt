@@ -1,5 +1,5 @@
 //
-//  TremorStepUi.kt
+//  TappingStepUi.kt
 //
 //
 //  Copyright © 2022 Sage Bionetworks. All rights reserved.
@@ -36,6 +36,9 @@ package org.sagebionetworks.motorcontrol.presentation.compose
 import android.graphics.drawable.Drawable
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.Button
+import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
@@ -51,18 +54,18 @@ import org.sagebionetworks.assessmentmodel.presentation.AssessmentViewModel
 import org.sagebionetworks.assessmentmodel.presentation.compose.PauseScreenDialog
 import org.sagebionetworks.assessmentmodel.presentation.compose.PauseTopBar
 import org.sagebionetworks.assessmentmodel.presentation.ui.theme.*
+import org.sagebionetworks.motorcontrol.presentation.theme.tapButtonText
 
 @Composable
-internal fun TremorStepUi(
-    modifier: Modifier = Modifier,
+internal fun TappingStepUi(
     assessmentViewModel: AssessmentViewModel?,
     image: Drawable?,
     flippedImage: Boolean,
     imageTintColor: Color?,
     timer: StepTimer?,
-    instruction: String?,
     duration: Double,
-    countdown: MutableState<Long>) {
+    countdown: MutableState<Long>,
+    tapCount: MutableState<Int>) {
     val imageModifier = if (flippedImage) {
         Modifier
             .fillMaxSize()
@@ -86,13 +89,15 @@ internal fun TremorStepUi(
                     assessmentViewModel?.let {
                         PauseScreenDialog(
                             showDialog = openDialog.value,
-                            assessmentViewModel = it,
+                            assessmentViewModel = it
                         ) {
                             countdown.value = duration.toLong()
                             timer?.startTimer()
                             openDialog.value = false
                         }
                     }
+                    val tapButtonSize = 100.dp
+                    val tapButtonVerticalPad = 48.dp
                     PauseTopBar(
                         onPauseClicked = {
                             openDialog.value = true
@@ -101,13 +106,45 @@ internal fun TremorStepUi(
                         onSkipClicked = { assessmentViewModel?.skip() },
                         showSkip = false
                     )
-                    Box(Modifier.padding(vertical = 10.dp)) {
-                        StepBodyTextUi(instruction, null, modifier)
-                    }
+                    Spacer(modifier = Modifier.weight(1F))
                     CountdownDial(
                         duration = duration,
                         countdown = countdown,
-                        dialSubText = stringResource(id = R.string.seconds))
+                        dialNumber = tapCount,
+                        dialSubText = stringResource(id = R.string.tap_count)
+                    )
+                    Spacer(modifier = Modifier.weight(1F))
+                    Row {
+                        Spacer(modifier = Modifier.weight(1F))
+                        Button(
+                            onClick = { tapCount.value += 1 },
+                            modifier = Modifier
+                                .padding(vertical = tapButtonVerticalPad)
+                                .size(tapButtonSize),
+                            shape = CircleShape
+                        ) {
+                            Text(
+                                text = stringResource(id = R.string.tap_button),
+                                color = Color.Black,
+                                style = tapButtonText
+                            )
+                        }
+                        Spacer(modifier = Modifier.weight(1F))
+                        Button(
+                            onClick = { tapCount.value += 1 },
+                            modifier = Modifier
+                                .padding(vertical = tapButtonVerticalPad)
+                                .size(tapButtonSize),
+                            shape = CircleShape
+                        ) {
+                            Text(
+                                text = stringResource(id = R.string.tap_button),
+                                color = Color.Black,
+                                style = tapButtonText
+                            )
+                        }
+                        Spacer(modifier = Modifier.weight(1F))
+                    }
                 }
             }
         }
@@ -119,15 +156,15 @@ internal fun TremorStepUi(
 @Composable
 private fun InstructionStepPreview() {
     SageSurveyTheme {
-        TremorStepUi(
+        TappingStepUi(
             assessmentViewModel = null,
             image = null,
             flippedImage = false,
             imageTintColor = null,
             timer = null,
-            instruction = "",
             duration = 5.0,
-            countdown = mutableStateOf(5)
+            countdown = mutableStateOf(5),
+            tapCount = mutableStateOf(0)
         )
     }
 }

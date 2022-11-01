@@ -50,10 +50,10 @@ import org.sagebionetworks.assessmentmodel.presentation.compose.PauseScreenDialo
 import org.sagebionetworks.assessmentmodel.presentation.compose.PauseTopBar
 import org.sagebionetworks.assessmentmodel.presentation.ui.theme.*
 import org.sagebionetworks.motorcontrol.R
+import org.sagebionetworks.motorcontrol.presentation.theme.countdownBeginText
 
 @Composable
 internal fun CountdownStepUi(
-    modifier: Modifier = Modifier,
     assessmentViewModel: AssessmentViewModel?,
     duration: Double,
     countdown: MutableState<Long>,
@@ -88,8 +88,7 @@ internal fun CountdownStepUi(
             Text(
                 text = stringResource(id = R.string.begin),
                 textAlign = TextAlign.Center,
-                fontWeight = FontWeight.Bold,
-                fontSize = 25.sp,
+                style = countdownBeginText,
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(16.dp)
