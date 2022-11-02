@@ -113,16 +113,12 @@ internal fun TappingStepUi(
 }
 
 @Composable
-private fun TapButton(
-    onTap: () -> Unit,
-) {
-    val tapButtonSize = 100.dp
-    val tapButtonVerticalPad = 48.dp
+private fun TapButton(onTap: () -> Unit) {
     Button(
         onClick = onTap,
         modifier = Modifier
-            .padding(vertical = tapButtonVerticalPad)
-            .size(tapButtonSize),
+            .padding(vertical = 48.dp)
+            .size(100.dp),
         shape = CircleShape,
     ) {
         Text(
