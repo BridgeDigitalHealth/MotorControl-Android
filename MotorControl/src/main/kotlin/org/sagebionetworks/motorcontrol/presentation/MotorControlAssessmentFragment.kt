@@ -36,9 +36,6 @@ package org.sagebionetworks.motorcontrol.presentation
 import androidx.fragment.app.Fragment
 import org.sagebionetworks.assessmentmodel.*
 import org.sagebionetworks.assessmentmodel.presentation.AssessmentFragment
-import org.sagebionetworks.assessmentmodel.presentation.DebugStepFragment
-import org.sagebionetworks.assessmentmodel.presentation.SurveyQuestionStepFragment
-import org.sagebionetworks.assessmentmodel.survey.Question
 import org.sagebionetworks.motorcontrol.serialization.TappingStepObject
 import org.sagebionetworks.motorcontrol.serialization.TremorStepObject
 
@@ -46,13 +43,11 @@ class MotorControlAssessmentFragment: AssessmentFragment() {
     override fun getFragmentForStep(step: Step): Fragment {
         return when (step) {
             is OverviewStep -> OverviewStepFragment()
-            is Question -> SurveyQuestionStepFragment()
             is InstructionStep -> InstructionStepFragment()
             is CountdownStep -> CountdownStepFragment()
             is TremorStepObject -> TremorStepFragment()
             is TappingStepObject -> TappingStepFragment()
-            is CompletionStep -> InstructionStepFragment()
-            else -> DebugStepFragment()
+            else -> super.getFragmentForStep(step)
         }
     }
 }
