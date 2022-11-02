@@ -57,11 +57,12 @@ internal fun CountdownStepUi(
     Column(modifier = Modifier.background(BackgroundGray)) {
         MotorControlPauseUi(
             assessmentViewModel = assessmentViewModel,
-            timer = timer
-        ) {
-            countdown.value = (duration * 1000).toLong() // Resets countdown to initial value
-            timer?.startTimer()
-        }
+            onPause = { timer?.stopTimer() },
+            onUnpause = {
+                countdown.value = (duration * 1000).toLong() // Resets countdown to initial value
+                timer?.startTimer()
+            }
+        )
         Column(
             modifier = Modifier
                 .fillMaxHeight()

@@ -85,10 +85,9 @@ internal fun TappingStepUi(
         Column {
             MotorControlPauseUi(
                 assessmentViewModel = assessmentViewModel,
-                timer = timer
-            ) {
-                timer?.startTimer(restartsOnPause = false)
-            }
+                onPause = { timer?.stopTimer() },
+                onUnpause = { timer?.startTimer(restartsOnPause = false) }
+            )
             Spacer(modifier = Modifier.weight(1F))
             CountdownDial(
                 duration = duration,
