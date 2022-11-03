@@ -93,7 +93,7 @@ internal fun TappingStepUi(
             CountdownDial(
                 duration = duration,
                 countdown = countdown,
-                dialNumber = tapCount,
+                dialContent = tapCount,
                 dialSubText = stringResource(id = R.string.tap_count)
             )
             Spacer(modifier = Modifier.weight(1F))

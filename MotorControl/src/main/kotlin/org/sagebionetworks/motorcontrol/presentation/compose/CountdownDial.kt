@@ -58,7 +58,7 @@ import kotlin.math.ceil
 fun CountdownDial(
     duration: Double,
     countdown: MutableState<Long>,
-    dialNumber: MutableState<Int>? = null,
+    dialContent: MutableState<Int>? = null,
     dialSubText: String? = null,
     backgroundColor: Color = BackgroundGray
 ) {
@@ -76,7 +76,7 @@ fun CountdownDial(
         )
         Column {
             Text(
-                text = dialNumber?.value?.toString() ?: ceil((countdown.value.toDouble() / 1000)).toInt().toString(),
+                text = dialContent?.value?.toString() ?: ceil((countdown.value.toDouble() / 1000)).toInt().toString(),
                 textAlign = TextAlign.Center,
                 style = dialText,
                 modifier = Modifier.fillMaxWidth()

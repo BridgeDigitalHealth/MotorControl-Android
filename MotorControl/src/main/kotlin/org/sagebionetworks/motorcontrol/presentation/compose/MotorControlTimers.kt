@@ -34,12 +34,18 @@
 package org.sagebionetworks.motorcontrol.presentation.compose
 
 import android.os.CountDownTimer
+import android.speech.tts.TextToSpeech
 import androidx.compose.runtime.MutableState
+import kotlin.math.ceil
 
 class StepTimer(val countdown: MutableState<Long>,
                 val stepDuration: Double,
-                val finished: () -> Unit) {
+                val finished: () -> Unit,
+                val textToSpeech: TextToSpeech? = null,
+                val spokenInstructions: Map<Int, String>? = null
+) {
     var timer: CountDownTimer? = null
+    var instructionsSpoken = mutableSetOf<Int>()
 
     fun startTimer(restartsOnPause: Boolean = true) {
         val countdownDuration = if (restartsOnPause) {
@@ -49,6 +55,13 @@ class StepTimer(val countdown: MutableState<Long>,
         }
         timer = object: CountDownTimer(countdownDuration.toLong(), 10) {
             override fun onTick(millisUntilFinished: Long) {
+                val second = ceil((millisUntilFinished.toDouble() / 1000)).toInt()
+                if (!instructionsSpoken.contains(second)) {
+                    spokenInstructions?.get(second)?.let {
+                        instructionsSpoken.add(second)
+                        textToSpeech?.speak(it, TextToSpeech.QUEUE_ADD, null, "")
+                    }
+                }
                 countdown.value = millisUntilFinished
             }
             override fun onFinish() {
@@ -60,6 +73,10 @@ class StepTimer(val countdown: MutableState<Long>,
     }
 
     fun stopTimer() {
+        spokenInstructions?.get(stepDuration.toInt())?.let {
+            instructionsSpoken.add(stepDuration.toInt())
+            textToSpeech?.speak(it, TextToSpeech.QUEUE_ADD, null, "")
+        }
         timer?.cancel()
     }
 }
