@@ -87,11 +87,11 @@ open class TappingStepFragment: StepFragment() {
             val countdown: MutableState<Long> = remember { mutableStateOf(step.duration.toLong() * 1000) }
             val tapCount: MutableState<Int> = remember { mutableStateOf(0) }
             timer = StepTimer(
-                countdown,
-                step.duration,
-                assessmentViewModel::goForward,
-                textToSpeech,
-                spokenInstructions
+                countdown = countdown,
+                stepDuration = step.duration,
+                finished = assessmentViewModel::goForward,
+                textToSpeech = textToSpeech,
+                spokenInstructions = spokenInstructions
             )
             SageSurveyTheme {
                 TappingStepUi(

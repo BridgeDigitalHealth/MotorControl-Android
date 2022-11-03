@@ -33,10 +33,7 @@
 
 package org.sagebionetworks.motorcontrol.presentation
 
-import android.content.Context
-import android.os.Bundle
-import android.os.VibrationEffect
-import android.os.Vibrator
+import android.os.*
 import android.speech.tts.TextToSpeech
 import android.view.LayoutInflater
 import android.view.View
@@ -54,6 +51,7 @@ import org.sagebionetworks.motorcontrol.navigation.hand
 import org.sagebionetworks.motorcontrol.presentation.compose.StepTimer
 import org.sagebionetworks.motorcontrol.presentation.compose.TremorStepUi
 import org.sagebionetworks.motorcontrol.serialization.TremorStepObject
+import org.sagebionetworks.motorcontrol.utils.MotorControlVibrator
 import org.sagebionetworks.motorcontrol.utils.SpokenInstructionsConverter
 
 
@@ -80,31 +78,28 @@ open class TremorStepFragment: StepFragment() {
         val drawable = step.imageInfo?.loadDrawable(requireContext())
         val tint = step.imageInfo?.tint ?: false
         val spokenInstructions = SpokenInstructionsConverter.convertSpokenInstructions(
-            step.spokenInstructions ?: mapOf(),
+            step.spokenInstructions,
             step.duration.toInt(),
             stepViewModel.nodeState.parent?.node?.hand()?.name
         )
-        val vibrator = context?.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
-        val vibrationEffect1: VibrationEffect =
-            VibrationEffect.createOneShot(500, VibrationEffect.DEFAULT_AMPLITUDE)
-        vibrator.cancel()
-        vibrator.vibrate(vibrationEffect1)
+        val vibrator = MotorControlVibrator(requireContext())
+        vibrator.vibrate(500)
         textToSpeech = TextToSpeech(context) {
             textToSpeech?.speak(spokenInstructions[0], TextToSpeech.QUEUE_ADD, null, "")
         }
         binding.questionContent.setContent {
             val countdown: MutableState<Long> = remember { mutableStateOf(step.duration.toLong() * 1000) }
             timer = StepTimer(
-                countdown,
-                step.duration,
-                {
+                countdown = countdown,
+                stepDuration = step.duration,
+                finished = {
+                    vibrator.vibrate(milliseconds = 500)
                     // Waiting for speaking to finish before navigating to the next step
-                    vibrator.vibrate(vibrationEffect1)
                     while (textToSpeech?.isSpeaking == true) { }
                     assessmentViewModel.goForward()
                 },
-                textToSpeech,
-                spokenInstructions
+                textToSpeech = textToSpeech,
+                spokenInstructions = spokenInstructions
             )
             timer?.startTimer()
             SageSurveyTheme {
