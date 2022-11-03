@@ -10,7 +10,7 @@ import org.sagebionetworks.assessmentmodel.presentation.compose.PauseTopBar
 @Composable
 fun MotorControlPauseUi(
     assessmentViewModel: AssessmentViewModel?,
-    timer: StepTimer? = null,
+    onPause: () -> Unit = {},
     onUnpause: () -> Unit = {}
 ) {
     val openDialog = remember { mutableStateOf(false) }
@@ -26,7 +26,7 @@ fun MotorControlPauseUi(
     PauseTopBar(
         onPauseClicked = {
             openDialog.value = true
-            timer?.stopTimer()
+            onPause()
         },
         onSkipClicked = { assessmentViewModel?.skip() },
         showSkip = false

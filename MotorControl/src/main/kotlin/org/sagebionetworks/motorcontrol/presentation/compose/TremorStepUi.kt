@@ -83,11 +83,12 @@ internal fun TremorStepUi(
         Column {
             MotorControlPauseUi(
                 assessmentViewModel = assessmentViewModel,
-                timer = timer
-            ) {
-                countdown.value = (duration * 1000).toLong() // Resets countdown to initial value
-                timer?.startTimer()
-            }
+                onPause = { timer?.stopTimer() },
+                onUnpause = {
+                    countdown.value = (duration * 1000).toLong() // Resets countdown to initial value
+                    timer?.startTimer()
+                }
+            )
             Box(Modifier.padding(vertical = 10.dp)) {
                 StepBodyTextUi(instruction, null, modifier)
             }
