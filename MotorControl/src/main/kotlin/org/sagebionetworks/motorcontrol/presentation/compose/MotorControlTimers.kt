@@ -38,14 +38,15 @@ import android.speech.tts.TextToSpeech
 import androidx.compose.runtime.MutableState
 import kotlin.math.ceil
 
-class StepTimer(val countdown: MutableState<Long>,
-                val stepDuration: Double,
-                val finished: () -> Unit,
-                val textToSpeech: TextToSpeech? = null,
-                val spokenInstructions: Map<Int, String>? = null
+class StepTimer(
+    val countdown: MutableState<Long>,
+    val stepDuration: Double,
+    val finished: () -> Unit,
+    private val textToSpeech: TextToSpeech? = null,
+    private val spokenInstructions: Map<Int, String>? = null,
 ) {
-    var timer: CountDownTimer? = null
-    var instructionsSpoken = mutableSetOf(0)
+    private var timer: CountDownTimer? = null
+    private var instructionsSpoken = mutableSetOf(0)
 
     fun startTimer(restartsOnPause: Boolean = true) {
         // This is to account for tapping step that does not restart the timer on pause
@@ -63,9 +64,6 @@ class StepTimer(val countdown: MutableState<Long>,
                 countdown.value = 0
                 speakAt(stepDuration.toInt())
                 this.cancel()
-
-                // Waiting for speaking to finish before navigating to the next step
-                while (textToSpeech?.isSpeaking == true) { }
                 finished()
             }
         }
@@ -74,6 +72,7 @@ class StepTimer(val countdown: MutableState<Long>,
 
     fun stopTimer() {
         timer?.cancel()
+        instructionsSpoken.clear()
     }
 
     fun speakAt(second: Int) {

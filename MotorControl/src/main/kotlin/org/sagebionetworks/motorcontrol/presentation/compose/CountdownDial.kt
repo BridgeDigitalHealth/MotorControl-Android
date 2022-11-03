@@ -53,7 +53,6 @@ import androidx.compose.ui.unit.dp
 import org.sagebionetworks.assessmentmodel.presentation.ui.theme.BackgroundGray
 import org.sagebionetworks.motorcontrol.presentation.theme.*
 import kotlin.math.ceil
-import kotlin.math.roundToInt
 
 @Composable
 fun CountdownDial(

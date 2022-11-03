@@ -33,7 +33,10 @@
 
 package org.sagebionetworks.motorcontrol.presentation
 
+import android.content.Context
 import android.os.Bundle
+import android.os.VibrationEffect
+import android.os.Vibrator
 import android.speech.tts.TextToSpeech
 import android.view.LayoutInflater
 import android.view.View
@@ -42,7 +45,6 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import org.sagebionetworks.assessmentmodel.SpokenInstructionTiming
 import org.sagebionetworks.assessmentmodel.presentation.StepFragment
 import org.sagebionetworks.assessmentmodel.presentation.databinding.ComposeQuestionStepFragmentBinding
 import org.sagebionetworks.assessmentmodel.presentation.ui.theme.SageSurveyTheme
@@ -53,6 +55,7 @@ import org.sagebionetworks.motorcontrol.presentation.compose.StepTimer
 import org.sagebionetworks.motorcontrol.presentation.compose.TremorStepUi
 import org.sagebionetworks.motorcontrol.serialization.TremorStepObject
 import org.sagebionetworks.motorcontrol.utils.SpokenInstructionsConverter
+
 
 open class TremorStepFragment: StepFragment() {
 
@@ -81,6 +84,11 @@ open class TremorStepFragment: StepFragment() {
             step.duration.toInt(),
             stepViewModel.nodeState.parent?.node?.hand()?.name
         )
+        val vibrator = context?.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
+        val vibrationEffect1: VibrationEffect =
+            VibrationEffect.createOneShot(500, VibrationEffect.DEFAULT_AMPLITUDE)
+        vibrator.cancel()
+        vibrator.vibrate(vibrationEffect1)
         textToSpeech = TextToSpeech(context) {
             textToSpeech?.speak(spokenInstructions[0], TextToSpeech.QUEUE_ADD, null, "")
         }
@@ -89,7 +97,12 @@ open class TremorStepFragment: StepFragment() {
             timer = StepTimer(
                 countdown,
                 step.duration,
-                assessmentViewModel::goForward,
+                {
+                    // Waiting for speaking to finish before navigating to the next step
+                    vibrator.vibrate(vibrationEffect1)
+                    while (textToSpeech?.isSpeaking == true) { }
+                    assessmentViewModel.goForward()
+                },
                 textToSpeech,
                 spokenInstructions
             )
