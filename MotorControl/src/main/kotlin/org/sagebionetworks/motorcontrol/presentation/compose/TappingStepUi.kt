@@ -98,11 +98,11 @@ internal fun TappingStepUi(
             Spacer(modifier = Modifier.weight(1F))
             Row {
                 Spacer(modifier = Modifier.weight(1F))
-                TapButton {
+                TapButton(tapCount, timer) {
                     tapCount.value += 1
                 }
                 Spacer(modifier = Modifier.weight(1F))
-                TapButton {
+                TapButton(tapCount, timer) {
                     tapCount.value += 1
                 }
                 Spacer(modifier = Modifier.weight(1F))
@@ -111,10 +111,16 @@ internal fun TappingStepUi(
     }
 }
 
+
 @Composable
-private fun TapButton(onTap: () -> Unit) {
+private fun TapButton(tapCount: MutableState<Int>, timer: StepTimer?, onTap: () -> Unit) {
     Button(
-        onClick = onTap,
+        onClick = {
+            if (tapCount.value == 0) {
+                timer?.startTimer()
+            }
+            onTap()
+        },
         modifier = Modifier
             .padding(vertical = 48.dp)
             .size(100.dp),

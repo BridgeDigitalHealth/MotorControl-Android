@@ -45,9 +45,10 @@ class StepTimer(val countdown: MutableState<Long>,
                 val spokenInstructions: Map<Int, String>? = null
 ) {
     var timer: CountDownTimer? = null
-    var instructionsSpoken = mutableSetOf<Int>()
+    var instructionsSpoken = mutableSetOf(0)
 
     fun startTimer(restartsOnPause: Boolean = true) {
+        // This is to account for tapping step that does not restart the timer on pause
         val countdownDuration = if (restartsOnPause) {
             stepDuration * 1000
         } else {
@@ -55,17 +56,16 @@ class StepTimer(val countdown: MutableState<Long>,
         }
         timer = object: CountDownTimer(countdownDuration.toLong(), 10) {
             override fun onTick(millisUntilFinished: Long) {
-                val second = ceil((millisUntilFinished.toDouble() / 1000)).toInt()
-                if (!instructionsSpoken.contains(second)) {
-                    spokenInstructions?.get(second)?.let {
-                        instructionsSpoken.add(second)
-                        textToSpeech?.speak(it, TextToSpeech.QUEUE_ADD, null, "")
-                    }
-                }
+                speakAt(stepDuration.toInt() - ceil((millisUntilFinished.toDouble() / 1000)).toInt())
                 countdown.value = millisUntilFinished
             }
             override fun onFinish() {
+                countdown.value = 0
+                speakAt(stepDuration.toInt())
                 this.cancel()
+
+                // Waiting for speaking to finish before navigating to the next step
+                while (textToSpeech?.isSpeaking == true) { }
                 finished()
             }
         }
@@ -73,11 +73,16 @@ class StepTimer(val countdown: MutableState<Long>,
     }
 
     fun stopTimer() {
-        spokenInstructions?.get(stepDuration.toInt())?.let {
-            instructionsSpoken.add(stepDuration.toInt())
-            textToSpeech?.speak(it, TextToSpeech.QUEUE_ADD, null, "")
-        }
         timer?.cancel()
+    }
+
+    fun speakAt(second: Int) {
+        if (!instructionsSpoken.contains(second)) {
+            spokenInstructions?.get(second)?.let {
+                instructionsSpoken.add(second)
+                textToSpeech?.speak(it, TextToSpeech.QUEUE_ADD, null, "")
+            }
+        }
     }
 }
 

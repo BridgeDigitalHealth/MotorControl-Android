@@ -53,6 +53,7 @@ import androidx.compose.ui.unit.dp
 import org.sagebionetworks.assessmentmodel.presentation.ui.theme.BackgroundGray
 import org.sagebionetworks.motorcontrol.presentation.theme.*
 import kotlin.math.ceil
+import kotlin.math.roundToInt
 
 @Composable
 fun CountdownDial(
@@ -75,8 +76,13 @@ fun CountdownDial(
                 .background(backgroundColor)
         )
         Column {
+            val countdownText = if (countdown.value < 50){
+                (0).toString()
+            } else {
+                ceil(countdown.value.toDouble() / 1000).toInt().toString()
+            }
             Text(
-                text = dialContent?.value?.toString() ?: ceil((countdown.value.toDouble() / 1000)).toInt().toString(),
+                text = dialContent?.value?.toString() ?: countdownText,
                 textAlign = TextAlign.Center,
                 style = dialText,
                 modifier = Modifier.fillMaxWidth()
