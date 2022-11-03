@@ -50,23 +50,43 @@ val fonts = FontFamily(
     Font(R.font.lato_regular, weight = FontWeight.Normal, style = FontStyle.Normal),
 )
 
-    val detailText = TextStyle(
-        fontFamily = fonts,
-        fontWeight = FontWeight.Normal,
-        fontSize = 22.sp
-    )
-    val iconHeaderText = TextStyle(
-        fontFamily = fonts,
-        fontWeight = FontWeight.Bold,
-        fontSize = 20.sp
-    )
-    val iconTitleText = TextStyle(
-        fontFamily = fonts,
-        fontWeight = FontWeight.Normal,
-        fontSize = 20.sp
-    )
-    val titleText = TextStyle(
-        fontFamily = fonts,
-        fontWeight = FontWeight.Normal,
-        fontSize = 36.sp
-    )
+val detailText = TextStyle(
+    fontFamily = fonts,
+    fontWeight = FontWeight.Normal,
+    fontSize = 22.sp
+)
+val iconHeaderText = TextStyle(
+    fontFamily = fonts,
+    fontWeight = FontWeight.Bold,
+    fontSize = 20.sp
+)
+val iconTitleText = TextStyle(
+    fontFamily = fonts,
+    fontWeight = FontWeight.Normal,
+    fontSize = 20.sp
+)
+val titleText = TextStyle(
+    fontFamily = fonts,
+    fontWeight = FontWeight.Normal,
+    fontSize = 36.sp
+)
+val dialText = TextStyle(
+    fontFamily = fonts,
+    fontWeight = FontWeight.Normal,
+    fontSize = 75.sp
+)
+val dialSecondaryText = TextStyle(
+    fontFamily = fonts,
+    fontWeight = FontWeight.Normal,
+    fontSize = 25.sp
+)
+val countdownBeginText = TextStyle(
+    fontFamily = fonts,
+    fontWeight = FontWeight.Bold,
+    fontSize = 25.sp
+)
+val tapButtonText = TextStyle(
+    fontFamily = fonts,
+    fontWeight = FontWeight.Normal,
+    fontSize = 18.sp
+)

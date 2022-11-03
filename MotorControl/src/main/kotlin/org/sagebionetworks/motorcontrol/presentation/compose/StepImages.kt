@@ -50,11 +50,13 @@ fun SingleImageUi(
     image: Drawable,
     surveyTint: Color = Color.Transparent,
     imageModifier: Modifier,
-    imageTintColor: Color?) {
+    imageTintColor: Color?,
+    alpha: Float = 1.0F) {
     Image(
         painter = rememberDrawablePainter(drawable = image),
         contentDescription = null,
         modifier = imageModifier.background(surveyTint),
+        alpha = alpha,
         contentScale = ContentScale.FillHeight,
         colorFilter = if (imageTintColor != null) {
             ColorFilter.tint(

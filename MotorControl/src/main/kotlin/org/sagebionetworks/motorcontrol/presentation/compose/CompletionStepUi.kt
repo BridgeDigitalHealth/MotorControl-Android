@@ -54,20 +54,19 @@ import org.sagebionetworks.assessmentmodel.presentation.ui.theme.*
 
 @Composable
 internal fun CompletionStepUi(
-    modifier: Modifier = Modifier,
     title: String?,
     detail: String?,
     nextButtonText: String,
     next:()->Unit,
 ) {
     Column(
-        modifier = modifier
+        modifier = Modifier
             .fillMaxHeight()
             .fillMaxWidth()
             .background(BackgroundGray)
     ) {
         Column(
-            modifier = modifier
+            modifier = Modifier
                 .fillMaxHeight()
                 .fillMaxWidth()
                 .padding(32.dp)
@@ -109,7 +108,7 @@ internal fun CompletionStepUi(
                     }
                 }
                 Image(
-                    modifier = modifier
+                    modifier = Modifier
                         .fillMaxWidth()
                         .align(TopCenter),
                     painter = painterResource(id = R.drawable.completion),
@@ -120,7 +119,7 @@ internal fun CompletionStepUi(
             BlackButton(
                 onClick = next,
                 text = nextButtonText,
-                modifier = modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth()
             )
         }
     }

@@ -1,5 +1,5 @@
 //
-//  AnimationTimer.kt
+//  MotorControlTimers.kt
 //
 //
 //  Copyright © 2022 Sage Bionetworks. All rights reserved.
@@ -35,6 +35,34 @@ package org.sagebionetworks.motorcontrol.presentation.compose
 
 import android.os.CountDownTimer
 import androidx.compose.runtime.MutableState
+
+class StepTimer(val countdown: MutableState<Long>,
+                val stepDuration: Double,
+                val finished: () -> Unit) {
+    var timer: CountDownTimer? = null
+
+    fun startTimer(restartsOnPause: Boolean = true) {
+        val countdownDuration = if (restartsOnPause) {
+            stepDuration * 1000
+        } else {
+            countdown.value
+        }
+        timer = object: CountDownTimer(countdownDuration.toLong(), 10) {
+            override fun onTick(millisUntilFinished: Long) {
+                countdown.value = millisUntilFinished
+            }
+            override fun onFinish() {
+                this.cancel()
+                finished()
+            }
+        }
+        timer?.start()
+    }
+
+    fun stopTimer() {
+        timer?.cancel()
+    }
+}
 
 class AnimationTimer(frames: Int,
                      duration: Double,

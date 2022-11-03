@@ -1,5 +1,5 @@
 //
-//  CountdownStepFragment.kt
+//  TappingStepFragment.kt
 //
 //
 //  Copyright © 2022 Sage Bionetworks. All rights reserved.
@@ -34,40 +34,46 @@
 package org.sagebionetworks.motorcontrol.presentation
 
 import android.os.Bundle
-import android.os.CountDownTimer
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import org.sagebionetworks.motorcontrol.presentation.compose.CountdownStepUi
-import org.sagebionetworks.assessmentmodel.CountdownStep
 import org.sagebionetworks.assessmentmodel.presentation.StepFragment
 import org.sagebionetworks.assessmentmodel.presentation.databinding.ComposeQuestionStepFragmentBinding
 import org.sagebionetworks.assessmentmodel.presentation.ui.theme.SageSurveyTheme
+import org.sagebionetworks.assessmentmodel.serialization.loadDrawable
+import org.sagebionetworks.motorcontrol.navigation.HandSelection
+import org.sagebionetworks.motorcontrol.navigation.hand
 import org.sagebionetworks.motorcontrol.presentation.compose.StepTimer
+import org.sagebionetworks.motorcontrol.presentation.compose.TappingStepUi
+import org.sagebionetworks.motorcontrol.serialization.TappingStepObject
 
-open class CountdownStepFragment: StepFragment() {
+open class TappingStepFragment: StepFragment() {
 
     private var _binding: ComposeQuestionStepFragmentBinding? = null
     // This property is only valid between onCreateView and onDestroyView.
     private val binding get() = _binding!!
 
-    private lateinit var step: CountdownStep
+    private lateinit var step: TappingStepObject
 
     private var timer: StepTimer? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        step = nodeState.node as CountdownStep
+        step = nodeState.node as TappingStepObject
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
         _binding = ComposeQuestionStepFragmentBinding.inflate(layoutInflater, container, false)
+        val drawable = step.imageInfo?.loadDrawable(requireContext())
+        val tint = step.imageInfo?.tint ?: false
         binding.questionContent.setContent {
             val countdown: MutableState<Long> = remember { mutableStateOf(step.duration.toLong() * 1000) }
+            val tapCount: MutableState<Int> = remember { mutableStateOf(0) }
             timer = StepTimer(
                 countdown,
                 step.duration,
@@ -75,11 +81,20 @@ open class CountdownStepFragment: StepFragment() {
             )
             timer?.startTimer()
             SageSurveyTheme {
-                CountdownStepUi(
+                TappingStepUi(
                     assessmentViewModel = assessmentViewModel,
+                    image = drawable,
+                    flippedImage = stepViewModel.nodeState.parent?.node?.hand()
+                            == HandSelection.RIGHT,
+                    imageTintColor = if (tint) {
+                        MaterialTheme.colors.primary
+                    } else {
+                        null
+                    },
+                    timer = timer,
                     duration = step.duration,
                     countdown = countdown,
-                    timer = timer
+                    tapCount = tapCount
                 )
             }
         }

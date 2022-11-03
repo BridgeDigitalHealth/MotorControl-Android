@@ -80,7 +80,7 @@ internal fun OverviewStepUi(
                 if (image != null) {
                     SingleImageUi(
                         image = image,
-                        surveyTint = Color(0xFF8FD6FF),
+                        surveyTint = ImageBackgroundColor,
                         imageModifier = Modifier
                             .fillMaxSize()
                             .background(Color.Cyan),
@@ -90,7 +90,7 @@ internal fun OverviewStepUi(
                 if (animations.isNotEmpty()) {
                     AnimationImageUi(
                         animations = animations,
-                        surveyTint = Color(0xFF8FD6FF),
+                        surveyTint = ImageBackgroundColor,
                         currentImage = animationIndex,
                         imageTintColor = imageTintColor,
                         imageModifier = Modifier
@@ -100,44 +100,7 @@ internal fun OverviewStepUi(
                 }
                 StepBodyTextUi(title, detail, modifier)
                 if (icons.isNotEmpty()) {
-                    Text(
-                        text = stringResource(R.string.icon_header),
-                        style = iconHeaderText,
-                        textAlign = TextAlign.Center,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(bottom = 30.dp)
-                    )
-                    Row(
-                        modifier = modifier.padding(bottom = 15.dp),
-                        horizontalArrangement = Arrangement.Center) {
-                        for (icon in icons) {
-                            Column(
-                                modifier = Modifier
-                                    .padding(horizontal = 15.dp)
-                                    .weight(1f, fill = false),
-                                horizontalAlignment = Alignment.CenterHorizontally
-                            ) {
-                                icon.first?.let {
-                                    SingleImageUi(
-                                        image = it,
-                                        imageModifier = Modifier.padding(bottom = 20.dp),
-                                        imageTintColor = imageTintColor
-                                    )
-                                }
-                                icon.second?.let {
-                                    Text(
-                                        text = it,
-                                        style = iconTitleText,
-                                        textAlign = TextAlign.Center,
-                                        modifier = modifier
-                                            .fillMaxWidth()
-                                            .padding(bottom = 10.dp)
-                                    )
-                                }
-                            }
-                        }
-                    }
+                    IconsUi(icons = icons, imageTintColor = imageTintColor)
                 }
             }
             Box(modifier = Modifier.padding(horizontal = 20.dp)) {
@@ -152,6 +115,52 @@ internal fun OverviewStepUi(
         }
         CloseTopBar(onCloseClicked = close)
     }
+}
+
+@Composable
+private fun IconsUi(
+    icons: List<Pair<Drawable?, String?>>,
+    imageTintColor: Color?
+) {
+    Text(
+        text = stringResource(R.string.icon_header),
+        style = iconHeaderText,
+        textAlign = TextAlign.Center,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(bottom = 30.dp)
+    )
+    Row(
+        modifier = Modifier.padding(bottom = 15.dp),
+        horizontalArrangement = Arrangement.Center) {
+        for (icon in icons) {
+            Column(
+                modifier = Modifier
+                    .padding(horizontal = 15.dp)
+                    .weight(1f, fill = false),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                icon.first?.let {
+                    SingleImageUi(
+                        image = it,
+                        imageModifier = Modifier.padding(bottom = 20.dp),
+                        imageTintColor = imageTintColor
+                    )
+                }
+                icon.second?.let {
+                    Text(
+                        text = it,
+                        style = iconTitleText,
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(bottom = 10.dp)
+                    )
+                }
+            }
+        }
+    }
+
 }
 
 @Preview

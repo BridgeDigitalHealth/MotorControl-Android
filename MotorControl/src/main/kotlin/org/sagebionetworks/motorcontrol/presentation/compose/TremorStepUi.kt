@@ -1,5 +1,5 @@
 //
-//  CountdownStepUi.kt
+//  TremorStepUi.kt
 //
 //
 //  Copyright © 2022 Sage Bionetworks. All rights reserved.
@@ -33,66 +33,87 @@
 
 package org.sagebionetworks.motorcontrol.presentation.compose
 
+import android.graphics.drawable.Drawable
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.Text
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.scale
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import org.sagebionetworks.motorcontrol.R
 import org.sagebionetworks.assessmentmodel.presentation.AssessmentViewModel
 import org.sagebionetworks.assessmentmodel.presentation.ui.theme.*
-import org.sagebionetworks.motorcontrol.R
-import org.sagebionetworks.motorcontrol.presentation.theme.countdownBeginText
+import org.sagebionetworks.motorcontrol.presentation.theme.ImageBackgroundColor
 
 @Composable
-internal fun CountdownStepUi(
+internal fun TremorStepUi(
+    modifier: Modifier = Modifier,
     assessmentViewModel: AssessmentViewModel?,
+    image: Drawable?,
+    flippedImage: Boolean,
+    imageTintColor: Color?,
+    timer: StepTimer?,
+    instruction: String?,
     duration: Double,
-    countdown: MutableState<Long>,
-    timer: StepTimer?
-) {
-    Column(modifier = Modifier.background(BackgroundGray)) {
-        MotorControlPauseUi(
-            assessmentViewModel = assessmentViewModel,
-            onPause = { timer?.stopTimer() },
-            onUnpause = {
-                countdown.value = (duration * 1000).toLong() // Resets countdown to initial value
-                timer?.startTimer()
-            }
-        )
-        Column(
-            modifier = Modifier
-                .fillMaxHeight()
-                .fillMaxWidth()
-                .padding(32.dp)
-        ) {
-            Spacer(modifier = Modifier.weight(1f))
-            Text(
-                text = stringResource(id = R.string.begin),
-                textAlign = TextAlign.Center,
-                style = countdownBeginText,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp)
+    countdown: MutableState<Long>) {
+    val imageModifier = if (flippedImage) {
+        Modifier
+            .fillMaxSize()
+            .scale(-1F, 1F)
+    } else {
+        Modifier.fillMaxSize()
+    }
+    Box(modifier = Modifier
+        .fillMaxHeight()
+        .background(BackgroundGray)
+    ) {
+        if (image != null) {
+            SingleImageUi(
+                image = image,
+                surveyTint = ImageBackgroundColor,
+                imageModifier = imageModifier,
+                imageTintColor = imageTintColor,
+                alpha = 0.5F)
+        }
+        Column {
+            MotorControlPauseUi(
+                assessmentViewModel = assessmentViewModel,
+                onPause = { timer?.stopTimer() },
+                onUnpause = {
+                    countdown.value = (duration * 1000).toLong() // Resets countdown to initial value
+                    timer?.startTimer()
+                }
             )
-            CountdownDial(duration = duration, countdown = countdown)
-            Spacer(modifier = Modifier.weight(1f))
+            Box(Modifier.padding(vertical = 10.dp)) {
+                StepBodyTextUi(instruction, null, modifier)
+            }
+            CountdownDial(
+                duration = duration,
+                countdown = countdown,
+                dialSubText = stringResource(id = R.string.seconds))
         }
     }
 }
+
 
 @Preview
 @Composable
 private fun InstructionStepPreview() {
     SageSurveyTheme {
-        CountdownStepUi(
+        TremorStepUi(
             assessmentViewModel = null,
+            image = null,
+            flippedImage = false,
+            imageTintColor = null,
+            timer = null,
+            instruction = "",
             duration = 5.0,
-            countdown = mutableStateOf(5),
-            timer = null
+            countdown = mutableStateOf(5)
         )
     }
 }

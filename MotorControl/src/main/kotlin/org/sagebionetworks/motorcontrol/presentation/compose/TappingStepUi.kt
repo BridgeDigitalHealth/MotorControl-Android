@@ -1,5 +1,5 @@
 //
-//  InstructionStepUi.kt
+//  TappingStepUi.kt
 //
 //
 //  Copyright © 2022 Sage Bionetworks. All rights reserved.
@@ -36,8 +36,9 @@ package org.sagebionetworks.motorcontrol.presentation.compose
 import android.graphics.drawable.Drawable
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.Button
+import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
@@ -47,24 +48,21 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import org.sagebionetworks.motorcontrol.R
 import org.sagebionetworks.assessmentmodel.presentation.AssessmentViewModel
-import org.sagebionetworks.assessmentmodel.presentation.R
-import org.sagebionetworks.assessmentmodel.presentation.compose.BottomNavigation
 import org.sagebionetworks.assessmentmodel.presentation.ui.theme.*
-import org.sagebionetworks.motorcontrol.presentation.theme.ImageBackgroundColor
+import org.sagebionetworks.motorcontrol.presentation.theme.*
 
 @Composable
-internal fun InstructionStepUi(
-    modifier: Modifier = Modifier,
+internal fun TappingStepUi(
     assessmentViewModel: AssessmentViewModel?,
     image: Drawable?,
-    animations: ArrayList<Drawable>,
-    animationIndex: MutableState<Int>,
     flippedImage: Boolean,
     imageTintColor: Color?,
-    title: String?,
-    detail: String?,
-    nextButtonText: String) {
+    timer: StepTimer?,
+    duration: Double,
+    countdown: MutableState<Long>,
+    tapCount: MutableState<Int>) {
     val imageModifier = if (flippedImage) {
         Modifier
             .fillMaxSize()
@@ -72,63 +70,77 @@ internal fun InstructionStepUi(
     } else {
         Modifier.fillMaxSize()
     }
-    Box {
-        Column(modifier = Modifier.background(BackgroundGray)) {
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .verticalScroll(rememberScrollState())
-                    .weight(1f, false)
-            ) {
-                if (image != null) {
-                    SingleImageUi(
-                        image = image,
-                        surveyTint = ImageBackgroundColor,
-                        imageModifier = imageModifier,
-                        imageTintColor = imageTintColor
-                    )
+    Box(modifier = Modifier
+        .fillMaxHeight()
+        .background(BackgroundGray)
+    ) {
+        if (image != null) {
+            SingleImageUi(
+                image = image,
+                surveyTint = ImageBackgroundColor,
+                imageModifier = imageModifier,
+                imageTintColor = imageTintColor,
+                alpha = 0.5F)
+        }
+        Column {
+            MotorControlPauseUi(
+                assessmentViewModel = assessmentViewModel,
+                onPause = { timer?.stopTimer() },
+                onUnpause = { timer?.startTimer(restartsOnPause = false) }
+            )
+            Spacer(modifier = Modifier.weight(1F))
+            CountdownDial(
+                duration = duration,
+                countdown = countdown,
+                dialNumber = tapCount,
+                dialSubText = stringResource(id = R.string.tap_count)
+            )
+            Spacer(modifier = Modifier.weight(1F))
+            Row {
+                Spacer(modifier = Modifier.weight(1F))
+                TapButton {
+                    tapCount.value += 1
                 }
-                if (animations.isNotEmpty()) {
-                    AnimationImageUi(
-                        animations = animations,
-                        surveyTint = ImageBackgroundColor,
-                        currentImage = animationIndex,
-                        imageTintColor = imageTintColor,
-                        imageModifier = imageModifier
-                    )
+                Spacer(modifier = Modifier.weight(1F))
+                TapButton {
+                    tapCount.value += 1
                 }
-                StepBodyTextUi(title, detail, modifier)
-            }
-            Box(modifier = Modifier.padding(horizontal = 20.dp)) {
-                val backEnabled = assessmentViewModel?.assessmentNodeState?.allowBackNavigation() == true
-                BottomNavigation(
-                    onBackClicked = { assessmentViewModel?.goBackward() },
-                    onNextClicked = { assessmentViewModel?.goForward() },
-                    nextText = nextButtonText,
-                    backEnabled = backEnabled,
-                    backVisible = backEnabled
-                )
+                Spacer(modifier = Modifier.weight(1F))
             }
         }
-        MotorControlPauseUi(assessmentViewModel = assessmentViewModel)
     }
 }
 
+@Composable
+private fun TapButton(onTap: () -> Unit) {
+    Button(
+        onClick = onTap,
+        modifier = Modifier
+            .padding(vertical = 48.dp)
+            .size(100.dp),
+        shape = CircleShape,
+    ) {
+        Text(
+            text = stringResource(id = R.string.tap_button),
+            color = Color.Black,
+            style = tapButtonText
+        )
+    }
+}
 
 @Preview
 @Composable
 private fun InstructionStepPreview() {
     SageSurveyTheme {
-        InstructionStepUi(
+        TappingStepUi(
             assessmentViewModel = null,
             image = null,
-            animations = ArrayList(),
-            animationIndex = mutableStateOf(0),
             flippedImage = false,
             imageTintColor = null,
-            title = "Title",
-            detail = "Details",
-            nextButtonText = stringResource(R.string.start)
+            timer = null,
+            duration = 5.0,
+            countdown = mutableStateOf(5),
+            tapCount = mutableStateOf(0)
         )
     }
 }
