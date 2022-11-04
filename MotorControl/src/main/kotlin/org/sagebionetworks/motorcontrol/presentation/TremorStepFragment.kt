@@ -33,8 +33,10 @@
 
 package org.sagebionetworks.motorcontrol.presentation
 
-import android.os.*
+import android.os.Bundle
+import android.os.Handler
 import android.speech.tts.TextToSpeech
+import android.speech.tts.UtteranceProgressListener
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -93,10 +95,25 @@ open class TremorStepFragment: StepFragment() {
                 countdown = countdown,
                 stepDuration = step.duration,
                 finished = {
-                    vibrator.vibrate(milliseconds = 500)
-                    // Waiting for speaking to finish before navigating to the next step
-                    while (textToSpeech?.isSpeaking == true) { }
-                    assessmentViewModel.goForward()
+                    vibrator.vibrate(500)
+                    val speechListener = object : UtteranceProgressListener() {
+                        override fun onStart(utteranceId: String?) {}
+                        override fun onDone(utteranceId: String?) {
+                            Handler(requireContext().mainLooper).post(
+                                kotlinx.coroutines.Runnable {
+                                    assessmentViewModel.goForward()
+                                }
+                            )
+                        }
+                        override fun onError(utteranceId: String?) {}
+                    }
+                    textToSpeech?.setOnUtteranceProgressListener(speechListener)
+                    textToSpeech?.speak(
+                        spokenInstructions[step.duration.toInt()],
+                        TextToSpeech.QUEUE_ADD,
+                        null,
+                        ""
+                    )
                 },
                 textToSpeech = textToSpeech,
                 spokenInstructions = spokenInstructions

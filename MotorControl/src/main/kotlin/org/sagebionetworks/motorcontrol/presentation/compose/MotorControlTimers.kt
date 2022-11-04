@@ -60,10 +60,10 @@ class StepTimer(
                 speakAt(stepDuration.toInt() - ceil((millisUntilFinished.toDouble() / 1000)).toInt())
                 countdown.value = millisUntilFinished
             }
+
             override fun onFinish() {
-                speakAt(stepDuration.toInt())
-                this.cancel()
                 finished()
+                this.cancel()
             }
         }
         timer?.start()
