@@ -75,13 +75,17 @@ fun CountdownDial(
                 .background(backgroundColor)
         )
         Column {
-            val countdownText = if (countdown.value < 50){
-                (0).toString()
+            /*
+            CountdownTimer's milliseconds do not always count down to 0 for onFinish().
+            This is a way to display 0 at the end of the countdown while keeping ceil().
+             */
+            val countdownInt = if (countdown.value < 50){
+                0
             } else {
-                ceil(countdown.value.toDouble() / 1000).toInt().toString()
+                ceil(countdown.value.toDouble() / 1000).toInt()
             }
             Text(
-                text = dialContent?.value?.toString() ?: countdownText,
+                text = dialContent?.value?.toString() ?: countdownInt.toString(),
                 textAlign = TextAlign.Center,
                 style = dialText,
                 modifier = Modifier.fillMaxWidth()
