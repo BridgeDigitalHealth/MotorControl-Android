@@ -61,7 +61,6 @@ class StepTimer(
                 countdown.value = millisUntilFinished
             }
             override fun onFinish() {
-                countdown.value = 0
                 speakAt(stepDuration.toInt())
                 this.cancel()
                 finished()

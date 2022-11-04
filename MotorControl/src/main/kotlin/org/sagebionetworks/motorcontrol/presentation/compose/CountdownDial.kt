@@ -77,12 +77,13 @@ fun CountdownDial(
         Column {
             /*
             CountdownTimer's milliseconds do not always count down to 0 for onFinish().
-            This is a way to display 0 at the end of the countdown while keeping ceil().
+            This is a way to display 0 at the end of the countdown while keeping ceil(), as
+            well as manually set the countdown.value to zero for the progress bar to finish.
              */
-            val countdownInt = if (countdown.value < 50){
-                0
-            } else {
-                ceil(countdown.value.toDouble() / 1000).toInt()
+            var countdownInt = ceil(countdown.value.toDouble() / 1000).toInt()
+            if (countdown.value < 50){
+                countdownInt = 0
+                countdown.value = 0
             }
             Text(
                 text = dialContent?.value?.toString() ?: countdownInt.toString(),
