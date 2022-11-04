@@ -99,6 +99,7 @@ open class TremorStepFragment: StepFragment() {
                     val speechListener = object : UtteranceProgressListener() {
                         override fun onStart(utteranceId: String?) {}
                         override fun onDone(utteranceId: String?) {
+                            // assessmentViewModel.goForward() must be run on main thread
                             Handler(requireContext().mainLooper).post(
                                 kotlinx.coroutines.Runnable {
                                     assessmentViewModel.goForward()
