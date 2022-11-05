@@ -42,7 +42,7 @@ class StepTimer(
     val countdown: MutableState<Long>,
     val stepDuration: Double,
     val finished: () -> Unit,
-    private val textToSpeech: TextToSpeech? = null,
+    private val textToSpeech: TextToSpeech,
     private val spokenInstructions: Map<Int, String>? = null,
 ) {
     private var timer: CountDownTimer? = null
@@ -78,7 +78,7 @@ class StepTimer(
         if (!instructionsSpoken.contains(second)) {
             spokenInstructions?.get(second)?.let {
                 instructionsSpoken.add(second)
-                textToSpeech?.speak(it, TextToSpeech.QUEUE_ADD, null, "")
+                textToSpeech.speak(it, TextToSpeech.QUEUE_ADD, null, "")
             }
         }
     }

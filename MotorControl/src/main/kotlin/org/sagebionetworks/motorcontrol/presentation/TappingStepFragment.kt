@@ -61,9 +61,9 @@ open class TappingStepFragment: StepFragment() {
 
     private lateinit var step: TappingStepObject
 
-    private var textToSpeech: TextToSpeech? = null
+    private lateinit var textToSpeech: TextToSpeech
 
-    private var timer: StepTimer? = null
+    private lateinit var timer: StepTimer
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -81,7 +81,7 @@ open class TappingStepFragment: StepFragment() {
             stepViewModel.nodeState.parent?.node?.hand()?.name
         )
         textToSpeech = TextToSpeech(context) {
-            textToSpeech?.speak(spokenInstructions[0], TextToSpeech.QUEUE_ADD, null, "")
+            textToSpeech.speak(spokenInstructions[0], TextToSpeech.QUEUE_ADD, null, "")
         }
         binding.questionContent.setContent {
             val countdown: MutableState<Long> = remember { mutableStateOf(step.duration.toLong() * 1000) }
@@ -115,8 +115,8 @@ open class TappingStepFragment: StepFragment() {
     }
 
     override fun onDestroyView() {
-        textToSpeech?.shutdown()
-        timer?.stopTimer()
+        textToSpeech.shutdown()
+        timer.stopTimer()
         super.onDestroyView()
         _binding = null
     }

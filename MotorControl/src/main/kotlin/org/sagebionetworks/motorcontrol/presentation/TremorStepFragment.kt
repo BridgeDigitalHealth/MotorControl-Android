@@ -65,9 +65,9 @@ open class TremorStepFragment: StepFragment() {
 
     private lateinit var step: TremorStepObject
 
-    private var textToSpeech: TextToSpeech? = null
+    private lateinit var textToSpeech: TextToSpeech
 
-    private var timer: StepTimer? = null
+    private lateinit var timer: StepTimer
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -87,7 +87,7 @@ open class TremorStepFragment: StepFragment() {
         val vibrator = MotorControlVibrator(requireContext())
         vibrator.vibrate(500)
         textToSpeech = TextToSpeech(context) {
-            textToSpeech?.speak(spokenInstructions[0], TextToSpeech.QUEUE_ADD, null, "")
+            textToSpeech.speak(spokenInstructions[0], TextToSpeech.QUEUE_ADD, null, "")
         }
         binding.questionContent.setContent {
             val countdown: MutableState<Long> = remember { mutableStateOf(step.duration.toLong() * 1000) }
@@ -108,8 +108,8 @@ open class TremorStepFragment: StepFragment() {
                         }
                         override fun onError(utteranceId: String?) {}
                     }
-                    textToSpeech?.setOnUtteranceProgressListener(speechListener)
-                    textToSpeech?.speak(
+                    textToSpeech.setOnUtteranceProgressListener(speechListener)
+                    textToSpeech.speak(
                         spokenInstructions[step.duration.toInt()],
                         TextToSpeech.QUEUE_ADD,
                         null,
@@ -119,7 +119,7 @@ open class TremorStepFragment: StepFragment() {
                 textToSpeech = textToSpeech,
                 spokenInstructions = spokenInstructions
             )
-            timer?.startTimer()
+            timer.startTimer()
             SageSurveyTheme {
                 TremorStepUi(
                     assessmentViewModel = assessmentViewModel,
@@ -143,8 +143,8 @@ open class TremorStepFragment: StepFragment() {
     }
 
     override fun onDestroyView() {
-        textToSpeech?.shutdown()
-        timer?.stopTimer()
+        textToSpeech.shutdown()
+        timer.stopTimer()
         super.onDestroyView()
         _binding = null
     }
