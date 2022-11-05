@@ -34,7 +34,9 @@
 package org.sagebionetworks.motorcontrol.presentation
 
 import android.os.Bundle
+import android.os.Handler
 import android.speech.tts.TextToSpeech
+import android.speech.tts.UtteranceProgressListener
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -89,7 +91,27 @@ open class TappingStepFragment: StepFragment() {
             timer = StepTimer(
                 countdown = countdown,
                 stepDuration = step.duration,
-                finished = assessmentViewModel::goForward,
+                finished = {
+                    val speechListener = object : UtteranceProgressListener() {
+                        override fun onStart(utteranceId: String?) {}
+                        override fun onDone(utteranceId: String?) {
+                            // assessmentViewModel.goForward() must be run on main thread
+                            Handler(requireContext().mainLooper).post(
+                                kotlinx.coroutines.Runnable {
+                                    assessmentViewModel.goForward()
+                                }
+                            )
+                        }
+                        override fun onError(utteranceId: String?) {}
+                    }
+                    textToSpeech.setOnUtteranceProgressListener(speechListener)
+                    textToSpeech.speak(
+                        spokenInstructions[step.duration.toInt()],
+                        TextToSpeech.QUEUE_ADD,
+                        null,
+                        ""
+                    )
+                },
                 textToSpeech = textToSpeech,
                 spokenInstructions = spokenInstructions
             )
