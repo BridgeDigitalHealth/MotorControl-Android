@@ -34,6 +34,9 @@
 package org.sagebionetworks.motorcontrol.presentation
 
 import android.os.Bundle
+import android.os.Handler
+import android.speech.tts.TextToSpeech
+import android.speech.tts.UtteranceProgressListener
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -50,6 +53,9 @@ import org.sagebionetworks.motorcontrol.navigation.hand
 import org.sagebionetworks.motorcontrol.presentation.compose.StepTimer
 import org.sagebionetworks.motorcontrol.presentation.compose.TremorStepUi
 import org.sagebionetworks.motorcontrol.serialization.TremorStepObject
+import org.sagebionetworks.motorcontrol.utils.MotorControlVibrator
+import org.sagebionetworks.motorcontrol.utils.SpokenInstructionsConverter
+
 
 open class TremorStepFragment: StepFragment() {
 
@@ -59,7 +65,9 @@ open class TremorStepFragment: StepFragment() {
 
     private lateinit var step: TremorStepObject
 
-    private var timer: StepTimer? = null
+    private lateinit var textToSpeech: TextToSpeech
+
+    private lateinit var timer: StepTimer
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -71,14 +79,47 @@ open class TremorStepFragment: StepFragment() {
         _binding = ComposeQuestionStepFragmentBinding.inflate(layoutInflater, container, false)
         val drawable = step.imageInfo?.loadDrawable(requireContext())
         val tint = step.imageInfo?.tint ?: false
+        val spokenInstructions = SpokenInstructionsConverter.convertSpokenInstructions(
+            step.spokenInstructions,
+            step.duration.toInt(),
+            stepViewModel.nodeState.parent?.node?.hand()?.name
+        )
+        val vibrator = MotorControlVibrator(requireContext())
+        vibrator.vibrate(500)
+        textToSpeech = TextToSpeech(context) {
+            textToSpeech.speak(spokenInstructions[0], TextToSpeech.QUEUE_ADD, null, "")
+        }
         binding.questionContent.setContent {
             val countdown: MutableState<Long> = remember { mutableStateOf(step.duration.toLong() * 1000) }
             timer = StepTimer(
-                countdown,
-                step.duration,
-                assessmentViewModel::goForward
+                countdown = countdown,
+                stepDuration = step.duration,
+                finished = {
+                    vibrator.vibrate(500)
+                    val speechListener = object : UtteranceProgressListener() {
+                        override fun onStart(utteranceId: String?) {}
+                        override fun onDone(utteranceId: String?) {
+                            // assessmentViewModel.goForward() must be run on main thread
+                            Handler(requireContext().mainLooper).post(
+                                kotlinx.coroutines.Runnable {
+                                    assessmentViewModel.goForward()
+                                }
+                            )
+                        }
+                        override fun onError(utteranceId: String?) {}
+                    }
+                    textToSpeech.setOnUtteranceProgressListener(speechListener)
+                    textToSpeech.speak(
+                        spokenInstructions[step.duration.toInt()],
+                        TextToSpeech.QUEUE_ADD,
+                        null,
+                        ""
+                    )
+                },
+                textToSpeech = textToSpeech,
+                spokenInstructions = spokenInstructions
             )
-            timer?.startTimer()
+            timer.startTimer()
             SageSurveyTheme {
                 TremorStepUi(
                     assessmentViewModel = assessmentViewModel,
@@ -102,7 +143,8 @@ open class TremorStepFragment: StepFragment() {
     }
 
     override fun onDestroyView() {
-        timer?.stopTimer()
+        textToSpeech.shutdown()
+        timer.stopTimer()
         super.onDestroyView()
         _binding = null
     }

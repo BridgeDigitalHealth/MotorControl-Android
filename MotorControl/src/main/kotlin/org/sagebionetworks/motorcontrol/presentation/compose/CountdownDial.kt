@@ -58,7 +58,7 @@ import kotlin.math.ceil
 fun CountdownDial(
     duration: Double,
     countdown: MutableState<Long>,
-    dialNumber: MutableState<Int>? = null,
+    dialContent: MutableState<Int>? = null,
     dialSubText: String? = null,
     backgroundColor: Color = BackgroundGray
 ) {
@@ -75,8 +75,18 @@ fun CountdownDial(
                 .background(backgroundColor)
         )
         Column {
+            /*
+            CountdownTimer's milliseconds do not always count down to 0 for onFinish().
+            This is a way to display 0 at the end of the countdown while keeping ceil(), as
+            well as manually set the countdown.value to zero for the progress bar to finish.
+             */
+            var countdownInt = ceil(countdown.value.toDouble() / 1000).toInt()
+            if (countdown.value < 50){
+                countdownInt = 0
+                countdown.value = 0
+            }
             Text(
-                text = dialNumber?.value?.toString() ?: ceil((countdown.value.toDouble() / 1000)).toInt().toString(),
+                text = dialContent?.value?.toString() ?: countdownInt.toString(),
                 textAlign = TextAlign.Center,
                 style = dialText,
                 modifier = Modifier.fillMaxWidth()

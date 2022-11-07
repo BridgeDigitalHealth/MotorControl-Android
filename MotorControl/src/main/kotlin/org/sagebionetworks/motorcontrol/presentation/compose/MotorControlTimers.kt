@@ -34,14 +34,22 @@
 package org.sagebionetworks.motorcontrol.presentation.compose
 
 import android.os.CountDownTimer
+import android.speech.tts.TextToSpeech
 import androidx.compose.runtime.MutableState
+import kotlin.math.ceil
 
-class StepTimer(val countdown: MutableState<Long>,
-                val stepDuration: Double,
-                val finished: () -> Unit) {
-    var timer: CountDownTimer? = null
+class StepTimer(
+    val countdown: MutableState<Long>,
+    val stepDuration: Double,
+    val finished: () -> Unit,
+    private val textToSpeech: TextToSpeech? = null,
+    private val spokenInstructions: Map<Int, String>? = null,
+) {
+    private var timer: CountDownTimer? = null
+    private var instructionsSpoken = mutableSetOf(0)
 
     fun startTimer(restartsOnPause: Boolean = true) {
+        // This is to account for tapping step that does not restart the timer on pause
         val countdownDuration = if (restartsOnPause) {
             stepDuration * 1000
         } else {
@@ -49,11 +57,13 @@ class StepTimer(val countdown: MutableState<Long>,
         }
         timer = object: CountDownTimer(countdownDuration.toLong(), 10) {
             override fun onTick(millisUntilFinished: Long) {
+                speakAt(stepDuration.toInt() - ceil((millisUntilFinished.toDouble() / 1000)).toInt())
                 countdown.value = millisUntilFinished
             }
+
             override fun onFinish() {
-                this.cancel()
                 finished()
+                this.cancel()
             }
         }
         timer?.start()
@@ -61,6 +71,16 @@ class StepTimer(val countdown: MutableState<Long>,
 
     fun stopTimer() {
         timer?.cancel()
+        instructionsSpoken.clear()
+    }
+
+    fun speakAt(second: Int) {
+        if (!instructionsSpoken.contains(second)) {
+            spokenInstructions?.get(second)?.let {
+                instructionsSpoken.add(second)
+                textToSpeech?.speak(it, TextToSpeech.QUEUE_ADD, null, "")
+            }
+        }
     }
 }
 
