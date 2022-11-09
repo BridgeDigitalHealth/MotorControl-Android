@@ -54,6 +54,7 @@ import org.sagebionetworks.motorcontrol.presentation.compose.StepTimer
 import org.sagebionetworks.motorcontrol.presentation.compose.TappingStepUi
 import org.sagebionetworks.motorcontrol.serialization.TappingStepObject
 import org.sagebionetworks.motorcontrol.utils.SpokenInstructionsConverter
+import org.sagebionetworks.motorcontrol.viewModel.TappingViewModel
 
 open class TappingStepFragment: StepFragment() {
 
@@ -66,6 +67,8 @@ open class TappingStepFragment: StepFragment() {
     private lateinit var textToSpeech: TextToSpeech
 
     private lateinit var timer: StepTimer
+
+    private lateinit var tappingViewModel: TappingViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -85,9 +88,15 @@ open class TappingStepFragment: StepFragment() {
         textToSpeech = TextToSpeech(context) {
             textToSpeech.speak(spokenInstructions[0], TextToSpeech.QUEUE_ADD, null, "")
         }
+
+        tappingViewModel = TappingViewModel(
+            // TODO: arabara 8/11/22 add actual stepPath value here
+            stepPath = "",
+            handSelection = stepViewModel.nodeState.parent?.node?.hand()
+        )
+
         binding.questionContent.setContent {
             val countdown: MutableState<Long> = remember { mutableStateOf(step.duration.toLong() * 1000) }
-            val tapCount: MutableState<Int> = remember { mutableStateOf(0) }
             timer = StepTimer(
                 countdown = countdown,
                 stepDuration = step.duration,
@@ -118,6 +127,7 @@ open class TappingStepFragment: StepFragment() {
             SageSurveyTheme {
                 TappingStepUi(
                     assessmentViewModel = assessmentViewModel,
+                    tappingViewModel,
                     image = drawable,
                     flippedImage = stepViewModel.nodeState.parent?.node?.hand()
                             == HandSelection.RIGHT,
@@ -129,7 +139,6 @@ open class TappingStepFragment: StepFragment() {
                     timer = timer,
                     duration = step.duration,
                     countdown = countdown,
-                    tapCount = tapCount
                 )
             }
         }

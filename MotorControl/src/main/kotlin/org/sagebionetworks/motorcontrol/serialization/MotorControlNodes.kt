@@ -33,8 +33,11 @@
 
 package org.sagebionetworks.motorcontrol.serialization
 
+import kotlinx.datetime.Instant
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 import kotlinx.serialization.modules.SerializersModule
 import kotlinx.serialization.modules.polymorphic
 import kotlinx.serialization.modules.subclass
@@ -45,6 +48,10 @@ import org.sagebionetworks.assessmentmodel.serialization.BaseActiveStepObject
 import org.sagebionetworks.assessmentmodel.serialization.NodeContainerObject
 import org.sagebionetworks.assessmentmodel.serialization.StepObject
 import org.sagebionetworks.motorcontrol.navigation.TwoHandNavigator
+import org.sagebionetworks.motorcontrol.resultObjects.ResultData
+import org.sagebionetworks.motorcontrol.resultObjects.TappingButtonIdentifier
+import org.sagebionetworks.motorcontrol.resultObjects.TappingSample
+import java.util.*
 
 val motorControlNodeSerializersModule = SerializersModule {
     polymorphic(Node::class) {
@@ -55,6 +62,9 @@ val motorControlNodeSerializersModule = SerializersModule {
     }
     polymorphic(Assessment::class) {
         subclass(TwoHandAssessmentObject::class)
+    }
+    polymorphic(ResultData::class) {
+        subclass(TappingResultObject::class)
     }
 }
 
@@ -121,3 +131,31 @@ data class TappingStepObject(
     override val duration: Double,
     override val identifier: String
 ) : BaseActiveStepObject(), ActiveStep
+
+@Serializable
+@SerialName("tapping")
+data class TappingResultObject(
+    override val identifier: String,
+    override val startDate: Instant,
+    override val endDate: Instant,
+    val hand: String,
+    val sample: List<TappingSampleObject>,
+    val tapCount: Int
+    ) : ResultData {
+    override fun deepCopy(): ResultData {
+        return this.copy(sample = this.sample.map { it.copy() })
+    }
+    fun encodeToString(): String {
+        return Json.encodeToString(this)
+    }
+}
+
+@Serializable
+data class TappingSampleObject(
+    override val uptime: Long,
+    override val timestamp: Long?,
+    override val stepPath: String,
+    override val buttonIdentifier: TappingButtonIdentifier,
+    override val location: List<Float>,
+    override val duration: Float
+) : TappingSample

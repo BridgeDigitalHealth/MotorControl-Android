@@ -35,34 +35,44 @@ package org.sagebionetworks.motorcontrol.presentation.compose
 
 import android.graphics.drawable.Drawable
 import androidx.compose.foundation.background
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.Button
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.layout.positionInRoot
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import org.sagebionetworks.motorcontrol.R
+import kotlinx.datetime.Clock
+import kotlinx.datetime.Instant
 import org.sagebionetworks.assessmentmodel.presentation.AssessmentViewModel
 import org.sagebionetworks.assessmentmodel.presentation.ui.theme.*
+import org.sagebionetworks.motorcontrol.R
 import org.sagebionetworks.motorcontrol.presentation.theme.*
+import org.sagebionetworks.motorcontrol.resultObjects.TappingButtonIdentifier
+import org.sagebionetworks.motorcontrol.viewModel.TappingViewModel
 
 @Composable
 internal fun TappingStepUi(
     assessmentViewModel: AssessmentViewModel?,
+    tappingViewModel: TappingViewModel,
     image: Drawable?,
     flippedImage: Boolean,
     imageTintColor: Color?,
     timer: StepTimer?,
     duration: Double,
-    countdown: MutableState<Long>,
-    tapCount: MutableState<Int>) {
+    countdown: MutableState<Long>
+) {
     val imageModifier = if (flippedImage) {
         Modifier
             .fillMaxSize()
@@ -70,10 +80,7 @@ internal fun TappingStepUi(
     } else {
         Modifier.fillMaxSize()
     }
-    Box(modifier = Modifier
-        .fillMaxHeight()
-        .background(BackgroundGray)
-    ) {
+    Box(modifier = screenModifierWithTapGesture(countdown, tappingViewModel)) {
         if (image != null) {
             SingleImageUi(
                 image = image,
@@ -92,18 +99,34 @@ internal fun TappingStepUi(
             CountdownDial(
                 duration = duration,
                 countdown = countdown,
-                dialContent = tapCount,
+                dialContent = tappingViewModel.tapCount,
                 dialSubText = stringResource(id = R.string.tap_count)
             )
             Spacer(modifier = Modifier.weight(1F))
             Row {
                 Spacer(modifier = Modifier.weight(1F))
-                TapButton(tapCount, timer) {
-                    tapCount.value += 1
+                TapButton(
+                    timer,
+                    tappingViewModel.initialTapOccurred,
+                    countdown
+                ) { location, duration ->
+                    tappingViewModel.addTappingSample(
+                        currentButton = TappingButtonIdentifier.Left,
+                        location = location,
+                        duration = duration
+                    )
                 }
                 Spacer(modifier = Modifier.weight(1F))
-                TapButton(tapCount, timer) {
-                    tapCount.value += 1
+                TapButton(
+                    timer,
+                    tappingViewModel.initialTapOccurred,
+                    countdown
+                ) { location, duration ->
+                    tappingViewModel.addTappingSample(
+                        currentButton = TappingButtonIdentifier.Right,
+                        location = location,
+                        duration = duration
+                    )
                 }
                 Spacer(modifier = Modifier.weight(1F))
             }
@@ -111,27 +134,104 @@ internal fun TappingStepUi(
     }
 }
 
-
 @Composable
-private fun TapButton(tapCount: MutableState<Int>, timer: StepTimer?, onTap: () -> Unit) {
-    Button(
-        onClick = {
-            if (tapCount.value == 0) {
-                timer?.startTimer()
-            }
-            onTap()
-        },
-        modifier = Modifier
-            .padding(vertical = 48.dp)
-            .size(100.dp),
-        shape = CircleShape,
+private fun TapButton(
+    timer: StepTimer?,
+    initialTapOccurred: MutableState<Boolean>,
+    countdown: MutableState<Long>,
+    onTap: (location: List<Float>, duration: Long) -> Unit
+) {
+    Box(
+        contentAlignment = Alignment.Center,
+        modifier = tapButtonModifierWithTapGesture(
+            initialTapOccurred,
+            countdown,
+            timer,
+            onTap
+        )
     ) {
         Text(
             text = stringResource(id = R.string.tap_button),
             color = Color.Black,
-            style = tapButtonText
+            style = tapButtonText,
         )
     }
+}
+
+@Composable
+fun screenModifierWithTapGesture(
+    countdown: MutableState<Long>,
+    tappingViewModel: TappingViewModel
+): Modifier {
+    return Modifier
+        .fillMaxHeight()
+        .background(BackgroundGray)
+        .pointerInput(Unit) {
+            detectTapGestures(
+                onPress = { location ->
+                    if (countdown.value <= 0) {
+                        return@detectTapGestures
+                    }
+                    lateinit var startDuration: Instant
+                    try {
+                        startDuration = Clock.System.now()
+                        awaitRelease()
+                    } finally {
+                        if (tappingViewModel.initialTapOccurred.value) {
+                            tappingViewModel.addTappingSample(
+                                currentButton = TappingButtonIdentifier.None,
+                                location = listOf(location.x, location.y),
+                                duration = Clock.System.now().toEpochMilliseconds()
+                                        - startDuration.toEpochMilliseconds()
+                            )
+                        }
+                    }
+                }
+            )
+        }
+}
+
+@Composable
+fun tapButtonModifierWithTapGesture(
+    initialTapOccurred: MutableState<Boolean>,
+    countdown: MutableState<Long>,
+    timer: StepTimer?,
+    onTap: (location: List<Float>, duration: Long) -> Unit
+): Modifier {
+    val xOffset: MutableState<Float> = remember { mutableStateOf(0F) }
+    val yOffset: MutableState<Float> = remember { mutableStateOf(0F) }
+    return Modifier
+        .padding(vertical = 48.dp)
+        .background(TapButtonColor, shape = CircleShape)
+        .size(100.dp)
+        .onGloballyPositioned {
+            xOffset.value = it.positionInRoot().x
+            yOffset.value = it.positionInRoot().y
+        }
+        .pointerInput(Unit) {
+            detectTapGestures(
+                onPress = { location ->
+                    lateinit var startDuration: Instant
+                    if (countdown.value <= 0) {
+                        return@detectTapGestures
+                    }
+                    try {
+                        if (!initialTapOccurred.value) {
+                            timer?.startTimer()
+                            initialTapOccurred.value = true
+                        }
+                        startDuration = Clock.System.now()
+                        awaitRelease()
+                    } finally {
+                        onTap(
+                            listOf(location.x + xOffset.value, location.y + yOffset.value),
+                            Clock.System.now().toEpochMilliseconds()
+                                    - startDuration.toEpochMilliseconds()
+                        )
+                    }
+                }
+            )
+        }
 }
 
 @Preview
@@ -140,13 +240,13 @@ private fun InstructionStepPreview() {
     SageSurveyTheme {
         TappingStepUi(
             assessmentViewModel = null,
+            tappingViewModel = TappingViewModel("", null),
             image = null,
             flippedImage = false,
             imageTintColor = null,
             timer = null,
             duration = 5.0,
-            countdown = mutableStateOf(5),
-            tapCount = mutableStateOf(0)
+            countdown = mutableStateOf(5)
         )
     }
 }
