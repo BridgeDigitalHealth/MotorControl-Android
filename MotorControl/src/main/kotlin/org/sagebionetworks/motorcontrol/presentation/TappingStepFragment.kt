@@ -88,13 +88,10 @@ open class TappingStepFragment: StepFragment() {
         textToSpeech = TextToSpeech(context) {
             textToSpeech.speak(spokenInstructions[0], TextToSpeech.QUEUE_ADD, null, "")
         }
-
         tappingViewModel = TappingViewModel(
-            // TODO: arabara 8/11/22 add actual stepPath value here
-            stepPath = "",
+            stepPath = "Tapping/${stepViewModel.nodeState.parent?.node?.hand()?.name?.lowercase()}",
             handSelection = stepViewModel.nodeState.parent?.node?.hand()
         )
-
         binding.questionContent.setContent {
             val countdown: MutableState<Long> = remember { mutableStateOf(step.duration.toLong() * 1000) }
             timer = StepTimer(
@@ -137,7 +134,7 @@ open class TappingStepFragment: StepFragment() {
                         null
                     },
                     timer = timer,
-                    duration = step.duration,
+                    countdownDuration = step.duration,
                     countdown = countdown,
                 )
             }
@@ -146,6 +143,11 @@ open class TappingStepFragment: StepFragment() {
     }
 
     override fun onDestroyView() {
+        assessmentViewModel
+            .assessmentNodeState
+            .currentResult
+            .pathHistoryResults
+            .add(tappingViewModel.getResult())
         textToSpeech.shutdown()
         timer.stopTimer()
         super.onDestroyView()

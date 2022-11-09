@@ -2,13 +2,13 @@ package org.sagebionetworks.motorcontrol.resultObjects
 
 interface TappingSample {
     // System clock time for the sample. This will be the same timestamp marker across different files.
-    val uptime: Long
+    val uptime: Float
 
     // A relative timestamp indicating the time of the tap event.
     //
     // The timestamp is relative to the value of `startDate` in the 'TappingResultObject` object that includes this
     // sample.
-    val timestamp: Long?
+    val timestamp: Float?
 
     // The current step path.
     val stepPath: String
@@ -17,7 +17,7 @@ interface TappingSample {
     //
     // If the value of this property is `.None`, it indicates that the tap was near, but not inside, one
     // of the target buttons.
-    val buttonIdentifier: TappingButtonIdentifier
+    val buttonIdentifier: String
 
     // The location of the tap within the step's view.
     //

@@ -48,7 +48,6 @@ import org.sagebionetworks.assessmentmodel.serialization.BaseActiveStepObject
 import org.sagebionetworks.assessmentmodel.serialization.NodeContainerObject
 import org.sagebionetworks.assessmentmodel.serialization.StepObject
 import org.sagebionetworks.motorcontrol.navigation.TwoHandNavigator
-import org.sagebionetworks.motorcontrol.resultObjects.ResultData
 import org.sagebionetworks.motorcontrol.resultObjects.TappingButtonIdentifier
 import org.sagebionetworks.motorcontrol.resultObjects.TappingSample
 import java.util.*
@@ -63,7 +62,7 @@ val motorControlNodeSerializersModule = SerializersModule {
     polymorphic(Assessment::class) {
         subclass(TwoHandAssessmentObject::class)
     }
-    polymorphic(ResultData::class) {
+    polymorphic(Result::class) {
         subclass(TappingResultObject::class)
     }
 }
@@ -136,26 +135,23 @@ data class TappingStepObject(
 @SerialName("tapping")
 data class TappingResultObject(
     override val identifier: String,
-    override val startDate: Instant,
-    override val endDate: Instant,
+    override var startDateTime: Instant,
+    override var endDateTime: Instant?,
     val hand: String,
-    val sample: List<TappingSampleObject>,
+    val samples: List<TappingSampleObject>,
     val tapCount: Int
-    ) : ResultData {
-    override fun deepCopy(): ResultData {
-        return this.copy(sample = this.sample.map { it.copy() })
-    }
-    fun encodeToString(): String {
-        return Json.encodeToString(this)
+    ) : Result {
+    override fun copyResult(identifier: String): Result {
+        return this.copy(samples = this.samples.map { it.copy() })
     }
 }
 
 @Serializable
 data class TappingSampleObject(
-    override val uptime: Long,
-    override val timestamp: Long?,
+    override val uptime: Float,
+    override val timestamp: Float?,
     override val stepPath: String,
-    override val buttonIdentifier: TappingButtonIdentifier,
+    override val buttonIdentifier: String,
     override val location: List<Float>,
     override val duration: Float
 ) : TappingSample

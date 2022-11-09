@@ -70,7 +70,7 @@ internal fun TappingStepUi(
     flippedImage: Boolean,
     imageTintColor: Color?,
     timer: StepTimer?,
-    duration: Double,
+    countdownDuration: Double,
     countdown: MutableState<Long>
 ) {
     val imageModifier = if (flippedImage) {
@@ -97,7 +97,7 @@ internal fun TappingStepUi(
             )
             Spacer(modifier = Modifier.weight(1F))
             CountdownDial(
-                duration = duration,
+                countdownDuration = countdownDuration,
                 countdown = countdown,
                 dialContent = tappingViewModel.tapCount,
                 dialSubText = stringResource(id = R.string.tap_count)
@@ -106,28 +106,40 @@ internal fun TappingStepUi(
             Row {
                 Spacer(modifier = Modifier.weight(1F))
                 TapButton(
-                    timer,
-                    tappingViewModel.initialTapOccurred,
-                    countdown
-                ) { location, duration ->
-                    tappingViewModel.addTappingSample(
-                        currentButton = TappingButtonIdentifier.Left,
-                        location = location,
-                        duration = duration
-                    )
-                }
+                    countdown = countdown,
+                    onFirstTap = {
+                        if (!tappingViewModel.initialTapOccurred.value) {
+                            timer?.startTimer()
+                            tappingViewModel.initialTapOccurred.value = true
+                            tappingViewModel.setStartTime()
+                        }
+                    },
+                    onTap = { location, tapDurationInMillis ->
+                        tappingViewModel.addTappingSample(
+                            currentButton = TappingButtonIdentifier.Left,
+                            location = location,
+                            tapDurationInMillis = tapDurationInMillis
+                        )
+                    }
+                )
                 Spacer(modifier = Modifier.weight(1F))
                 TapButton(
-                    timer,
-                    tappingViewModel.initialTapOccurred,
-                    countdown
-                ) { location, duration ->
-                    tappingViewModel.addTappingSample(
-                        currentButton = TappingButtonIdentifier.Right,
-                        location = location,
-                        duration = duration
-                    )
-                }
+                    countdown = countdown,
+                    onFirstTap = {
+                        if (!tappingViewModel.initialTapOccurred.value) {
+                            timer?.startTimer()
+                            tappingViewModel.initialTapOccurred.value = true
+                            tappingViewModel.setStartTime()
+                        }
+                    },
+                    onTap = { location, tapDurationInMillis ->
+                        tappingViewModel.addTappingSample(
+                            currentButton = TappingButtonIdentifier.Right,
+                            location = location,
+                            tapDurationInMillis = tapDurationInMillis
+                        )
+                    }
+                )
                 Spacer(modifier = Modifier.weight(1F))
             }
         }
@@ -136,18 +148,16 @@ internal fun TappingStepUi(
 
 @Composable
 private fun TapButton(
-    timer: StepTimer?,
-    initialTapOccurred: MutableState<Boolean>,
     countdown: MutableState<Long>,
+    onFirstTap: () -> Unit = {},
     onTap: (location: List<Float>, duration: Long) -> Unit
 ) {
     Box(
         contentAlignment = Alignment.Center,
         modifier = tapButtonModifierWithTapGesture(
-            initialTapOccurred,
-            countdown,
-            timer,
-            onTap
+            countdown = countdown,
+            onFirstTap = onFirstTap,
+            onTap = onTap
         )
     ) {
         Text(
@@ -172,17 +182,17 @@ fun screenModifierWithTapGesture(
                     if (countdown.value <= 0) {
                         return@detectTapGestures
                     }
-                    lateinit var startDuration: Instant
+                    lateinit var startOfTapDuration: Instant
                     try {
-                        startDuration = Clock.System.now()
+                        startOfTapDuration = Clock.System.now()
                         awaitRelease()
                     } finally {
                         if (tappingViewModel.initialTapOccurred.value) {
                             tappingViewModel.addTappingSample(
                                 currentButton = TappingButtonIdentifier.None,
                                 location = listOf(location.x, location.y),
-                                duration = Clock.System.now().toEpochMilliseconds()
-                                        - startDuration.toEpochMilliseconds()
+                                tapDurationInMillis = Clock.System.now().toEpochMilliseconds()
+                                        - startOfTapDuration.toEpochMilliseconds()
                             )
                         }
                     }
@@ -193,10 +203,9 @@ fun screenModifierWithTapGesture(
 
 @Composable
 fun tapButtonModifierWithTapGesture(
-    initialTapOccurred: MutableState<Boolean>,
     countdown: MutableState<Long>,
-    timer: StepTimer?,
-    onTap: (location: List<Float>, duration: Long) -> Unit
+    onFirstTap: () -> Unit = {},
+    onTap: (location: List<Float>, tapDurationInMillis: Long) -> Unit
 ): Modifier {
     val xOffset: MutableState<Float> = remember { mutableStateOf(0F) }
     val yOffset: MutableState<Float> = remember { mutableStateOf(0F) }
@@ -211,22 +220,20 @@ fun tapButtonModifierWithTapGesture(
         .pointerInput(Unit) {
             detectTapGestures(
                 onPress = { location ->
-                    lateinit var startDuration: Instant
+                    var startOfTapDuration: Long = 0
                     if (countdown.value <= 0) {
                         return@detectTapGestures
                     }
+                    // The try captures the moment of contact, finally captures moment of release
                     try {
-                        if (!initialTapOccurred.value) {
-                            timer?.startTimer()
-                            initialTapOccurred.value = true
-                        }
-                        startDuration = Clock.System.now()
+                        onFirstTap()
+                        startOfTapDuration = Clock.System.now().toEpochMilliseconds()
                         awaitRelease()
                     } finally {
                         onTap(
                             listOf(location.x + xOffset.value, location.y + yOffset.value),
                             Clock.System.now().toEpochMilliseconds()
-                                    - startDuration.toEpochMilliseconds()
+                                    - startOfTapDuration
                         )
                     }
                 }
@@ -245,7 +252,7 @@ private fun InstructionStepPreview() {
             flippedImage = false,
             imageTintColor = null,
             timer = null,
-            duration = 5.0,
+            countdownDuration = 5.0,
             countdown = mutableStateOf(5)
         )
     }

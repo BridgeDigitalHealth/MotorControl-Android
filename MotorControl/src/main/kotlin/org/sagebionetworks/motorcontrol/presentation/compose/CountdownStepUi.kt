@@ -78,7 +78,7 @@ internal fun CountdownStepUi(
                     .fillMaxWidth()
                     .padding(16.dp)
             )
-            CountdownDial(duration = duration, countdown = countdown)
+            CountdownDial(countdownDuration = duration, countdown = countdown)
             Spacer(modifier = Modifier.weight(1f))
         }
     }

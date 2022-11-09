@@ -11,26 +11,25 @@ import org.sagebionetworks.motorcontrol.serialization.TappingResultObject
 import org.sagebionetworks.motorcontrol.serialization.TappingSampleObject
 
 class TappingViewModel(val stepPath: String, val handSelection: HandSelection?) {
-    private val startDate: Instant = Clock.System.now()
-    private val startTime: Long = uptimeMillis()
+    private var startDate: Instant = Clock.System.now()
     private val samples: MutableList<TappingSampleObject> = ArrayList()
+    private var previousButton: TappingButtonIdentifier = TappingButtonIdentifier.None
     val tapCount: MutableState<Int> = mutableStateOf(0)
     val initialTapOccurred: MutableState<Boolean> = mutableStateOf(false)
-    var previousButton: TappingButtonIdentifier = TappingButtonIdentifier.None
+    var startTime: Long = uptimeMillis()
 
     fun addTappingSample(currentButton: TappingButtonIdentifier,
                          location: List<Float>,
-                         duration: Long
+                         tapDurationInMillis: Long
     ) {
         val sample = TappingSampleObject(
-            uptime = uptimeMillis(),
-            timestamp = uptimeMillis() - startTime - duration,
+            uptime = uptimeMillis().toFloat() / 1000,
+            timestamp = (uptimeMillis() - startTime - tapDurationInMillis).toFloat() / 1000,
             stepPath = stepPath,
-            buttonIdentifier = currentButton,
+            buttonIdentifier = currentButton.name.lowercase(),
             location = location,
-            duration = duration.toFloat() / 1000
+            duration = tapDurationInMillis.toFloat() / 1000
         )
-        println(sample)
         samples.add(sample)
 
         if (currentButton == TappingButtonIdentifier.None || previousButton == currentButton) {
@@ -40,14 +39,18 @@ class TappingViewModel(val stepPath: String, val handSelection: HandSelection?) 
         previousButton = currentButton
     }
 
-    fun exportJSON() {
-        val tappingResultObject = TappingResultObject(
+    fun getResult(): TappingResultObject {
+        return TappingResultObject(
             identifier = "tapping",
-            startDate = startDate,
-            endDate = Clock.System.now(),
-            hand = handSelection?.name ?: "none",
-            sample = samples,
+            startDateTime = startDate,
+            endDateTime = Clock.System.now(),
+            hand = handSelection?.name?.lowercase() ?: "",
+            samples = samples,
             tapCount = tapCount.value
         )
+    }
+
+    fun setStartTime() {
+        startTime = uptimeMillis()
     }
 }
