@@ -44,7 +44,6 @@ import org.sagebionetworks.assessmentmodel.presentation.ui.theme.SageSurveyTheme
 import org.sagebionetworks.assessmentmodel.serialization.loadDrawable
 import org.sagebionetworks.motorcontrol.navigation.HandSelection
 import org.sagebionetworks.motorcontrol.navigation.hand
-import org.sagebionetworks.motorcontrol.presentation.compose.StepTimer
 import org.sagebionetworks.motorcontrol.presentation.compose.TappingStepUi
 import org.sagebionetworks.motorcontrol.resultObjects.TappingResult
 import org.sagebionetworks.motorcontrol.serialization.TappingStepObject
@@ -84,7 +83,7 @@ open class TappingStepFragment: StepFragment() {
             SageSurveyTheme {
                 TappingStepUi(
                     assessmentViewModel = assessmentViewModel,
-                    tappingViewModel,
+                    tappingViewModel = tappingViewModel,
                     image = drawable,
                     flippedImage = stepViewModel.nodeState.parent?.node?.hand()
                             == HandSelection.RIGHT,
