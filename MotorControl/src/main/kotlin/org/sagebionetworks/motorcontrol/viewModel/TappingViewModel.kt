@@ -90,6 +90,8 @@ class TappingViewModel(
         )
         samples.add(sample)
 
+        // Increment tapCount if tap was inside button and current button tapped is not the same
+        // as the last button tapped
         if (currentButton == TappingButtonIdentifier.None || previousButton == currentButton) {
             return
         }
