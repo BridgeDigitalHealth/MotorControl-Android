@@ -59,12 +59,12 @@ import org.sagebionetworks.assessmentmodel.presentation.ui.theme.*
 import org.sagebionetworks.motorcontrol.R
 import org.sagebionetworks.motorcontrol.presentation.theme.*
 import org.sagebionetworks.motorcontrol.resultObjects.TappingButtonIdentifier
-import org.sagebionetworks.motorcontrol.viewModel.TappingViewModel
+import org.sagebionetworks.motorcontrol.viewModel.TappingState
 
 @Composable
 internal fun TappingStepUi(
     assessmentViewModel: AssessmentViewModel?,
-    tappingViewModel: TappingViewModel,
+    tappingViewModel: TappingState,
     image: Drawable?,
     flippedImage: Boolean,
     imageTintColor: Color?,
@@ -159,7 +159,7 @@ private fun TapButton(
 @Composable
 fun screenModifierWithTapGesture(
     countdown: MutableState<Long>,
-    tappingViewModel: TappingViewModel
+    tappingViewModel: TappingState
 ): Modifier {
     return Modifier
         .fillMaxHeight()
@@ -167,6 +167,7 @@ fun screenModifierWithTapGesture(
         .pointerInput(Unit) {
             detectTapGestures(
                 onPress = { location ->
+                    // Ignores tap on screen if countdown is done
                     if (countdown.value <= 0) {
                         return@detectTapGestures
                     }
@@ -203,6 +204,9 @@ fun tapButtonModifierWithTapGesture(
         .background(TapButtonColor, shape = CircleShape)
         .size(100.dp)
         .onGloballyPositioned {
+            // This sets the offsets to the top left location of the TapButton within
+            // the Root view so that the tap location within the button can be added to the offsets
+            // to get the location of the tap with respect to it's location in the whole view
             xOffset.value = it.positionInRoot().x
             yOffset.value = it.positionInRoot().y
         }
@@ -210,6 +214,7 @@ fun tapButtonModifierWithTapGesture(
             detectTapGestures(
                 onPress = { location ->
                     var startOfTapDuration: Long = 0
+                    // Ignores tap on screen if countdown is done
                     if (countdown.value <= 0) {
                         return@detectTapGestures
                     }

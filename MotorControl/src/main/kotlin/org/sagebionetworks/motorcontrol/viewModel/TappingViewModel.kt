@@ -2,6 +2,7 @@ package org.sagebionetworks.motorcontrol.viewModel
 
 import android.content.Context
 import android.os.Handler
+import android.os.Looper
 import android.os.SystemClock.uptimeMillis
 import android.speech.tts.TextToSpeech
 import android.speech.tts.UtteranceProgressListener
@@ -17,7 +18,7 @@ import org.sagebionetworks.motorcontrol.resultObjects.TappingResult
 import org.sagebionetworks.motorcontrol.serialization.TappingSampleObject
 import org.sagebionetworks.motorcontrol.utils.SpokenInstructionsConverter
 
-class TappingViewModel(
+class TappingState(
     val stepPath: String,
     val hand: HandSelection?,
     val nodeStateResults: TappingResult,
@@ -56,7 +57,7 @@ class TappingViewModel(
                 override fun onStart(utteranceId: String?) {}
                 override fun onDone(utteranceId: String?) {
                     // assessmentViewModel.goForward() must be run on main thread
-                    Handler(context.mainLooper).post(
+                    Handler(Looper.getMainLooper()).post(
                         kotlinx.coroutines.Runnable {
                             goForward()
                         }

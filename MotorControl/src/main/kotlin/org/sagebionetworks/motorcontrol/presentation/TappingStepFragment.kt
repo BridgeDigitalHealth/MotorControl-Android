@@ -47,7 +47,7 @@ import org.sagebionetworks.motorcontrol.navigation.hand
 import org.sagebionetworks.motorcontrol.presentation.compose.TappingStepUi
 import org.sagebionetworks.motorcontrol.resultObjects.TappingResult
 import org.sagebionetworks.motorcontrol.serialization.TappingStepObject
-import org.sagebionetworks.motorcontrol.viewModel.TappingViewModel
+import org.sagebionetworks.motorcontrol.viewModel.TappingState
 
 open class TappingStepFragment: StepFragment() {
 
@@ -57,7 +57,7 @@ open class TappingStepFragment: StepFragment() {
 
     private lateinit var step: TappingStepObject
 
-    private lateinit var tappingViewModel: TappingViewModel
+    private lateinit var tappingViewModel: TappingState
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -71,7 +71,7 @@ open class TappingStepFragment: StepFragment() {
         val tint = step.imageInfo?.tint ?: false
 
         binding.questionContent.setContent {
-            tappingViewModel = TappingViewModel(
+            tappingViewModel = TappingState(
                 stepPath = "Tapping/${stepViewModel.nodeState.parent?.node?.hand()?.name?.lowercase()}",
                 hand = stepViewModel.nodeState.parent?.node?.hand(),
                 nodeStateResults = stepViewModel.nodeState.currentResult as TappingResult,
