@@ -33,6 +33,7 @@
 
 package org.sagebionetworks.motorcontrol.serialization
 
+import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
@@ -49,6 +50,7 @@ import org.sagebionetworks.assessmentmodel.serialization.NodeContainerObject
 import org.sagebionetworks.assessmentmodel.serialization.StepObject
 import org.sagebionetworks.motorcontrol.navigation.TwoHandNavigator
 import org.sagebionetworks.motorcontrol.resultObjects.TappingButtonIdentifier
+import org.sagebionetworks.motorcontrol.resultObjects.TappingResult
 import org.sagebionetworks.motorcontrol.resultObjects.TappingSample
 import java.util.*
 
@@ -129,29 +131,33 @@ data class TremorStepObject(
 data class TappingStepObject(
     override val duration: Double,
     override val identifier: String
-) : BaseActiveStepObject(), ActiveStep
+) : BaseActiveStepObject(), ActiveStep {
+    override fun createResult(): TappingResultObject {
+        return TappingResultObject(identifier)
+    }
+}
 
 @Serializable
 @SerialName("tapping")
 data class TappingResultObject(
     override val identifier: String,
-    override var startDateTime: Instant,
-    override var endDateTime: Instant?,
-    val hand: String,
-    val samples: List<TappingSampleObject>,
-    val tapCount: Int
-    ) : Result {
-    override fun copyResult(identifier: String): Result {
+    override var startDateTime: Instant = Clock.System.now(),
+    override var endDateTime: Instant? = null,
+    override var hand: String? = null,
+    override var samples: List<TappingSampleObject> = mutableListOf(),
+    override var tapCount: Int = 0
+    ) : TappingResult {
+    override fun copyResult(identifier: String): TappingResult {
         return this.copy(samples = this.samples.map { it.copy() })
     }
 }
 
 @Serializable
 data class TappingSampleObject(
-    override val uptime: Float,
-    override val timestamp: Float?,
+    override val uptime: Double,
+    override val timestamp: Double?,
     override val stepPath: String,
     override val buttonIdentifier: String,
     override val location: List<Float>,
-    override val duration: Float
+    override val duration: Double
 ) : TappingSample

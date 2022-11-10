@@ -51,7 +51,6 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.positionInRoot
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
@@ -69,9 +68,6 @@ internal fun TappingStepUi(
     image: Drawable?,
     flippedImage: Boolean,
     imageTintColor: Color?,
-    timer: StepTimer?,
-    countdownDuration: Double,
-    countdown: MutableState<Long>
 ) {
     val imageModifier = if (flippedImage) {
         Modifier
@@ -80,7 +76,7 @@ internal fun TappingStepUi(
     } else {
         Modifier.fillMaxSize()
     }
-    Box(modifier = screenModifierWithTapGesture(countdown, tappingViewModel)) {
+    Box(modifier = screenModifierWithTapGesture(tappingViewModel.countdown, tappingViewModel)) {
         if (image != null) {
             SingleImageUi(
                 image = image,
@@ -92,13 +88,13 @@ internal fun TappingStepUi(
         Column {
             MotorControlPauseUi(
                 assessmentViewModel = assessmentViewModel,
-                onPause = { timer?.stopTimer() },
-                onUnpause = { timer?.startTimer(restartsOnPause = false) }
+                onPause = { tappingViewModel.timer.stopTimer() },
+                onUnpause = { tappingViewModel.timer.startTimer(restartsOnPause = false) }
             )
             Spacer(modifier = Modifier.weight(1F))
             CountdownDial(
-                countdownDuration = countdownDuration,
-                countdown = countdown,
+                countdownDuration = tappingViewModel.duration,
+                countdown = tappingViewModel.countdown,
                 dialContent = tappingViewModel.tapCount,
                 dialSubText = stringResource(id = R.string.tap_count)
             )
@@ -106,13 +102,9 @@ internal fun TappingStepUi(
             Row {
                 Spacer(modifier = Modifier.weight(1F))
                 TapButton(
-                    countdown = countdown,
+                    countdown = tappingViewModel.countdown,
                     onFirstTap = {
-                        if (!tappingViewModel.initialTapOccurred.value) {
-                            timer?.startTimer()
-                            tappingViewModel.initialTapOccurred.value = true
-                            tappingViewModel.setStartTime()
-                        }
+                        tappingViewModel.onFirstTap()
                     },
                     onTap = { location, tapDurationInMillis ->
                         tappingViewModel.addTappingSample(
@@ -124,13 +116,9 @@ internal fun TappingStepUi(
                 )
                 Spacer(modifier = Modifier.weight(1F))
                 TapButton(
-                    countdown = countdown,
+                    countdown = tappingViewModel.countdown,
                     onFirstTap = {
-                        if (!tappingViewModel.initialTapOccurred.value) {
-                            timer?.startTimer()
-                            tappingViewModel.initialTapOccurred.value = true
-                            tappingViewModel.setStartTime()
-                        }
+                        tappingViewModel.onFirstTap()
                     },
                     onTap = { location, tapDurationInMillis ->
                         tappingViewModel.addTappingSample(
@@ -183,6 +171,7 @@ fun screenModifierWithTapGesture(
                         return@detectTapGestures
                     }
                     lateinit var startOfTapDuration: Instant
+                    // The try captures the moment of contact, finally captures moment of release
                     try {
                         startOfTapDuration = Clock.System.now()
                         awaitRelease()
@@ -239,21 +228,4 @@ fun tapButtonModifierWithTapGesture(
                 }
             )
         }
-}
-
-@Preview
-@Composable
-private fun InstructionStepPreview() {
-    SageSurveyTheme {
-        TappingStepUi(
-            assessmentViewModel = null,
-            tappingViewModel = TappingViewModel("", null),
-            image = null,
-            flippedImage = false,
-            imageTintColor = null,
-            timer = null,
-            countdownDuration = 5.0,
-            countdown = mutableStateOf(5)
-        )
-    }
 }
