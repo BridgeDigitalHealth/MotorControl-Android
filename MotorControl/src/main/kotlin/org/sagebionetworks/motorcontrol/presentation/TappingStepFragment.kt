@@ -34,26 +34,20 @@
 package org.sagebionetworks.motorcontrol.presentation
 
 import android.os.Bundle
-import android.os.Handler
-import android.speech.tts.TextToSpeech
-import android.speech.tts.UtteranceProgressListener
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.compose.material.MaterialTheme
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import org.sagebionetworks.assessmentmodel.presentation.StepFragment
 import org.sagebionetworks.assessmentmodel.presentation.databinding.ComposeQuestionStepFragmentBinding
 import org.sagebionetworks.assessmentmodel.presentation.ui.theme.SageSurveyTheme
 import org.sagebionetworks.assessmentmodel.serialization.loadDrawable
 import org.sagebionetworks.motorcontrol.navigation.HandSelection
 import org.sagebionetworks.motorcontrol.navigation.hand
-import org.sagebionetworks.motorcontrol.presentation.compose.StepTimer
 import org.sagebionetworks.motorcontrol.presentation.compose.TappingStepUi
+import org.sagebionetworks.motorcontrol.resultObjects.TappingResult
 import org.sagebionetworks.motorcontrol.serialization.TappingStepObject
-import org.sagebionetworks.motorcontrol.utils.SpokenInstructionsConverter
+import org.sagebionetworks.motorcontrol.viewModel.TappingState
 
 open class TappingStepFragment: StepFragment() {
 
@@ -63,9 +57,7 @@ open class TappingStepFragment: StepFragment() {
 
     private lateinit var step: TappingStepObject
 
-    private lateinit var textToSpeech: TextToSpeech
-
-    private lateinit var timer: StepTimer
+    private lateinit var tappingViewModel: TappingState
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -77,47 +69,21 @@ open class TappingStepFragment: StepFragment() {
         _binding = ComposeQuestionStepFragmentBinding.inflate(layoutInflater, container, false)
         val drawable = step.imageInfo?.loadDrawable(requireContext())
         val tint = step.imageInfo?.tint ?: false
-        val spokenInstructions = SpokenInstructionsConverter.convertSpokenInstructions(
-            step.spokenInstructions ?: mapOf(),
-            step.duration.toInt(),
-            stepViewModel.nodeState.parent?.node?.hand()?.name
-        )
-        textToSpeech = TextToSpeech(context) {
-            textToSpeech.speak(spokenInstructions[0], TextToSpeech.QUEUE_ADD, null, "")
-        }
+
         binding.questionContent.setContent {
-            val countdown: MutableState<Long> = remember { mutableStateOf(step.duration.toLong() * 1000) }
-            val tapCount: MutableState<Int> = remember { mutableStateOf(0) }
-            timer = StepTimer(
-                countdown = countdown,
-                stepDuration = step.duration,
-                finished = {
-                    val speechListener = object : UtteranceProgressListener() {
-                        override fun onStart(utteranceId: String?) {}
-                        override fun onDone(utteranceId: String?) {
-                            // assessmentViewModel.goForward() must be run on main thread
-                            Handler(requireContext().mainLooper).post(
-                                kotlinx.coroutines.Runnable {
-                                    assessmentViewModel.goForward()
-                                }
-                            )
-                        }
-                        override fun onError(utteranceId: String?) {}
-                    }
-                    textToSpeech.setOnUtteranceProgressListener(speechListener)
-                    textToSpeech.speak(
-                        spokenInstructions[step.duration.toInt()],
-                        TextToSpeech.QUEUE_ADD,
-                        null,
-                        ""
-                    )
-                },
-                textToSpeech = textToSpeech,
-                spokenInstructions = spokenInstructions
+            tappingViewModel = TappingState(
+                stepPath = "Tapping/${stepViewModel.nodeState.parent?.node?.hand()?.name?.lowercase()}",
+                hand = stepViewModel.nodeState.parent?.node?.hand(),
+                nodeStateResults = stepViewModel.nodeState.currentResult as TappingResult,
+                duration = step.duration,
+                context = requireContext(),
+                spokenInstructions = step.spokenInstructions ?: mapOf(),
+                goForward = assessmentViewModel::goForward
             )
             SageSurveyTheme {
                 TappingStepUi(
                     assessmentViewModel = assessmentViewModel,
+                    tappingViewModel = tappingViewModel,
                     image = drawable,
                     flippedImage = stepViewModel.nodeState.parent?.node?.hand()
                             == HandSelection.RIGHT,
@@ -125,11 +91,7 @@ open class TappingStepFragment: StepFragment() {
                         MaterialTheme.colors.primary
                     } else {
                         null
-                    },
-                    timer = timer,
-                    duration = step.duration,
-                    countdown = countdown,
-                    tapCount = tapCount
+                    }
                 )
             }
         }
@@ -137,8 +99,8 @@ open class TappingStepFragment: StepFragment() {
     }
 
     override fun onDestroyView() {
-        textToSpeech.shutdown()
-        timer.stopTimer()
+        tappingViewModel.textToSpeech.shutdown()
+        tappingViewModel.timer.stopTimer()
         super.onDestroyView()
         _binding = null
     }

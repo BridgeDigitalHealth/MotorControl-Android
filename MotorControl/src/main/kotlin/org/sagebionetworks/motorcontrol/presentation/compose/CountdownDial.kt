@@ -56,7 +56,7 @@ import kotlin.math.ceil
 
 @Composable
 fun CountdownDial(
-    duration: Double,
+    countdownDuration: Double,
     countdown: MutableState<Long>,
     dialContent: MutableState<Int>? = null,
     dialSubText: String? = null,
@@ -64,7 +64,7 @@ fun CountdownDial(
 ) {
     Box(contentAlignment = Alignment.Center) {
         CircularProgressIndicator(
-            progress = 1 - (countdown.value / (duration * 1000)).toFloat(),
+            progress = 1 - (countdown.value / (countdownDuration * 1000)).toFloat(),
             color = Color.Black,
             strokeWidth = 7.dp,
             modifier = Modifier

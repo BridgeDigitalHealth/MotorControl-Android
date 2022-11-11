@@ -93,7 +93,7 @@ internal fun TremorStepUi(
                 StepBodyTextUi(instruction, null, modifier)
             }
             CountdownDial(
-                duration = duration,
+                countdownDuration = duration,
                 countdown = countdown,
                 dialSubText = stringResource(id = R.string.seconds))
         }
