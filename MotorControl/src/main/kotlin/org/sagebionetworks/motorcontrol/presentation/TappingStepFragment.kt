@@ -57,7 +57,7 @@ open class TappingStepFragment: StepFragment() {
 
     private lateinit var step: TappingStepObject
 
-    private lateinit var tappingViewModel: TappingState
+    private lateinit var tappingState: TappingState
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -71,7 +71,7 @@ open class TappingStepFragment: StepFragment() {
         val tint = step.imageInfo?.tint ?: false
 
         binding.questionContent.setContent {
-            tappingViewModel = TappingState(
+            tappingState = TappingState(
                 stepPath = "Tapping/${stepViewModel.nodeState.parent?.node?.hand()?.name?.lowercase()}",
                 hand = stepViewModel.nodeState.parent?.node?.hand(),
                 nodeStateResults = stepViewModel.nodeState.currentResult as TappingResult,
@@ -80,10 +80,12 @@ open class TappingStepFragment: StepFragment() {
                 spokenInstructions = step.spokenInstructions ?: mapOf(),
                 goForward = assessmentViewModel::goForward
             )
+            tappingState.start()
+
             SageSurveyTheme {
                 TappingStepUi(
                     assessmentViewModel = assessmentViewModel,
-                    tappingViewModel = tappingViewModel,
+                    tappingState = tappingState,
                     image = drawable,
                     flippedImage = stepViewModel.nodeState.parent?.node?.hand()
                             == HandSelection.RIGHT,
@@ -99,8 +101,8 @@ open class TappingStepFragment: StepFragment() {
     }
 
     override fun onDestroyView() {
-        tappingViewModel.textToSpeech.shutdown()
-        tappingViewModel.timer.stopTimer()
+        tappingState.timer.stopTimer()
+        tappingState.textToSpeech.shutdown()
         super.onDestroyView()
         _binding = null
     }

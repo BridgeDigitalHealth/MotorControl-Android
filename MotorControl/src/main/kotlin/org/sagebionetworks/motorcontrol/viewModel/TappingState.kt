@@ -1,3 +1,36 @@
+//
+//  TappingState.kt
+//
+//
+//  Copyright © 2022 Sage Bionetworks. All rights reserved.
+//
+// Redistribution and use in source and binary forms, with or without modification,
+// are permitted provided that the following conditions are met:
+//
+// 1.  Redistributions of source code must retain the above copyright notice, this
+// list of conditions and the following disclaimer.
+//
+// 2.  Redistributions in binary form must reproduce the above copyright notice,
+// this list of conditions and the following disclaimer in the documentation and/or
+// other materials provided with the distribution.
+//
+// 3.  Neither the name of the copyright holder(s) nor the names of any contributors
+// may be used to endorse or promote products derived from this software without
+// specific prior written permission. No license is granted to the trademarks of
+// the copyright holders even if such marks are included in this software.
+//
+// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+// AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+// IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+// ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE
+// FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+// DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+// SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+// CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+// OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+// OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+//
+
 package org.sagebionetworks.motorcontrol.viewModel
 
 import android.content.Context
@@ -19,21 +52,21 @@ import org.sagebionetworks.motorcontrol.serialization.TappingSampleObject
 import org.sagebionetworks.motorcontrol.utils.SpokenInstructionsConverter
 
 class TappingState(
-    val stepPath: String,
-    val hand: HandSelection?,
+    override val hand: HandSelection?,
+    override val duration: Double,
+    override val context: Context,
+    override val spokenInstructions: Map<SpokenInstructionTiming, String>,
+    override val goForward: () -> Unit,
     val nodeStateResults: TappingResult,
-    val duration: Double,
-    val context: Context,
-    val spokenInstructions: Map<SpokenInstructionTiming, String>,
-    val goForward: () -> Unit
-) {
+    val stepPath: String,
+) : ActiveStep{
+    override val countdown: MutableState<Long> = mutableStateOf(duration.toLong() * 1000)
     private var startDate: Instant = Clock.System.now()
     private val samples: MutableList<TappingSampleObject> = ArrayList()
     private var previousButton: TappingButtonIdentifier = TappingButtonIdentifier.None
     private var startTime: Long = uptimeMillis()
     val tapCount: MutableState<Int> = mutableStateOf(0)
     val initialTapOccurred: MutableState<Boolean> = mutableStateOf(false)
-    val countdown: MutableState<Long> = mutableStateOf(duration.toLong() * 1000)
 
     private val convertedSpokenInstruction = SpokenInstructionsConverter.convertSpokenInstructions(
         spokenInstructions,
@@ -41,18 +74,18 @@ class TappingState(
         hand?.name ?: ""
     )
 
-    lateinit var textToSpeech: TextToSpeech
+    override lateinit var textToSpeech: TextToSpeech
     init {
         textToSpeech = TextToSpeech(context) {
             textToSpeech.speak(convertedSpokenInstruction[0], TextToSpeech.QUEUE_ADD, null, "")
         }
     }
 
-    val timer = StepTimer(
+    override val timer = StepTimer(
         countdown = countdown,
         stepDuration = duration,
         finished = {
-            setResults()
+            finished()
             val speechListener = object : UtteranceProgressListener() {
                 override fun onStart(utteranceId: String?) {}
                 override fun onDone(utteranceId: String?) {
@@ -100,7 +133,11 @@ class TappingState(
         previousButton = currentButton
     }
 
-    private fun setResults() {
+    override fun start() {
+        timer.startTimer()
+    }
+
+    override fun finished() {
         nodeStateResults.startDateTime = startDate
         nodeStateResults.endDateTime = Clock.System.now()
         nodeStateResults.hand = hand?.name ?: ""

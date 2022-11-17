@@ -64,7 +64,7 @@ import org.sagebionetworks.motorcontrol.viewModel.TappingState
 @Composable
 internal fun TappingStepUi(
     assessmentViewModel: AssessmentViewModel?,
-    tappingViewModel: TappingState,
+    tappingState: TappingState,
     image: Drawable?,
     flippedImage: Boolean,
     imageTintColor: Color?,
@@ -76,7 +76,7 @@ internal fun TappingStepUi(
     } else {
         Modifier.fillMaxSize()
     }
-    Box(modifier = screenModifierWithTapGesture(tappingViewModel.countdown, tappingViewModel)) {
+    Box(modifier = screenModifierWithTapGesture(tappingState)) {
         if (image != null) {
             SingleImageUi(
                 image = image,
@@ -88,26 +88,26 @@ internal fun TappingStepUi(
         Column {
             MotorControlPauseUi(
                 assessmentViewModel = assessmentViewModel,
-                onPause = { tappingViewModel.timer.stopTimer() },
-                onUnpause = { tappingViewModel.timer.startTimer(restartsOnPause = false) }
+                onPause = { tappingState.timer.stopTimer() },
+                onUnpause = { tappingState.timer.startTimer(restartsOnPause = false) }
             )
             Spacer(modifier = Modifier.weight(1F))
             CountdownDial(
-                countdownDuration = tappingViewModel.duration,
-                countdown = tappingViewModel.countdown,
-                dialContent = tappingViewModel.tapCount,
+                countdownDuration = tappingState.duration,
+                countdown = tappingState.countdown,
+                dialContent = tappingState.tapCount,
                 dialSubText = stringResource(id = R.string.tap_count)
             )
             Spacer(modifier = Modifier.weight(1F))
             Row {
                 Spacer(modifier = Modifier.weight(1F))
                 TapButton(
-                    countdown = tappingViewModel.countdown,
+                    countdown = tappingState.countdown,
                     onFirstTap = {
-                        tappingViewModel.onFirstTap()
+                        tappingState.onFirstTap()
                     },
                     onTap = { location, tapDurationInMillis ->
-                        tappingViewModel.addTappingSample(
+                        tappingState.addTappingSample(
                             currentButton = TappingButtonIdentifier.Left,
                             location = location,
                             tapDurationInMillis = tapDurationInMillis
@@ -116,12 +116,12 @@ internal fun TappingStepUi(
                 )
                 Spacer(modifier = Modifier.weight(1F))
                 TapButton(
-                    countdown = tappingViewModel.countdown,
+                    countdown = tappingState.countdown,
                     onFirstTap = {
-                        tappingViewModel.onFirstTap()
+                        tappingState.onFirstTap()
                     },
                     onTap = { location, tapDurationInMillis ->
-                        tappingViewModel.addTappingSample(
+                        tappingState.addTappingSample(
                             currentButton = TappingButtonIdentifier.Right,
                             location = location,
                             tapDurationInMillis = tapDurationInMillis
@@ -158,7 +158,6 @@ private fun TapButton(
 
 @Composable
 fun screenModifierWithTapGesture(
-    countdown: MutableState<Long>,
     tappingViewModel: TappingState
 ): Modifier {
     return Modifier
@@ -168,7 +167,7 @@ fun screenModifierWithTapGesture(
             detectTapGestures(
                 onPress = { location ->
                     // Ignores tap on screen if countdown is done
-                    if (countdown.value <= 0) {
+                    if (tappingViewModel.countdown.value <= 0) {
                         return@detectTapGestures
                     }
                     lateinit var startOfTapDuration: Instant
