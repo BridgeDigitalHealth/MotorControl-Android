@@ -118,7 +118,7 @@ class TremorState(
         spokenInstructions = convertedSpokenInstruction
     )
 
-    override fun start() {
+    fun start() {
         recorderRunner.start()
         timer.startTimer()
     }

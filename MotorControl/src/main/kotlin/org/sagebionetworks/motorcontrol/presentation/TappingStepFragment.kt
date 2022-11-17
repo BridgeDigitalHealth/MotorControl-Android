@@ -80,7 +80,6 @@ open class TappingStepFragment: StepFragment() {
                 spokenInstructions = step.spokenInstructions ?: mapOf(),
                 goForward = assessmentViewModel::goForward
             )
-            tappingState.start()
 
             SageSurveyTheme {
                 TappingStepUi(

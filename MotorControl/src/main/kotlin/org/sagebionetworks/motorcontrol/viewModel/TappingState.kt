@@ -133,10 +133,6 @@ class TappingState(
         previousButton = currentButton
     }
 
-    override fun start() {
-        timer.startTimer()
-    }
-
     override fun finished() {
         nodeStateResults.startDateTime = startDate
         nodeStateResults.endDateTime = Clock.System.now()

@@ -50,6 +50,5 @@ interface ActiveStep {
     var textToSpeech: TextToSpeech
     val timer: StepTimer
 
-    fun start()
     fun finished()
 }
