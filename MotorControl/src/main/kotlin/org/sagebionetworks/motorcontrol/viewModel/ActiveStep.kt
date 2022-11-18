@@ -69,7 +69,7 @@ interface ActiveStep {
     }
 
     fun cancel() {
-        timer.stopTimer()
+        timer.clear()
         try {
             recorderRunner.cancel()
         } catch (e: Exception) {

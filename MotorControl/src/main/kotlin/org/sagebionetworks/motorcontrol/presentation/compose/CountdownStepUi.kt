@@ -57,7 +57,7 @@ internal fun CountdownStepUi(
     Column(modifier = Modifier.background(BackgroundGray)) {
         MotorControlPauseUi(
             assessmentViewModel = assessmentViewModel,
-            onPause = { timer?.stopTimer() },
+            onPause = { timer?.clear() },
             onUnpause = {
                 countdown.value = (duration * 1000).toLong() // Resets countdown to initial value
                 timer?.startTimer()

@@ -69,9 +69,13 @@ class StepTimer(
         timer?.start()
     }
 
-    fun stopTimer() {
+    fun clear() {
         timer?.cancel()
         instructionsSpoken.clear()
+    }
+
+    fun stopTimer() {
+        timer?.cancel()
     }
 
     fun speakAt(second: Int) {
