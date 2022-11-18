@@ -80,6 +80,7 @@ internal fun TremorStepUi(
         Column {
             MotorControlPauseUi(
                 assessmentViewModel = assessmentViewModel,
+                stepCompleted = tremorState.countdown.value == 0L,
                 onPause = {
                     tremorState.cancel()
                     tremorState.textToSpeech.stop()

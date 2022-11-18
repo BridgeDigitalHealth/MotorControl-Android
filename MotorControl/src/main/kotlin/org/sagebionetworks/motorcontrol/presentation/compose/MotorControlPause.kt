@@ -10,6 +10,7 @@ import org.sagebionetworks.assessmentmodel.presentation.compose.PauseTopBar
 @Composable
 fun MotorControlPauseUi(
     assessmentViewModel: AssessmentViewModel?,
+    stepCompleted: Boolean? = null,
     onPause: () -> Unit = {},
     onUnpause: () -> Unit = {}
 ) {
@@ -25,6 +26,9 @@ fun MotorControlPauseUi(
     }
     PauseTopBar(
         onPauseClicked = {
+            if (stepCompleted == true) {
+                return@PauseTopBar
+            }
             openDialog.value = true
             onPause()
         },
