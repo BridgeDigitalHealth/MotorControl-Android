@@ -34,21 +34,81 @@
 package org.sagebionetworks.motorcontrol.viewModel
 
 import android.content.Context
+import android.os.Handler
+import android.os.Looper
 import android.speech.tts.TextToSpeech
+import android.speech.tts.UtteranceProgressListener
 import androidx.compose.runtime.MutableState
-import org.sagebionetworks.assessmentmodel.SpokenInstructionTiming
+import co.touchlab.kermit.Logger
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import org.sagebionetworks.motorcontrol.navigation.HandSelection
 import org.sagebionetworks.motorcontrol.presentation.compose.StepTimer
+import org.sagebionetworks.motorcontrol.recorder.MotionRecorderRunner
+import org.sagebionetworks.motorcontrol.utils.MotorControlVibrator
 
 interface ActiveStep {
+    val identifier: String
     val hand: HandSelection?
     val duration: Double
     val context: Context
-    val spokenInstructions: Map<SpokenInstructionTiming, String>
+    val spokenInstructions: Map<Int, String>
     val goForward: () -> Unit
     val countdown: MutableState<Long>
     var textToSpeech: TextToSpeech
+    val restartsOnPause: Boolean
     val timer: StepTimer
+    val recorderRunner: MotionRecorderRunner
+    val vibrator: MotorControlVibrator?
 
-    fun finished()
+    fun start() {
+        vibrator?.vibrate(500)
+        recorderRunner.start()
+        timer.startTimer(restartsOnPause = restartsOnPause)
+    }
+
+    fun cancel() {
+        timer.stopTimer()
+        try {
+            recorderRunner.cancel()
+        } catch (e: Exception) {
+            Logger.w("Error cancelling recorder", e)
+        }
+    }
+
+    fun stopRecorder() {
+        vibrator?.vibrate(500)
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                println(recorderRunner.stop())
+                //TODO: arabara 11/17/22 Remove print and do something with the FileResult
+            } catch (e: Exception) {
+                Logger.w("Error stopping recorder", e)
+            }
+        }
+    }
+
+    fun speakAtCompleted() {
+        val speechListener = object : UtteranceProgressListener() {
+            override fun onStart(utteranceId: String?) {}
+            override fun onDone(utteranceId: String?) {
+                // assessmentViewModel.goForward() must be run on main thread
+                Handler(Looper.getMainLooper()).post(
+                    kotlinx.coroutines.Runnable {
+                        textToSpeech.shutdown()
+                        goForward()
+                    }
+                )
+            }
+            override fun onError(utteranceId: String?) {}
+        }
+        textToSpeech.setOnUtteranceProgressListener(speechListener)
+        textToSpeech.speak(
+            spokenInstructions[duration.toInt()],
+            TextToSpeech.QUEUE_ADD,
+            null,
+            ""
+        )
+    }
 }

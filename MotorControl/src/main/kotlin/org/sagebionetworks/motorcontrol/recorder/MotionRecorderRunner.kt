@@ -97,7 +97,7 @@ class MotionRecorderRunner(
         Logger.i("Start finished")
     }
 
-    fun stop(): Deferred<ResultData?> {
+    suspend fun stop(): ResultData? {
         Logger.i("Stop called")
 
         val recorderId = recorder.configuration.identifier
@@ -107,7 +107,7 @@ class MotionRecorderRunner(
         } catch (e: Exception) {
             Logger.w("Error stopping recorder: $recorderId", e)
         }
-        return deferredRecorderResult
+        return deferredRecorderResult.await()
     }
 
     fun cancel() {

@@ -74,15 +74,19 @@ internal fun TremorStepUi(
                 surveyTint = ImageBackgroundColor,
                 imageModifier = imageModifier,
                 imageTintColor = imageTintColor,
-                alpha = 0.5F)
+                alpha = 0.5F
+            )
         }
         Column {
             MotorControlPauseUi(
                 assessmentViewModel = assessmentViewModel,
-                onPause = { tremorState.timer.stopTimer() },
+                onPause = {
+                    tremorState.cancel()
+                    tremorState.textToSpeech.stop()
+                },
                 onUnpause = {
                     tremorState.countdown.value = (tremorState.duration * 1000).toLong() // Resets countdown to initial value
-                    tremorState.timer.startTimer()
+                    tremorState.start()
                 }
             )
             Box(Modifier.padding(vertical = 10.dp)) {
@@ -91,7 +95,8 @@ internal fun TremorStepUi(
             CountdownDial(
                 countdownDuration = tremorState.duration,
                 countdown = tremorState.countdown,
-                dialSubText = stringResource(id = R.string.seconds))
+                dialSubText = stringResource(id = R.string.seconds)
+            )
         }
     }
 }

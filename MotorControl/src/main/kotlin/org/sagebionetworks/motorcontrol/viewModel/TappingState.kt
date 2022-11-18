@@ -34,33 +34,47 @@
 package org.sagebionetworks.motorcontrol.viewModel
 
 import android.content.Context
-import android.os.Handler
-import android.os.Looper
 import android.os.SystemClock.uptimeMillis
 import android.speech.tts.TextToSpeech
-import android.speech.tts.UtteranceProgressListener
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
-import org.sagebionetworks.assessmentmodel.SpokenInstructionTiming
+import org.sagebionetworks.assessmentmodel.passivedata.recorder.motion.MotionRecorderConfiguration
+import org.sagebionetworks.assessmentmodel.passivedata.recorder.motion.MotionRecorderType
 import org.sagebionetworks.motorcontrol.navigation.HandSelection
 import org.sagebionetworks.motorcontrol.presentation.compose.StepTimer
+import org.sagebionetworks.motorcontrol.recorder.MotionRecorderRunner
 import org.sagebionetworks.motorcontrol.resultObjects.TappingButtonIdentifier
 import org.sagebionetworks.motorcontrol.resultObjects.TappingResult
 import org.sagebionetworks.motorcontrol.serialization.TappingSampleObject
-import org.sagebionetworks.motorcontrol.utils.SpokenInstructionsConverter
+import org.sagebionetworks.motorcontrol.utils.MotorControlVibrator
 
 class TappingState(
+    override val identifier: String,
     override val hand: HandSelection?,
     override val duration: Double,
     override val context: Context,
-    override val spokenInstructions: Map<SpokenInstructionTiming, String>,
+    override val spokenInstructions: MutableMap<Int, String>,
+    override val restartsOnPause: Boolean,
     override val goForward: () -> Unit,
+    override val vibrator: MotorControlVibrator?,
     val nodeStateResults: TappingResult,
     val stepPath: String,
 ) : ActiveStep{
     override val countdown: MutableState<Long> = mutableStateOf(duration.toLong() * 1000)
+    override lateinit var textToSpeech: TextToSpeech
+    override val recorderRunner: MotionRecorderRunner = MotionRecorderRunner(
+        context,
+        MotionRecorderConfiguration(
+            identifier = "${identifier}_${hand?.name?.lowercase()}",
+            startStepIdentifier = identifier,
+            stopStepIdentifier = identifier,
+            requiresBackgroundAudio = true,
+            recorderTypes = MotionRecorderType.all,
+            frequency = Double.MAX_VALUE // Keep recorder running
+        )
+    )
     private var startDate: Instant = Clock.System.now()
     private val samples: MutableList<TappingSampleObject> = ArrayList()
     private var previousButton: TappingButtonIdentifier = TappingButtonIdentifier.None
@@ -68,16 +82,9 @@ class TappingState(
     val tapCount: MutableState<Int> = mutableStateOf(0)
     val initialTapOccurred: MutableState<Boolean> = mutableStateOf(false)
 
-    private val convertedSpokenInstruction = SpokenInstructionsConverter.convertSpokenInstructions(
-        spokenInstructions,
-        duration.toInt(),
-        hand?.name ?: ""
-    )
-
-    override lateinit var textToSpeech: TextToSpeech
     init {
         textToSpeech = TextToSpeech(context) {
-            textToSpeech.speak(convertedSpokenInstruction[0], TextToSpeech.QUEUE_ADD, null, "")
+            textToSpeech.speak(spokenInstructions[0], TextToSpeech.QUEUE_ADD, null, "")
         }
     }
 
@@ -85,30 +92,22 @@ class TappingState(
         countdown = countdown,
         stepDuration = duration,
         finished = {
-            finished()
-            val speechListener = object : UtteranceProgressListener() {
-                override fun onStart(utteranceId: String?) {}
-                override fun onDone(utteranceId: String?) {
-                    // assessmentViewModel.goForward() must be run on main thread
-                    Handler(Looper.getMainLooper()).post(
-                        kotlinx.coroutines.Runnable {
-                            goForward()
-                        }
-                    )
-                }
-                override fun onError(utteranceId: String?) {}
-            }
-            textToSpeech.setOnUtteranceProgressListener(speechListener)
-            textToSpeech.speak(
-                convertedSpokenInstruction[duration.toInt()],
-                TextToSpeech.QUEUE_ADD,
-                null,
-                ""
-            )
+            stopRecorder()
+            speakAtCompleted()
         },
         textToSpeech = textToSpeech,
-        spokenInstructions = convertedSpokenInstruction
+        spokenInstructions = spokenInstructions
     )
+
+    override fun stopRecorder() {
+        super.stopRecorder()
+
+        nodeStateResults.startDateTime = startDate
+        nodeStateResults.endDateTime = Clock.System.now()
+        nodeStateResults.hand = hand?.name ?: ""
+        nodeStateResults.samples = samples
+        nodeStateResults.tapCount = tapCount.value
+    }
 
     fun addTappingSample(currentButton: TappingButtonIdentifier,
                          location: List<Float>,
@@ -133,17 +132,9 @@ class TappingState(
         previousButton = currentButton
     }
 
-    override fun finished() {
-        nodeStateResults.startDateTime = startDate
-        nodeStateResults.endDateTime = Clock.System.now()
-        nodeStateResults.hand = hand?.name ?: ""
-        nodeStateResults.samples = samples
-        nodeStateResults.tapCount = tapCount.value
-    }
-
     fun onFirstTap() {
         if (!initialTapOccurred.value) {
-            timer.startTimer()
+            start()
             initialTapOccurred.value = true
             startTime = uptimeMillis()
         }

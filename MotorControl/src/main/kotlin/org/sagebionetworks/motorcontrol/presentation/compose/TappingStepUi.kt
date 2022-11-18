@@ -83,13 +83,14 @@ internal fun TappingStepUi(
                 surveyTint = ImageBackgroundColor,
                 imageModifier = imageModifier,
                 imageTintColor = imageTintColor,
-                alpha = 0.5F)
+                alpha = 0.5F
+            )
         }
         Column {
             MotorControlPauseUi(
                 assessmentViewModel = assessmentViewModel,
                 onPause = { tappingState.timer.stopTimer() },
-                onUnpause = { tappingState.timer.startTimer(restartsOnPause = false) }
+                onUnpause = { tappingState.timer.startTimer(restartsOnPause = false)}
             )
             Spacer(modifier = Modifier.weight(1F))
             CountdownDial(

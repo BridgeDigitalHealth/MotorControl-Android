@@ -45,8 +45,9 @@ import org.sagebionetworks.assessmentmodel.serialization.loadDrawable
 import org.sagebionetworks.motorcontrol.navigation.hand
 import org.sagebionetworks.motorcontrol.presentation.compose.TremorStepUi
 import org.sagebionetworks.motorcontrol.serialization.TremorStepObject
+import org.sagebionetworks.motorcontrol.utils.MotorControlVibrator
+import org.sagebionetworks.motorcontrol.utils.SpokenInstructionsConverter
 import org.sagebionetworks.motorcontrol.viewModel.TremorState
-
 
 open class TremorStepFragment: StepFragment() {
 
@@ -73,12 +74,18 @@ open class TremorStepFragment: StepFragment() {
 
         binding.questionContent.setContent {
             tremorState = TremorState(
+                identifier = step.identifier,
                 hand = stepViewModel.nodeState.parent?.node?.hand(),
                 context = requireContext(),
                 duration = step.duration,
+                restartsOnPause = true,
                 goForward = assessmentViewModel::goForward,
-                identifier = step.identifier,
-                spokenInstructions = step.spokenInstructions ?: mapOf(),
+                spokenInstructions = SpokenInstructionsConverter.convertSpokenInstructions(
+                    step.spokenInstructions,
+                    step.duration.toInt(),
+                    stepViewModel.nodeState.parent?.node?.hand()?.name ?: ""
+                ),
+                vibrator = MotorControlVibrator(requireContext()),
                 title = step.title ?: ""
             )
             tremorState.start()
@@ -100,8 +107,7 @@ open class TremorStepFragment: StepFragment() {
     }
 
     override fun onDestroyView() {
-        tremorState.timer.stopTimer()
-        tremorState.textToSpeech.shutdown()
+        tremorState.cancel()
         super.onDestroyView()
         _binding = null
     }
