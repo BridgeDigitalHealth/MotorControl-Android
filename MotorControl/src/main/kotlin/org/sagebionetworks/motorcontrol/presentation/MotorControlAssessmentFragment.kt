@@ -34,6 +34,8 @@
 package org.sagebionetworks.motorcontrol.presentation
 
 import android.content.pm.ActivityInfo
+import android.os.Bundle
+import android.view.View
 import androidx.fragment.app.Fragment
 import org.sagebionetworks.assessmentmodel.*
 import org.sagebionetworks.assessmentmodel.presentation.AssessmentFragment
@@ -41,11 +43,13 @@ import org.sagebionetworks.motorcontrol.serialization.TappingStepObject
 import org.sagebionetworks.motorcontrol.serialization.TremorStepObject
 
 class MotorControlAssessmentFragment: AssessmentFragment() {
-    override fun getFragmentForStep(step: Step): Fragment {
-
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
         // Prevent landscape mode for all steps in Motor Control Assessments
-        activity?.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+        requireActivity().requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+    }
 
+    override fun getFragmentForStep(step: Step): Fragment {
         return when (step) {
             is OverviewStep -> OverviewStepFragment()
             is InstructionStep -> InstructionStepFragment()

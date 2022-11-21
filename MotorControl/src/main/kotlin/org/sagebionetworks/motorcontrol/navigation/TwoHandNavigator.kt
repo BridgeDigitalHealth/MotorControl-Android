@@ -94,7 +94,7 @@ open class TwoHandNavigator(node: NodeContainer): Navigator {
 
     private fun currentHandSelection(branchResult: BranchNodeResult): HandSelection? {
         val answer = branchResult.pathHistoryResults
-            .find { it.identifier == handSelectionIdentifier } as? AnswerResult ?: return null
+            .findLast { it.identifier == handSelectionIdentifier } as? AnswerResult ?: return null
         val rawValue = answer.jsonValue.toString().replace("\"", "").uppercase()
         return try {
             HandSelection.valueOf(rawValue)
