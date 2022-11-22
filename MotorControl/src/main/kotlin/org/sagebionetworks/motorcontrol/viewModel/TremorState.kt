@@ -72,7 +72,7 @@ class TremorState(
     init {
         title = title.replace("%@", hand?.name ?: "")
         textToSpeech = TextToSpeech(context) {
-            textToSpeech.speak(spokenInstructions[0], android.speech.tts.TextToSpeech.QUEUE_ADD, null, "")
+            textToSpeech.speak(spokenInstructions[0], TextToSpeech.QUEUE_ADD, null, "")
         }
     }
 
