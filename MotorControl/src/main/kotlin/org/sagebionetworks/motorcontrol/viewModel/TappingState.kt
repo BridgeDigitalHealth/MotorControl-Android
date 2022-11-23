@@ -40,13 +40,11 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
-import org.sagebionetworks.assessmentmodel.passivedata.recorder.motion.MotionRecorderConfiguration
-import org.sagebionetworks.assessmentmodel.passivedata.recorder.motion.MotionRecorderType
 import org.sagebionetworks.motorcontrol.navigation.HandSelection
 import org.sagebionetworks.motorcontrol.presentation.compose.StepTimer
-import org.sagebionetworks.motorcontrol.recorder.MotionRecorderRunner
-import org.sagebionetworks.motorcontrol.resultObjects.TappingButtonIdentifier
-import org.sagebionetworks.motorcontrol.resultObjects.TappingResult
+import org.sagebionetworks.motorcontrol.recorder.RecorderRunner
+import org.sagebionetworks.motorcontrol.serialization.TappingButtonIdentifier
+import org.sagebionetworks.motorcontrol.serialization.TappingResultObject
 import org.sagebionetworks.motorcontrol.serialization.TappingSampleObject
 import org.sagebionetworks.motorcontrol.utils.MotorControlVibrator
 
@@ -59,22 +57,13 @@ class TappingState(
     override val restartsOnPause: Boolean,
     override val goForward: () -> Unit,
     override val vibrator: MotorControlVibrator?,
-    val nodeStateResults: TappingResult,
+    val nodeStateResults: TappingResultObject,
     val stepPath: String,
 ) : ActiveStep{
     override val countdown: MutableState<Long> = mutableStateOf(duration.toLong() * 1000)
     override lateinit var textToSpeech: TextToSpeech
-    override val recorderRunner: MotionRecorderRunner = MotionRecorderRunner(
-        context,
-        MotionRecorderConfiguration(
-            identifier = "${identifier}_${hand?.name?.lowercase()}",
-            startStepIdentifier = identifier,
-            stopStepIdentifier = identifier,
-            requiresBackgroundAudio = true,
-            recorderTypes = MotionRecorderType.all,
-            frequency = Double.MAX_VALUE // Keep recorder running
-        )
-    )
+    override lateinit var recorderRunnerFactory: RecorderRunner.RecorderRunnerFactory
+    override lateinit var recorderRunner: RecorderRunner
     private var startDate: Instant = Clock.System.now()
     private val samples: MutableList<TappingSampleObject> = ArrayList()
     private var previousButton: TappingButtonIdentifier = TappingButtonIdentifier.None
@@ -83,6 +72,7 @@ class TappingState(
     val initialTapOccurred: MutableState<Boolean> = mutableStateOf(false)
 
     init {
+        createMotionSensor()
         textToSpeech = TextToSpeech(context) {
             textToSpeech.speak(spokenInstructions[0], TextToSpeech.QUEUE_ADD, null, "")
         }

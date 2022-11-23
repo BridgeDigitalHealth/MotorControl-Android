@@ -43,9 +43,12 @@ import co.touchlab.kermit.Logger
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import org.sagebionetworks.assessmentmodel.passivedata.recorder.motion.MotionRecorderConfiguration
 import org.sagebionetworks.motorcontrol.navigation.HandSelection
 import org.sagebionetworks.motorcontrol.presentation.compose.StepTimer
-import org.sagebionetworks.motorcontrol.recorder.MotionRecorderRunner
+import org.sagebionetworks.motorcontrol.recorder.RecorderRunner
+import org.sagebionetworks.motorcontrol.recorder.RecorderScheduledAssessmentConfig
+import org.sagebionetworks.motorcontrol.serialization.BackgroundRecordersConfigurationElement
 import org.sagebionetworks.motorcontrol.utils.MotorControlVibrator
 
 interface ActiveStep {
@@ -59,8 +62,27 @@ interface ActiveStep {
     var textToSpeech: TextToSpeech
     val restartsOnPause: Boolean
     val timer: StepTimer
-    val recorderRunner: MotionRecorderRunner
+    var recorderRunnerFactory: RecorderRunner.RecorderRunnerFactory
+    var recorderRunner: RecorderRunner
     val vibrator: MotorControlVibrator?
+
+    fun createMotionSensor() {
+        recorderRunnerFactory = RecorderRunner.RecorderRunnerFactory(context, null)
+        recorderRunnerFactory.withConfig(
+            listOf(
+                RecorderScheduledAssessmentConfig(
+                    recorder = BackgroundRecordersConfigurationElement.Recorder(
+                        "${identifier}/${hand?.name?.lowercase()}",
+                        MotionRecorderConfiguration.TYPE
+                    ),
+                    disabledByAppForTaskIdentifiers = setOf(),
+                    enabledByStudyClientData = true,
+                    services = listOf()
+                )
+            )
+        )
+        recorderRunner = recorderRunnerFactory.create(identifier)
+    }
 
     fun start() {
         vibrator?.vibrate(500)
@@ -101,6 +123,7 @@ interface ActiveStep {
                     }
                 )
             }
+            @Deprecated("Deprecated in Java")
             override fun onError(utteranceId: String?) {}
         }
         textToSpeech.setOnUtteranceProgressListener(speechListener)

@@ -58,7 +58,7 @@ import org.sagebionetworks.assessmentmodel.presentation.AssessmentViewModel
 import org.sagebionetworks.assessmentmodel.presentation.ui.theme.*
 import org.sagebionetworks.motorcontrol.R
 import org.sagebionetworks.motorcontrol.presentation.theme.*
-import org.sagebionetworks.motorcontrol.resultObjects.TappingButtonIdentifier
+import org.sagebionetworks.motorcontrol.serialization.TappingButtonIdentifier
 import org.sagebionetworks.motorcontrol.viewModel.TappingState
 
 @Composable

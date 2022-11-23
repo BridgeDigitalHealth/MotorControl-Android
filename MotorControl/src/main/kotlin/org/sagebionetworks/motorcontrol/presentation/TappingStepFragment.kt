@@ -45,7 +45,7 @@ import org.sagebionetworks.assessmentmodel.serialization.loadDrawable
 import org.sagebionetworks.motorcontrol.navigation.HandSelection
 import org.sagebionetworks.motorcontrol.navigation.hand
 import org.sagebionetworks.motorcontrol.presentation.compose.TappingStepUi
-import org.sagebionetworks.motorcontrol.resultObjects.TappingResult
+import org.sagebionetworks.motorcontrol.serialization.TappingResultObject
 import org.sagebionetworks.motorcontrol.serialization.TappingStepObject
 import org.sagebionetworks.motorcontrol.utils.SpokenInstructionsConverter
 import org.sagebionetworks.motorcontrol.viewModel.TappingState
@@ -76,7 +76,7 @@ open class TappingStepFragment: StepFragment() {
                 identifier = step.identifier,
                 stepPath = "Tapping/${stepViewModel.nodeState.parent?.node?.hand()?.name?.lowercase()}",
                 hand = stepViewModel.nodeState.parent?.node?.hand(),
-                nodeStateResults = stepViewModel.nodeState.currentResult as TappingResult,
+                nodeStateResults = stepViewModel.nodeState.currentResult as TappingResultObject,
                 duration = step.duration,
                 context = requireContext(),
                 spokenInstructions = SpokenInstructionsConverter.convertSpokenInstructions(
