@@ -33,10 +33,7 @@
 
 package org.sagebionetworks.motorcontrol.recorder
 
-import android.Manifest
 import android.content.Context
-import android.content.pm.PackageManager
-import androidx.core.app.ActivityCompat
 import co.touchlab.kermit.Logger
 import io.ktor.client.HttpClient
 import kotlinx.coroutines.*
@@ -70,7 +67,9 @@ class RecorderRunner(
     val context: Context,
     private val httpClient: HttpClient?,
     configs: List<RecorderScheduledAssessmentConfig>,
-    private val taskIdentifier: String
+    private val taskIdentifier: String,
+    private val canCreateMotionRecorder: Boolean,
+    private val canCreateAudioRecorder: Boolean
 ) {
     private val scope = CoroutineScope(Dispatchers.IO)
     private val deferredRecorderResult: Deferred<List<ResultData>>
@@ -269,20 +268,22 @@ class RecorderRunner(
                 }
             }
             MotionRecorderConfiguration.TYPE -> {
-                with(recorderConfig) {
-                    MotionRecorderConfiguration(
-                        identifier = identifier,
-                        requiresBackgroundAudio = false,
-                        shouldDeletePrevious = false
-                    )
+                // Check if user has given permission to use motion sensor
+                if (canCreateMotionRecorder) {
+                    with(recorderConfig) {
+                        MotionRecorderConfiguration(
+                            identifier = identifier,
+                            requiresBackgroundAudio = false,
+                            shouldDeletePrevious = false
+                        )
+                    }
+                } else {
+                    return null
                 }
             }
             AudioRecorderConfiguration.TYPE -> {
                 //Check if we have permission to record audio
-                if (ActivityCompat.checkSelfPermission(
-                        context,
-                        Manifest.permission.RECORD_AUDIO
-                    ) == PackageManager.PERMISSION_GRANTED) {
+                if (canCreateAudioRecorder) {
                     with(recorderConfig) {
                         AudioRecorderConfiguration(
                             identifier = identifier
@@ -301,7 +302,9 @@ class RecorderRunner(
 
     class RecorderRunnerFactory(
         val context: Context,
-        private val httpClient: HttpClient?
+        private val httpClient: HttpClient?,
+        private val canCreateMotionRecorder: Boolean = true,
+        private val canCreateAudioRecorder: Boolean = true
     ) {
         private lateinit var configs: List<RecorderScheduledAssessmentConfig>
         fun withConfig(configs: List<RecorderScheduledAssessmentConfig>) {
@@ -311,7 +314,14 @@ class RecorderRunner(
         fun create(
             taskIdentifier: String
         ): RecorderRunner {
-            return RecorderRunner(context, httpClient, configs, taskIdentifier)
+            return RecorderRunner(
+                context,
+                httpClient,
+                configs,
+                taskIdentifier,
+                canCreateMotionRecorder,
+                canCreateAudioRecorder
+            )
         }
     }
 }
