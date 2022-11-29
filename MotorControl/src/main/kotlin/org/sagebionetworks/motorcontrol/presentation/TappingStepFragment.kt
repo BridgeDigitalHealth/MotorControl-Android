@@ -86,6 +86,7 @@ open class TappingStepFragment: StepFragment() {
                 ),
                 restartsOnPause = false,
                 vibrator = null,
+                inputResult = stepViewModel.nodeState.parent?.currentResult?.inputResults,
                 goForward = assessmentViewModel::goForward
             )
 

@@ -40,6 +40,7 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
+import org.sagebionetworks.assessmentmodel.Result
 import org.sagebionetworks.motorcontrol.navigation.HandSelection
 import org.sagebionetworks.motorcontrol.presentation.compose.StepTimer
 import org.sagebionetworks.motorcontrol.recorder.RecorderRunner
@@ -57,6 +58,7 @@ class TappingState(
     override val restartsOnPause: Boolean,
     override val goForward: () -> Unit,
     override val vibrator: MotorControlVibrator?,
+    override val inputResult: MutableSet<Result>?,
     val nodeStateResults: TappingResultObject,
     val stepPath: String,
 ) : ActiveStep{
@@ -91,10 +93,9 @@ class TappingState(
 
     override fun stopRecorder() {
         super.stopRecorder()
-
         nodeStateResults.startDateTime = startDate
         nodeStateResults.endDateTime = Clock.System.now()
-        nodeStateResults.hand = hand?.name ?: ""
+        nodeStateResults.hand = hand?.name?.lowercase() ?: ""
         nodeStateResults.samples = samples
         nodeStateResults.tapCount = tapCount.value
     }

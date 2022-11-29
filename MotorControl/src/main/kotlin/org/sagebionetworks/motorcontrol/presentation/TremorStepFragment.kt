@@ -86,6 +86,7 @@ open class TremorStepFragment: StepFragment() {
                     stepViewModel.nodeState.parent?.node?.hand()?.name ?: ""
                 ),
                 vibrator = MotorControlVibrator(requireContext()),
+                inputResult = stepViewModel.nodeState.parent?.currentResult?.inputResults,
                 title = step.title ?: ""
             )
             tremorState.start()

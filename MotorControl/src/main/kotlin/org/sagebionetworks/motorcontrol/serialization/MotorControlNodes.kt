@@ -37,6 +37,8 @@ import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 import kotlinx.serialization.modules.SerializersModule
 import kotlinx.serialization.modules.polymorphic
 import kotlinx.serialization.modules.subclass
@@ -140,9 +142,17 @@ data class TappingResultObject(
     var hand: String? = null,
     var samples: List<TappingSampleObject> = mutableListOf(),
     var tapCount: Int = 0
-    ) : Result {
+    ) : JsonFileArchivableResult {
     override fun copyResult(identifier: String): TappingResultObject {
         return this.copy(samples = this.samples.map { it.copy() })
+    }
+
+    override fun getJsonArchivableFile(stepPath: String): JsonArchivableFile {
+        return JsonArchivableFile(
+            filename = "$identifier.json",
+            json = Json.encodeToString(this),
+            jsonSchema = null
+        )
     }
 }
 
