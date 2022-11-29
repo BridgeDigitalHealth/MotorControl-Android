@@ -41,7 +41,7 @@ import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.modules.plus
-import org.sagebionetworks.assessmentmodel.passivedata.ResultData
+import org.sagebionetworks.assessmentmodel.Result
 import org.sagebionetworks.assessmentmodel.passivedata.asyncaction.AsyncActionConfiguration
 import org.sagebionetworks.assessmentmodel.passivedata.recorder.Recorder
 import org.sagebionetworks.assessmentmodel.passivedata.recorder.audio.AudioRecorder
@@ -72,8 +72,8 @@ class RecorderRunner(
     private val canCreateAudioRecorder: Boolean
 ) {
     private val scope = CoroutineScope(Dispatchers.IO)
-    private val deferredRecorderResult: Deferred<List<ResultData>>
-    private val recorders: List<Recorder<ResultData>>
+    private val deferredRecorderResult: Deferred<List<Result>>
+    private val recorders: List<Recorder<Result>>
 
     init {
         this.recorders = configs
@@ -153,7 +153,7 @@ class RecorderRunner(
         Logger.i("Start finished")
     }
 
-    fun stop(): Deferred<List<ResultData>> {
+    fun stop(): Deferred<List<Result>> {
         Logger.i("Stop called")
 
         recorders.forEach {
@@ -182,7 +182,7 @@ class RecorderRunner(
     }
 
     @OptIn(ExperimentalSerializationApi::class, ExperimentalCoroutinesApi::class)
-    internal fun recorderFactory(recorderScheduledAssessmentConfig: RecorderScheduledAssessmentConfig): Recorder<ResultData>? {
+    internal fun recorderFactory(recorderScheduledAssessmentConfig: RecorderScheduledAssessmentConfig): Recorder<Result>? {
         val recorderConfig = recorderConfigFactory(recorderScheduledAssessmentConfig.recorder)
             ?: return null
 

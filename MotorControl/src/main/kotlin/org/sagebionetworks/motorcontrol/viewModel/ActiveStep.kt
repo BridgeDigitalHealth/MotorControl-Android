@@ -43,6 +43,7 @@ import co.touchlab.kermit.Logger
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import org.sagebionetworks.assessmentmodel.FileResult
 import org.sagebionetworks.assessmentmodel.passivedata.recorder.motion.MotionRecorderConfiguration
 import org.sagebionetworks.motorcontrol.navigation.HandSelection
 import org.sagebionetworks.motorcontrol.presentation.compose.StepTimer
@@ -103,7 +104,9 @@ interface ActiveStep {
         vibrator?.vibrate(500)
         CoroutineScope(Dispatchers.IO).launch {
             try {
-                println(recorderRunner.stop())
+                for (result in recorderRunner.stop().await()) {
+                    println(result)
+                }
                 //TODO: arabara 11/17/22 Remove print and do something with the FileResult
             } catch (e: Exception) {
                 Logger.w("Error stopping recorder", e)

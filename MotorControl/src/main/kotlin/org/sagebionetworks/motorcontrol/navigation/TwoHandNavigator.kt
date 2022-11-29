@@ -36,7 +36,7 @@ package org.sagebionetworks.motorcontrol.navigation
 import org.sagebionetworks.assessmentmodel.*
 import org.sagebionetworks.assessmentmodel.navigation.NavigationPoint
 import org.sagebionetworks.assessmentmodel.navigation.Navigator
-import org.sagebionetworks.assessmentmodel.navigation.NavigationPoint.Direction
+import org.sagebionetworks.assessmentmodel.navigation.Direction
 import org.sagebionetworks.assessmentmodel.navigation.Progress
 
 open class TwoHandNavigator(node: NodeContainer): Navigator {

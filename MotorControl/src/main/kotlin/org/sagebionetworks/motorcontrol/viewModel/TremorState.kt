@@ -37,6 +37,7 @@ import android.content.Context
 import android.speech.tts.TextToSpeech
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
+import org.sagebionetworks.assessmentmodel.FileResult
 import org.sagebionetworks.motorcontrol.navigation.HandSelection
 import org.sagebionetworks.motorcontrol.presentation.compose.StepTimer
 import org.sagebionetworks.motorcontrol.recorder.RecorderRunner
