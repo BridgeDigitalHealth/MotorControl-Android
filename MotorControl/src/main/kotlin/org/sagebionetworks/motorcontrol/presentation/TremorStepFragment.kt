@@ -73,18 +73,19 @@ open class TremorStepFragment: StepFragment() {
         val tint = step.imageInfo?.tint ?: false
 
         binding.questionContent.setContent {
+            val hand = stepViewModel.nodeState.parent?.node?.hand()
             tremorState = TremorState(
                 identifier = step.identifier,
-                hand = stepViewModel.nodeState.parent?.node?.hand(),
-                context = requireContext(),
+                hand = hand,
                 duration = step.duration,
-                restartsOnPause = true,
-                goForward = assessmentViewModel::goForward,
+                context = requireContext(),
                 spokenInstructions = SpokenInstructionsConverter.convertSpokenInstructions(
                     step.spokenInstructions,
                     step.duration.toInt(),
-                    stepViewModel.nodeState.parent?.node?.hand()?.name ?: ""
+                    hand?.name ?: ""
                 ),
+                restartsOnPause = true,
+                goForward = assessmentViewModel::goForward,
                 vibrator = MotorControlVibrator(requireContext()),
                 inputResult = stepViewModel.nodeState.parent?.currentResult?.inputResults,
                 title = step.title ?: ""

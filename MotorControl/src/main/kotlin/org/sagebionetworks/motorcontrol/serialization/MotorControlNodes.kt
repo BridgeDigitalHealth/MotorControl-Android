@@ -149,9 +149,9 @@ data class TappingResultObject(
 
     override fun getJsonArchivableFile(stepPath: String): JsonArchivableFile {
         return JsonArchivableFile(
-            filename = "$identifier.json",
+            filename = "${hand}_$identifier",
             json = Json.encodeToString(this),
-            jsonSchema = null
+            jsonSchema = "https://sage-bionetworks.github.io/mobile-client-json/schemas/v2/MotionRecord.json"
         )
     }
 }
