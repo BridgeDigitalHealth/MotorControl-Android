@@ -74,7 +74,7 @@ interface ActiveStep {
             listOf(
                 RecorderScheduledAssessmentConfig(
                     recorder = BackgroundRecordersConfigurationElement.Recorder(
-                        "${identifier}/${hand?.name?.lowercase()}",
+                        "$identifier",
                         MotionRecorderConfiguration.TYPE
                     ),
                     disabledByAppForTaskIdentifiers = setOf(),
