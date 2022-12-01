@@ -86,7 +86,7 @@ open class CountdownStepFragment: StepFragment() {
     }
 
     override fun onDestroyView() {
-        timer?.stopTimer()
+        timer?.clear()
         super.onDestroyView()
         _binding = null
     }

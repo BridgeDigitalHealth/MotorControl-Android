@@ -37,31 +37,27 @@ import android.graphics.drawable.Drawable
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import org.sagebionetworks.motorcontrol.R
 import org.sagebionetworks.assessmentmodel.presentation.AssessmentViewModel
 import org.sagebionetworks.assessmentmodel.presentation.ui.theme.*
+import org.sagebionetworks.motorcontrol.navigation.HandSelection
 import org.sagebionetworks.motorcontrol.presentation.theme.ImageBackgroundColor
+import org.sagebionetworks.motorcontrol.viewModel.TremorState
 
 @Composable
 internal fun TremorStepUi(
     modifier: Modifier = Modifier,
     assessmentViewModel: AssessmentViewModel?,
+    tremorState: TremorState,
     image: Drawable?,
-    flippedImage: Boolean,
-    imageTintColor: Color?,
-    timer: StepTimer?,
-    instruction: String?,
-    duration: Double,
-    countdown: MutableState<Long>) {
-    val imageModifier = if (flippedImage) {
+    imageTintColor: Color?
+) {
+    val imageModifier = if (tremorState.hand == HandSelection.RIGHT) {
         Modifier
             .fillMaxSize()
             .scale(-1F, 1F)
@@ -78,42 +74,30 @@ internal fun TremorStepUi(
                 surveyTint = ImageBackgroundColor,
                 imageModifier = imageModifier,
                 imageTintColor = imageTintColor,
-                alpha = 0.5F)
+                alpha = 0.5F
+            )
         }
         Column {
             MotorControlPauseUi(
                 assessmentViewModel = assessmentViewModel,
-                onPause = { timer?.stopTimer() },
+                stepCompleted = tremorState.countdown.value == 0L,
+                onPause = {
+                    tremorState.cancel()
+                    tremorState.textToSpeech.stop()
+                },
                 onUnpause = {
-                    countdown.value = (duration * 1000).toLong() // Resets countdown to initial value
-                    timer?.startTimer()
+                    tremorState.countdown.value = (tremorState.duration * 1000).toLong() // Resets countdown to initial value
+                    tremorState.start()
                 }
             )
             Box(Modifier.padding(vertical = 10.dp)) {
-                StepBodyTextUi(instruction, null, modifier)
+                StepBodyTextUi(tremorState.title, null, modifier)
             }
             CountdownDial(
-                countdownDuration = duration,
-                countdown = countdown,
-                dialSubText = stringResource(id = R.string.seconds))
+                countdownDuration = tremorState.duration,
+                countdown = tremorState.countdown,
+                dialSubText = stringResource(id = R.string.seconds)
+            )
         }
-    }
-}
-
-
-@Preview
-@Composable
-private fun InstructionStepPreview() {
-    SageSurveyTheme {
-        TremorStepUi(
-            assessmentViewModel = null,
-            image = null,
-            flippedImage = false,
-            imageTintColor = null,
-            timer = null,
-            instruction = "",
-            duration = 5.0,
-            countdown = mutableStateOf(5)
-        )
     }
 }

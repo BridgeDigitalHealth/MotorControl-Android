@@ -45,8 +45,9 @@ import org.sagebionetworks.assessmentmodel.serialization.loadDrawable
 import org.sagebionetworks.motorcontrol.navigation.HandSelection
 import org.sagebionetworks.motorcontrol.navigation.hand
 import org.sagebionetworks.motorcontrol.presentation.compose.TappingStepUi
-import org.sagebionetworks.motorcontrol.resultObjects.TappingResult
+import org.sagebionetworks.motorcontrol.serialization.TappingResultObject
 import org.sagebionetworks.motorcontrol.serialization.TappingStepObject
+import org.sagebionetworks.motorcontrol.utils.SpokenInstructionsConverter
 import org.sagebionetworks.motorcontrol.viewModel.TappingState
 
 open class TappingStepFragment: StepFragment() {
@@ -57,7 +58,7 @@ open class TappingStepFragment: StepFragment() {
 
     private lateinit var step: TappingStepObject
 
-    private lateinit var tappingViewModel: TappingState
+    private lateinit var tappingState: TappingState
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -71,19 +72,27 @@ open class TappingStepFragment: StepFragment() {
         val tint = step.imageInfo?.tint ?: false
 
         binding.questionContent.setContent {
-            tappingViewModel = TappingState(
+            tappingState = TappingState(
+                identifier = step.identifier,
                 stepPath = "Tapping/${stepViewModel.nodeState.parent?.node?.hand()?.name?.lowercase()}",
                 hand = stepViewModel.nodeState.parent?.node?.hand(),
-                nodeStateResults = stepViewModel.nodeState.currentResult as TappingResult,
+                nodeStateResults = stepViewModel.nodeState.currentResult as TappingResultObject,
                 duration = step.duration,
                 context = requireContext(),
-                spokenInstructions = step.spokenInstructions ?: mapOf(),
+                spokenInstructions = SpokenInstructionsConverter.convertSpokenInstructions(
+                    step.spokenInstructions,
+                    step.duration.toInt(),
+                    stepViewModel.nodeState.parent?.node?.hand()?.name ?: ""
+                ),
+                restartsOnPause = false,
+                vibrator = null,
                 goForward = assessmentViewModel::goForward
             )
+
             SageSurveyTheme {
                 TappingStepUi(
                     assessmentViewModel = assessmentViewModel,
-                    tappingViewModel = tappingViewModel,
+                    tappingState = tappingState,
                     image = drawable,
                     flippedImage = stepViewModel.nodeState.parent?.node?.hand()
                             == HandSelection.RIGHT,
@@ -99,8 +108,7 @@ open class TappingStepFragment: StepFragment() {
     }
 
     override fun onDestroyView() {
-        tappingViewModel.textToSpeech.shutdown()
-        tappingViewModel.timer.stopTimer()
+        tappingState.cancel()
         super.onDestroyView()
         _binding = null
     }

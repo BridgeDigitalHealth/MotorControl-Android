@@ -37,8 +37,6 @@ import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.Json
 import kotlinx.serialization.modules.SerializersModule
 import kotlinx.serialization.modules.polymorphic
 import kotlinx.serialization.modules.subclass
@@ -49,10 +47,6 @@ import org.sagebionetworks.assessmentmodel.serialization.BaseActiveStepObject
 import org.sagebionetworks.assessmentmodel.serialization.NodeContainerObject
 import org.sagebionetworks.assessmentmodel.serialization.StepObject
 import org.sagebionetworks.motorcontrol.navigation.TwoHandNavigator
-import org.sagebionetworks.motorcontrol.resultObjects.TappingButtonIdentifier
-import org.sagebionetworks.motorcontrol.resultObjects.TappingResult
-import org.sagebionetworks.motorcontrol.resultObjects.TappingSample
-import java.util.*
 
 val motorControlNodeSerializersModule = SerializersModule {
     polymorphic(Node::class) {
@@ -143,21 +137,26 @@ data class TappingResultObject(
     override val identifier: String,
     override var startDateTime: Instant = Clock.System.now(),
     override var endDateTime: Instant? = null,
-    override var hand: String? = null,
-    override var samples: List<TappingSampleObject> = mutableListOf(),
-    override var tapCount: Int = 0
-    ) : TappingResult {
-    override fun copyResult(identifier: String): TappingResult {
+    var hand: String? = null,
+    var samples: List<TappingSampleObject> = mutableListOf(),
+    var tapCount: Int = 0
+    ) : Result {
+    override fun copyResult(identifier: String): TappingResultObject {
         return this.copy(samples = this.samples.map { it.copy() })
     }
 }
 
 @Serializable
 data class TappingSampleObject(
-    override val uptime: Double,
-    override val timestamp: Double?,
-    override val stepPath: String,
-    override val buttonIdentifier: String,
-    override val location: List<Float>,
-    override val duration: Double
-) : TappingSample
+    val uptime: Double,
+    val timestamp: Double?,
+    val stepPath: String,
+    val buttonIdentifier: String,
+    val location: List<Float>,
+    val duration: Double
+)
+
+// Used to differentiate the button tapped for a TappingSample
+enum class TappingButtonIdentifier {
+    Left, Right, None
+}

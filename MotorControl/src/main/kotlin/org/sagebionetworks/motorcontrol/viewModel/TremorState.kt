@@ -1,5 +1,5 @@
 //
-//  MotorControlAssessmentFragment.kt
+//  TremorState.kt
 //
 //
 //  Copyright © 2022 Sage Bionetworks. All rights reserved.
@@ -31,32 +31,49 @@
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
 
-package org.sagebionetworks.motorcontrol.presentation
+package org.sagebionetworks.motorcontrol.viewModel
 
-import android.content.pm.ActivityInfo
-import android.os.Bundle
-import android.view.View
-import androidx.fragment.app.Fragment
-import org.sagebionetworks.assessmentmodel.*
-import org.sagebionetworks.assessmentmodel.presentation.AssessmentFragment
-import org.sagebionetworks.motorcontrol.serialization.TappingStepObject
-import org.sagebionetworks.motorcontrol.serialization.TremorStepObject
+import android.content.Context
+import android.speech.tts.TextToSpeech
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateOf
+import org.sagebionetworks.motorcontrol.navigation.HandSelection
+import org.sagebionetworks.motorcontrol.presentation.compose.StepTimer
+import org.sagebionetworks.motorcontrol.recorder.RecorderRunner
+import org.sagebionetworks.motorcontrol.utils.MotorControlVibrator
 
-class MotorControlAssessmentFragment: AssessmentFragment() {
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        // Prevent landscape mode for all steps in Motor Control Assessments
-        requireActivity().requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
-    }
+class TremorState(
+    override val identifier: String,
+    override val hand: HandSelection?,
+    override val duration: Double,
+    override val context: Context,
+    override val spokenInstructions: Map<Int, String>,
+    override val restartsOnPause: Boolean,
+    override val goForward: () -> Unit,
+    override val vibrator: MotorControlVibrator?,
+    var title: String
+) : ActiveStep {
+    override val countdown: MutableState<Long> = mutableStateOf(duration.toLong() * 1000)
+    override lateinit var textToSpeech: TextToSpeech
+    override lateinit var recorderRunnerFactory: RecorderRunner.RecorderRunnerFactory
+    override lateinit var recorderRunner: RecorderRunner
 
-    override fun getFragmentForStep(step: Step): Fragment {
-        return when (step) {
-            is OverviewStep -> OverviewStepFragment()
-            is InstructionStep -> InstructionStepFragment()
-            is CountdownStep -> CountdownStepFragment()
-            is TremorStepObject -> TremorStepFragment()
-            is TappingStepObject -> TappingStepFragment()
-            else -> super.getFragmentForStep(step)
+    init {
+        createMotionSensor()
+        title = title.replace("%@", hand?.name ?: "")
+        textToSpeech = TextToSpeech(context) {
+            textToSpeech.speak(spokenInstructions[0], TextToSpeech.QUEUE_ADD, null, "")
         }
     }
+
+    override val timer = StepTimer(
+        countdown = countdown,
+        stepDuration = duration,
+        finished = {
+            stopRecorder()
+            speakAtCompleted()
+        },
+        textToSpeech = textToSpeech,
+        spokenInstructions = spokenInstructions
+    )
 }
