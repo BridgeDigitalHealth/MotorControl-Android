@@ -59,7 +59,7 @@ import org.sagebionetworks.assessmentmodel.presentation.ui.theme.*
 import org.sagebionetworks.motorcontrol.R
 import org.sagebionetworks.motorcontrol.presentation.theme.*
 import org.sagebionetworks.motorcontrol.serialization.TappingButtonIdentifier
-import org.sagebionetworks.motorcontrol.viewModel.TappingState
+import org.sagebionetworks.motorcontrol.state.TappingState
 
 @Composable
 internal fun TappingStepUi(
@@ -160,7 +160,7 @@ private fun TapButton(
 
 @Composable
 fun screenModifierWithTapGesture(
-    tappingViewModel: TappingState
+    tappingState: TappingState
 ): Modifier {
     return Modifier
         .fillMaxHeight()
@@ -169,7 +169,7 @@ fun screenModifierWithTapGesture(
             detectTapGestures(
                 onPress = { location ->
                     // Ignores tap on screen if countdown is done
-                    if (tappingViewModel.countdown.value <= 0) {
+                    if (tappingState.countdown.value <= 0) {
                         return@detectTapGestures
                     }
                     lateinit var startOfTapDuration: Instant
@@ -178,8 +178,8 @@ fun screenModifierWithTapGesture(
                         startOfTapDuration = Clock.System.now()
                         awaitRelease()
                     } finally {
-                        if (tappingViewModel.initialTapOccurred.value) {
-                            tappingViewModel.addTappingSample(
+                        if (tappingState.initialTapOccurred.value) {
+                            tappingState.addTappingSample(
                                 currentButton = TappingButtonIdentifier.None,
                                 location = listOf(location.x, location.y),
                                 tapDurationInMillis = Clock.System.now().toEpochMilliseconds()

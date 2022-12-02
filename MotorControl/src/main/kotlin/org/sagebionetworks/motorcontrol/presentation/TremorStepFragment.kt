@@ -47,7 +47,7 @@ import org.sagebionetworks.motorcontrol.presentation.compose.TremorStepUi
 import org.sagebionetworks.motorcontrol.serialization.TremorStepObject
 import org.sagebionetworks.motorcontrol.utils.MotorControlVibrator
 import org.sagebionetworks.motorcontrol.utils.SpokenInstructionsConverter
-import org.sagebionetworks.motorcontrol.viewModel.TremorState
+import org.sagebionetworks.motorcontrol.state.TremorState
 
 open class TremorStepFragment: StepFragment() {
 

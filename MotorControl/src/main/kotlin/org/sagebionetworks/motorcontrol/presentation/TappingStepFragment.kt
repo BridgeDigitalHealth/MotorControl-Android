@@ -48,7 +48,7 @@ import org.sagebionetworks.motorcontrol.presentation.compose.TappingStepUi
 import org.sagebionetworks.motorcontrol.serialization.TappingResultObject
 import org.sagebionetworks.motorcontrol.serialization.TappingStepObject
 import org.sagebionetworks.motorcontrol.utils.SpokenInstructionsConverter
-import org.sagebionetworks.motorcontrol.viewModel.TappingState
+import org.sagebionetworks.motorcontrol.state.TappingState
 
 open class TappingStepFragment: StepFragment() {
 

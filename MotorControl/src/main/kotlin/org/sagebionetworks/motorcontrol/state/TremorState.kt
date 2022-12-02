@@ -31,7 +31,7 @@
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
 
-package org.sagebionetworks.motorcontrol.viewModel
+package org.sagebionetworks.motorcontrol.state
 
 import android.content.Context
 import android.speech.tts.TextToSpeech

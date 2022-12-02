@@ -47,7 +47,7 @@ import org.sagebionetworks.assessmentmodel.presentation.AssessmentViewModel
 import org.sagebionetworks.assessmentmodel.presentation.ui.theme.*
 import org.sagebionetworks.motorcontrol.navigation.HandSelection
 import org.sagebionetworks.motorcontrol.presentation.theme.ImageBackgroundColor
-import org.sagebionetworks.motorcontrol.viewModel.TremorState
+import org.sagebionetworks.motorcontrol.state.TremorState
 
 @Composable
 internal fun TremorStepUi(
