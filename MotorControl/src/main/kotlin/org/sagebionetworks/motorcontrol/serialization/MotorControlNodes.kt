@@ -151,7 +151,7 @@ data class TappingResultObject(
         return JsonArchivableFile(
             filename = "${hand}_$identifier",
             json = Json.encodeToString(this),
-            jsonSchema = "https://sage-bionetworks.github.io/mobile-client-json/schemas/v2/MotionRecord.json"
+            jsonSchema = "https://sage-bionetworks.github.io/mobile-client-json/schemas/v1/TappingResultObject.json"
         )
     }
 }
