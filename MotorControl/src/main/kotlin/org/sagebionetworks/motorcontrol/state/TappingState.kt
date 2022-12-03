@@ -61,6 +61,8 @@ class TappingState(
     override val inputResult: MutableSet<Result>?,
     val nodeStateResults: TappingResultObject,
     val stepPath: String,
+    val buttonRectLeft: MutableSet<List<Float>> = mutableSetOf(),
+    val buttonRectRight: MutableSet<List<Float>> = mutableSetOf()
 ) : ActiveStep{
     override val countdown: MutableState<Long> = mutableStateOf(duration.toLong() * 1000)
     override lateinit var textToSpeech: TextToSpeech
@@ -96,6 +98,8 @@ class TappingState(
         nodeStateResults.startDateTime = startDate
         nodeStateResults.endDateTime = Clock.System.now()
         nodeStateResults.hand = hand?.name?.lowercase() ?: ""
+        nodeStateResults.buttonRectLeft = buttonRectLeft.toString()
+        nodeStateResults.buttonRectRight = buttonRectRight.toString()
         nodeStateResults.samples = samples
         nodeStateResults.tapCount = tapCount.value
     }

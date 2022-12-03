@@ -140,6 +140,8 @@ data class TappingResultObject(
     override var startDateTime: Instant = Clock.System.now(),
     override var endDateTime: Instant? = null,
     var hand: String? = null,
+    var buttonRectLeft: String = "",
+    var buttonRectRight: String = "",
     var samples: List<TappingSampleObject> = mutableListOf(),
     var tapCount: Int = 0
     ) : JsonFileArchivableResult {

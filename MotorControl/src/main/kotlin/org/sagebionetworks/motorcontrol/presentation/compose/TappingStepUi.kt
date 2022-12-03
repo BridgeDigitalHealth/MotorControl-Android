@@ -108,6 +108,7 @@ internal fun TappingStepUi(
                     onFirstTap = {
                         tappingState.onFirstTap()
                     },
+                    buttonRect = tappingState.buttonRectLeft,
                     onTap = { location, tapDurationInMillis ->
                         tappingState.addTappingSample(
                             currentButton = TappingButtonIdentifier.Left,
@@ -122,6 +123,7 @@ internal fun TappingStepUi(
                     onFirstTap = {
                         tappingState.onFirstTap()
                     },
+                    buttonRect = tappingState.buttonRectRight,
                     onTap = { location, tapDurationInMillis ->
                         tappingState.addTappingSample(
                             currentButton = TappingButtonIdentifier.Right,
@@ -140,6 +142,7 @@ internal fun TappingStepUi(
 private fun TapButton(
     countdown: MutableState<Long>,
     onFirstTap: () -> Unit = {},
+    buttonRect: MutableSet<List<Float>>,
     onTap: (location: List<Float>, duration: Long) -> Unit
 ) {
     Box(
@@ -147,6 +150,7 @@ private fun TapButton(
         modifier = tapButtonModifierWithTapGesture(
             countdown = countdown,
             onFirstTap = onFirstTap,
+            buttonRect = buttonRect,
             onTap = onTap
         )
     ) {
@@ -196,14 +200,16 @@ fun screenModifierWithTapGesture(
 fun tapButtonModifierWithTapGesture(
     countdown: MutableState<Long>,
     onFirstTap: () -> Unit = {},
+    buttonRect: MutableSet<List<Float>>,
     onTap: (location: List<Float>, tapDurationInMillis: Long) -> Unit
 ): Modifier {
     val xOffset: MutableState<Float> = remember { mutableStateOf(0F) }
     val yOffset: MutableState<Float> = remember { mutableStateOf(0F) }
+    val buttonSize = 100F.dp
     return Modifier
         .padding(vertical = 48.dp)
         .background(TapButtonColor, shape = CircleShape)
-        .size(100.dp)
+        .size(buttonSize)
         .onGloballyPositioned {
             // This sets the offsets to the top left location of the TapButton within
             // the Root view so that the tap location within the button can be added to the offsets
@@ -221,12 +227,16 @@ fun tapButtonModifierWithTapGesture(
                     }
                     // The try captures the moment of contact, finally captures moment of release
                     try {
+                        buttonRect.add(listOf(xOffset.value, yOffset.value))
+                        buttonRect.add(listOf(buttonSize.toPx(), buttonSize.toPx()))
                         onFirstTap()
                         startOfTapDuration = Clock.System.now().toEpochMilliseconds()
                         awaitRelease()
                     } finally {
                         onTap(
-                            listOf(location.x + xOffset.value, location.y + yOffset.value),
+                            listOf(
+                                location.x + xOffset.value,
+                                location.y + yOffset.value),
                             Clock.System.now().toEpochMilliseconds()
                                     - startOfTapDuration
                         )
