@@ -47,7 +47,7 @@ import org.sagebionetworks.motorcontrol.presentation.compose.TremorStepUi
 import org.sagebionetworks.motorcontrol.serialization.TremorStepObject
 import org.sagebionetworks.motorcontrol.utils.MotorControlVibrator
 import org.sagebionetworks.motorcontrol.utils.SpokenInstructionsConverter
-import org.sagebionetworks.motorcontrol.viewModel.TremorState
+import org.sagebionetworks.motorcontrol.state.TremorState
 
 open class TremorStepFragment: StepFragment() {
 
@@ -73,19 +73,21 @@ open class TremorStepFragment: StepFragment() {
         val tint = step.imageInfo?.tint ?: false
 
         binding.questionContent.setContent {
+            val hand = stepViewModel.nodeState.parent?.node?.hand()
             tremorState = TremorState(
                 identifier = step.identifier,
-                hand = stepViewModel.nodeState.parent?.node?.hand(),
-                context = requireContext(),
+                hand = hand,
                 duration = step.duration,
-                restartsOnPause = true,
-                goForward = assessmentViewModel::goForward,
+                context = requireContext(),
                 spokenInstructions = SpokenInstructionsConverter.convertSpokenInstructions(
                     step.spokenInstructions,
                     step.duration.toInt(),
-                    stepViewModel.nodeState.parent?.node?.hand()?.name ?: ""
+                    hand?.name ?: ""
                 ),
+                restartsOnPause = true,
+                goForward = assessmentViewModel::goForward,
                 vibrator = MotorControlVibrator(requireContext()),
+                inputResult = stepViewModel.nodeState.parent?.currentResult?.inputResults,
                 title = step.title ?: ""
             )
             tremorState.start()

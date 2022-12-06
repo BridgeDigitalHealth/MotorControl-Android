@@ -37,6 +37,8 @@ import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 import kotlinx.serialization.modules.SerializersModule
 import kotlinx.serialization.modules.polymorphic
 import kotlinx.serialization.modules.subclass
@@ -138,11 +140,21 @@ data class TappingResultObject(
     override var startDateTime: Instant = Clock.System.now(),
     override var endDateTime: Instant? = null,
     var hand: String? = null,
+    var buttonRectLeft: String = "",
+    var buttonRectRight: String = "",
     var samples: List<TappingSampleObject> = mutableListOf(),
     var tapCount: Int = 0
-    ) : Result {
+    ) : JsonFileArchivableResult {
     override fun copyResult(identifier: String): TappingResultObject {
         return this.copy(samples = this.samples.map { it.copy() })
+    }
+
+    override fun getJsonArchivableFile(stepPath: String): JsonArchivableFile {
+        return JsonArchivableFile(
+            filename = "${hand}_$identifier",
+            json = Json.encodeToString(this),
+            jsonSchema = "https://sage-bionetworks.github.io/mobile-client-json/schemas/v1/TappingResultObject.json"
+        )
     }
 }
 

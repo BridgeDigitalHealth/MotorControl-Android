@@ -31,7 +31,7 @@
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
 
-package org.sagebionetworks.motorcontrol.viewModel
+package org.sagebionetworks.motorcontrol.state
 
 import android.content.Context
 import android.os.Handler
@@ -43,6 +43,7 @@ import co.touchlab.kermit.Logger
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import org.sagebionetworks.assessmentmodel.Result
 import org.sagebionetworks.assessmentmodel.passivedata.recorder.motion.MotionRecorderConfiguration
 import org.sagebionetworks.motorcontrol.navigation.HandSelection
 import org.sagebionetworks.motorcontrol.presentation.compose.StepTimer
@@ -65,6 +66,7 @@ interface ActiveStep {
     var recorderRunnerFactory: RecorderRunner.RecorderRunnerFactory
     var recorderRunner: RecorderRunner
     val vibrator: MotorControlVibrator?
+    val inputResult: MutableSet<Result>?
 
     fun createMotionSensor() {
         recorderRunnerFactory = RecorderRunner.RecorderRunnerFactory(context, null)
@@ -72,7 +74,7 @@ interface ActiveStep {
             listOf(
                 RecorderScheduledAssessmentConfig(
                     recorder = BackgroundRecordersConfigurationElement.Recorder(
-                        "${identifier}/${hand?.name?.lowercase()}",
+                        "${hand?.name?.lowercase()}_$identifier",
                         MotionRecorderConfiguration.TYPE
                     ),
                     disabledByAppForTaskIdentifiers = setOf(),
@@ -103,8 +105,9 @@ interface ActiveStep {
         vibrator?.vibrate(500)
         CoroutineScope(Dispatchers.IO).launch {
             try {
-                println(recorderRunner.stop())
-                //TODO: arabara 11/17/22 Remove print and do something with the FileResult
+                for (result in recorderRunner.stop().await()) {
+                    inputResult?.add(result)
+                }
             } catch (e: Exception) {
                 Logger.w("Error stopping recorder", e)
             }

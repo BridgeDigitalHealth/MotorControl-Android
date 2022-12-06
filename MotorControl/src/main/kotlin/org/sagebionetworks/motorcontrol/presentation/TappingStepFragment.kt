@@ -48,7 +48,7 @@ import org.sagebionetworks.motorcontrol.presentation.compose.TappingStepUi
 import org.sagebionetworks.motorcontrol.serialization.TappingResultObject
 import org.sagebionetworks.motorcontrol.serialization.TappingStepObject
 import org.sagebionetworks.motorcontrol.utils.SpokenInstructionsConverter
-import org.sagebionetworks.motorcontrol.viewModel.TappingState
+import org.sagebionetworks.motorcontrol.state.TappingState
 
 open class TappingStepFragment: StepFragment() {
 
@@ -72,21 +72,23 @@ open class TappingStepFragment: StepFragment() {
         val tint = step.imageInfo?.tint ?: false
 
         binding.questionContent.setContent {
+            val hand = stepViewModel.nodeState.parent?.node?.hand()
             tappingState = TappingState(
                 identifier = step.identifier,
-                stepPath = "Tapping/${stepViewModel.nodeState.parent?.node?.hand()?.name?.lowercase()}",
-                hand = stepViewModel.nodeState.parent?.node?.hand(),
-                nodeStateResults = stepViewModel.nodeState.currentResult as TappingResultObject,
+                hand = hand,
                 duration = step.duration,
                 context = requireContext(),
                 spokenInstructions = SpokenInstructionsConverter.convertSpokenInstructions(
                     step.spokenInstructions,
                     step.duration.toInt(),
-                    stepViewModel.nodeState.parent?.node?.hand()?.name ?: ""
+                    hand?.name ?: ""
                 ),
                 restartsOnPause = false,
+                goForward = assessmentViewModel::goForward,
                 vibrator = null,
-                goForward = assessmentViewModel::goForward
+                inputResult = stepViewModel.nodeState.parent?.currentResult?.inputResults,
+                nodeStateResults = stepViewModel.nodeState.currentResult as TappingResultObject,
+                stepPath = "Tapping/${hand?.name?.lowercase()}"
             )
 
             SageSurveyTheme {
