@@ -10,5 +10,33 @@ plugins {
     id("com.android.application") version ("7.3.0") apply(false)
     id("com.android.library") version("7.3.0") apply(false)
     id("org.jetbrains.kotlin.android") version("1.7.0") apply(false)
+    id("maven-publish")
+    id("org.jetbrains.dokka") version "1.6.21"
     kotlin("plugin.serialization") version("1.7.0")
+}
+
+tasks.dokkaHtmlMultiModule {
+    outputDirectory.set(rootDir.resolve("docs"))
+}
+
+subprojects {
+    afterEvaluate {
+        if (project.plugins.hasPlugin("com.android.library")) {
+//            val android = this.extensions.getByName("android") as com.android.build.gradle.LibraryExtension
+//            val kotlin =
+//                this.extensions.getByType(org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension::class.java)
+
+            tasks.register<Jar>("javadocJar") {
+                val dokkaJavadoc = tasks.getByName<org.jetbrains.dokka.gradle.DokkaTask>("dokkaJavadoc")
+                dependsOn(dokkaJavadoc)
+                classifier = "javadoc"
+                from(dokkaJavadoc.outputDirectory)
+            }
+        }
+    }
+}
+
+allprojects {
+    group = "org.sagebionetworks.motorControl"
+    version = "0.0.1"
 }
