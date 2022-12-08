@@ -102,10 +102,10 @@ afterEvaluate {
 
     publishing {
         publications {
-            create<MavenPublication>("presentation") {
+            create<MavenPublication>("motorcontrol") {
                 from(components.getByName("release"))
-                artifact(tasks.getByName("releaseSourcesJar"))
-                artifact(tasks.getByName<Jar>("javadocJar"))
+//                artifact(tasks.getByName("releaseSourcesJar"))
+//                artifact(tasks.getByName<Jar>("javadocJar"))
             }
         }
     }
