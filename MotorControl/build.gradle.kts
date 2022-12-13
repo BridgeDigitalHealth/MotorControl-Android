@@ -2,6 +2,8 @@ plugins {
     id("com.android.library")
     id("org.jetbrains.kotlin.android")
     id("org.jetbrains.kotlin.plugin.serialization")
+    id("maven-publish")
+    id("org.jetbrains.dokka")
 }
 
 android {
@@ -37,6 +39,13 @@ android {
     }
     kotlinOptions {
         jvmTarget = "1.8"
+    }
+    publishing {
+        singleVariant("release") {
+            // if you don't want sources/javadoc, remove these lines
+            withSourcesJar()
+            withJavadocJar()
+        }
     }
 }
 
@@ -82,4 +91,33 @@ dependencies {
     androidTestImplementation("androidx.test.ext:junit:1.1.3")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.4.0")
     androidTestImplementation("androidx.compose.ui:ui-test-junit4:$composeUiVersion")
+}
+
+afterEvaluate {
+
+    tasks.register<Jar>("sourcesJar") {
+        from(android.sourceSets["main"].java.srcDirs)
+        classifier = "sources"
+    }
+
+    publishing {
+        publications {
+            create<MavenPublication>("motorcontrol") {
+                from(components.getByName("release"))
+//                artifact(tasks.getByName("releaseSourcesJar"))
+//                artifact(tasks.getByName<Jar>("javadocJar"))
+            }
+        }
+    }
+}
+publishing {
+    repositories {
+        maven {
+            url = uri("https://sagebionetworks.jfrog.io/artifactory/mobile-sdks/")
+            credentials {
+                username = System.getenv("artifactoryUser")
+                password = System.getenv("artifactoryPwd")
+            }
+        }
+    }
 }
