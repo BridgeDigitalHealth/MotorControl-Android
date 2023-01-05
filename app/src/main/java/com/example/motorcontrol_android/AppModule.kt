@@ -8,6 +8,7 @@ import org.sagebionetworks.assessmentmodel.RootAssessmentRegistryProvider
 import org.sagebionetworks.assessmentmodel.navigation.CustomNodeStateProvider
 import org.sagebionetworks.assessmentmodel.presentation.AssessmentFragment
 import org.sagebionetworks.assessmentmodel.presentation.AssessmentFragmentProvider
+import org.sagebionetworks.assessmentmodel.presentation.RootAssessmentFragmentProvider
 import org.sagebionetworks.assessmentmodel.resourcemanagement.FileLoader
 import org.sagebionetworks.assessmentmodel.serialization.FileLoaderAndroid
 import org.sagebionetworks.motorcontrol.presentation.MotorControlAssessmentFragment
@@ -27,11 +28,9 @@ val appModule = module {
 
         }}
 
-    single<AssessmentFragmentProvider?> {
-        object : AssessmentFragmentProvider {
-            override fun fragmentFor(branchNode: BranchNode): AssessmentFragment {
-                return MotorControlAssessmentFragment()
-            }
-        }}
+    single<AssessmentFragmentProvider>() {
+        RootAssessmentFragmentProvider(listOf(
+            get(qualifier = named("sage-motorcontrol"))))
+    }
 
 }
