@@ -1,0 +1,25 @@
+[
+  {
+    "type": "MotorControlModuleInfo",
+    "assessments": [
+      {
+        "type": "transformableAssessment",
+        "identifier": "tremor",
+        "title": "Tremor Assessment",
+        "resourceName": "tremor"
+      },
+      {
+        "type": "transformableAssessment",
+        "identifier": "kinetic_tremor",
+        "title": "Kinetic Tremor Assessment",
+        "resourceName": "kinetic_tremor"
+      },
+      {
+        "type": "transformableAssessment",
+        "identifier": "finger-tapping",
+        "title": "Finger Tapping Assessment",
+        "resourceName": "finger_tapping"
+      }
+    ]
+  }
+]

@@ -3,7 +3,7 @@ buildscript {
     val kotlinVersion by extra("1.7.0")
     val assessmentVersion by extra("0.10.1")
     val kermitVersion by extra("1.0.0")
-    val koinVersion by extra("3.2.2")
+    val koinVersion by extra("3.1.5")
 }
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 plugins {
