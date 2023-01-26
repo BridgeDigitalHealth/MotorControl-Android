@@ -39,8 +39,7 @@ import android.view.View
 import androidx.fragment.app.Fragment
 import org.sagebionetworks.assessmentmodel.*
 import org.sagebionetworks.assessmentmodel.presentation.AssessmentFragment
-import org.sagebionetworks.motorcontrol.serialization.TappingStepObject
-import org.sagebionetworks.motorcontrol.serialization.TremorStepObject
+import org.sagebionetworks.motorcontrol.serialization.*
 
 class MotorControlAssessmentFragment: AssessmentFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -54,7 +53,7 @@ class MotorControlAssessmentFragment: AssessmentFragment() {
             is OverviewStep -> OverviewStepFragment()
             is InstructionStep -> InstructionStepFragment()
             is CountdownStep -> CountdownStepFragment()
-            is TremorStepObject -> TremorStepFragment()
+            is MotionSensorStepObject -> MotionSensorStepFragment()
             is TappingStepObject -> TappingStepFragment()
             else -> super.getFragmentForStep(step)
         }

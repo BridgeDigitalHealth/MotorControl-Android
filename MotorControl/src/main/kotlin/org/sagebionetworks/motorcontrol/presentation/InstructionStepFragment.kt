@@ -121,6 +121,8 @@ open class InstructionStepFragment: StepFragment() {
                         },
                         title = step.title?.replace("%@",
                             stepViewModel.nodeState.parent?.node?.hand()?.name ?: ""),
+                        subtitle = step.subtitle?.replace("%@",
+                            stepViewModel.nodeState.parent?.node?.hand()?.name ?: ""),
                         detail = step.detail?.replace("%@",
                             stepViewModel.nodeState.parent?.node?.hand()?.name ?: ""),
                         nextButtonText = buttonTextResource ?: stringResource(R.string.next),

@@ -1,5 +1,5 @@
 //
-//  TremorStepFragment.kt
+//  MotionSensorStepFragment.kt
 //
 //
 //  Copyright © 2022 Sage Bionetworks. All rights reserved.
@@ -43,25 +43,32 @@ import org.sagebionetworks.assessmentmodel.presentation.databinding.ComposeQuest
 import org.sagebionetworks.assessmentmodel.presentation.ui.theme.SageSurveyTheme
 import org.sagebionetworks.assessmentmodel.serialization.loadDrawable
 import org.sagebionetworks.motorcontrol.navigation.hand
-import org.sagebionetworks.motorcontrol.presentation.compose.TremorStepUi
+import org.sagebionetworks.motorcontrol.presentation.compose.MotionSensorStepUi
+import org.sagebionetworks.motorcontrol.serialization.BalanceStepObject
+import org.sagebionetworks.motorcontrol.serialization.MotionSensorStepObject
 import org.sagebionetworks.motorcontrol.serialization.TremorStepObject
+import org.sagebionetworks.motorcontrol.serialization.WalkStepObject
 import org.sagebionetworks.motorcontrol.utils.MotorControlVibrator
 import org.sagebionetworks.motorcontrol.utils.SpokenInstructionsConverter
-import org.sagebionetworks.motorcontrol.state.TremorState
+import org.sagebionetworks.motorcontrol.state.MotionSensorState
 
-open class TremorStepFragment: StepFragment() {
+open class MotionSensorStepFragment: StepFragment() {
 
     private var _binding: ComposeQuestionStepFragmentBinding? = null
     // This property is only valid between onCreateView and onDestroyView.
     private val binding get() = _binding!!
 
-    private lateinit var step: TremorStepObject
+    private lateinit var step: MotionSensorStepObject
 
-    private lateinit var tremorState: TremorState
+    private lateinit var motionSensorState: MotionSensorState
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        step = nodeState.node as TremorStepObject
+        step = when (nodeState.node) {
+            is TremorStepObject -> nodeState.node as TremorStepObject
+            is BalanceStepObject -> nodeState.node as BalanceStepObject
+            else -> nodeState.node as WalkStepObject
+        }
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
@@ -74,7 +81,7 @@ open class TremorStepFragment: StepFragment() {
 
         binding.questionContent.setContent {
             val hand = stepViewModel.nodeState.parent?.node?.hand()
-            tremorState = TremorState(
+            motionSensorState = MotionSensorState(
                 identifier = step.identifier,
                 hand = hand,
                 duration = step.duration,
@@ -90,12 +97,12 @@ open class TremorStepFragment: StepFragment() {
                 inputResult = stepViewModel.nodeState.parent?.currentResult?.inputResults,
                 title = step.title ?: ""
             )
-            tremorState.start()
+            motionSensorState.start()
 
             SageSurveyTheme {
-                TremorStepUi(
+                MotionSensorStepUi(
                     assessmentViewModel = assessmentViewModel,
-                    tremorState = tremorState,
+                    motionSensorState = motionSensorState,
                     image = drawable,
                     imageTintColor = if (tint) {
                         MaterialTheme.colors.primary
@@ -109,7 +116,7 @@ open class TremorStepFragment: StepFragment() {
     }
 
     override fun onDestroyView() {
-        tremorState.cancel()
+        motionSensorState.cancel()
         super.onDestroyView()
         _binding = null
     }

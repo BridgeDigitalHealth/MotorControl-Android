@@ -109,6 +109,7 @@ open class OverviewStepFragment: StepFragment() {
                         null
                     },
                     title = step.title,
+                    subtitle = step.subtitle,
                     detail = step.detail,
                     icons = icons,
                     nextButtonText = buttonTextResource ?: stringResource(R.string.start),

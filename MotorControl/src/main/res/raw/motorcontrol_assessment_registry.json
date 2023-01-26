@@ -19,6 +19,18 @@
         "identifier": "finger-tapping",
         "title": "Finger Tapping Assessment",
         "resourceName": "finger_tapping"
+      },
+      {
+        "type": "transformableAssessment",
+        "identifier": "walk_thirty_second",
+        "title": "30 Second Walk Assessment",
+        "resourceName": "walk_thirty_second"
+      },
+      {
+        "type": "transformableAssessment",
+        "identifier": "walk_and_balance",
+        "title": "Walk and Balance Assessment",
+        "resourceName": "walk_and_balance"
       }
     ]
   }

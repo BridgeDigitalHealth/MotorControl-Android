@@ -63,6 +63,7 @@ internal fun InstructionStepUi(
     flippedImage: Boolean,
     imageTintColor: Color?,
     title: String?,
+    subtitle: String?,
     detail: String?,
     nextButtonText: String) {
     val imageModifier = if (flippedImage) {
@@ -97,7 +98,7 @@ internal fun InstructionStepUi(
                         imageModifier = imageModifier
                     )
                 }
-                StepBodyTextUi(title, detail, modifier)
+                StepBodyTextUi(title, detail, subtitle, modifier)
             }
             Box(modifier = Modifier.padding(horizontal = 20.dp)) {
                 val backEnabled = assessmentViewModel?.assessmentNodeState?.allowBackNavigation() == true
@@ -127,6 +128,7 @@ private fun InstructionStepPreview() {
             flippedImage = false,
             imageTintColor = null,
             title = "Title",
+            subtitle = "Subtitle",
             detail = "Details",
             nextButtonText = stringResource(R.string.start)
         )
