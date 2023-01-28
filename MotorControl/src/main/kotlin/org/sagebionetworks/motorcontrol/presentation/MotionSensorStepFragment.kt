@@ -64,11 +64,7 @@ open class MotionSensorStepFragment: StepFragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        step = when (nodeState.node) {
-            is TremorStepObject -> nodeState.node as TremorStepObject
-            is BalanceStepObject -> nodeState.node as BalanceStepObject
-            else -> nodeState.node as WalkStepObject
-        }
+        step = nodeState.node as MotionSensorStepObject
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
