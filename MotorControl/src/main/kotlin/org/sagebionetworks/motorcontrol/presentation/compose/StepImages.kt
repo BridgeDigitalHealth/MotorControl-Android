@@ -77,7 +77,8 @@ fun AnimationImageUi(
     imageTintColor: Color?,
     imageModifier: Modifier) {
     Image(
-        painter = rememberDrawablePainter(drawable = animations[currentImage.value]),
+        // Logic within the getter for animations accounts for currentImage.value starting at -1
+        painter = rememberDrawablePainter(drawable = animations[ if (currentImage.value >= 0) currentImage.value else 0 ]),
         contentDescription = null,
         modifier = imageModifier.background(surveyTint),
         contentScale = ContentScale.FillHeight,

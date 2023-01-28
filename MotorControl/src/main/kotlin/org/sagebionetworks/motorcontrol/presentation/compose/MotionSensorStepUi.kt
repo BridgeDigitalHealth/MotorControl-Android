@@ -1,5 +1,5 @@
 //
-//  TremorStepUi.kt
+//  MotionSensorStepUi.kt
 //
 //
 //  Copyright © 2022 Sage Bionetworks. All rights reserved.
@@ -47,17 +47,17 @@ import org.sagebionetworks.assessmentmodel.presentation.AssessmentViewModel
 import org.sagebionetworks.assessmentmodel.presentation.ui.theme.*
 import org.sagebionetworks.motorcontrol.navigation.HandSelection
 import org.sagebionetworks.motorcontrol.presentation.theme.ImageBackgroundColor
-import org.sagebionetworks.motorcontrol.state.TremorState
+import org.sagebionetworks.motorcontrol.state.MotionSensorState
 
 @Composable
-internal fun TremorStepUi(
+internal fun MotionSensorStepUi(
     modifier: Modifier = Modifier,
     assessmentViewModel: AssessmentViewModel?,
-    tremorState: TremorState,
+    motionSensorState: MotionSensorState,
     image: Drawable?,
     imageTintColor: Color?
 ) {
-    val imageModifier = if (tremorState.hand == HandSelection.RIGHT) {
+    val imageModifier = if (motionSensorState.hand == HandSelection.RIGHT) {
         Modifier
             .fillMaxSize()
             .scale(-1F, 1F)
@@ -80,22 +80,22 @@ internal fun TremorStepUi(
         Column {
             MotorControlPauseUi(
                 assessmentViewModel = assessmentViewModel,
-                stepCompleted = tremorState.countdown.value == 0L,
+                stepCompleted = motionSensorState.countdown.value == 0L,
                 onPause = {
-                    tremorState.cancel()
-                    tremorState.textToSpeech.stop()
+                    motionSensorState.cancel()
+                    motionSensorState.textToSpeech.stop()
                 },
                 onUnpause = {
-                    tremorState.countdown.value = (tremorState.duration * 1000).toLong() // Resets countdown to initial value
-                    tremorState.start()
+                    motionSensorState.countdown.value = (motionSensorState.duration * 1000).toLong() // Resets countdown to initial value
+                    motionSensorState.start()
                 }
             )
             Box(Modifier.padding(vertical = 10.dp)) {
-                StepBodyTextUi(tremorState.title, null, modifier)
+                StepBodyTextUi(motionSensorState.title, null, null, modifier)
             }
             CountdownDial(
-                countdownDuration = tremorState.duration,
-                countdown = tremorState.countdown,
+                countdownDuration = motionSensorState.duration,
+                countdown = motionSensorState.countdown,
                 dialSubText = stringResource(id = R.string.seconds)
             )
         }

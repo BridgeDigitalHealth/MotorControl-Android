@@ -1,5 +1,5 @@
 //
-//  TremorState.kt
+//  MotionSensorState.kt
 //
 //
 //  Copyright © 2022 Sage Bionetworks. All rights reserved.
@@ -43,7 +43,7 @@ import org.sagebionetworks.motorcontrol.presentation.compose.StepTimer
 import org.sagebionetworks.motorcontrol.recorder.RecorderRunner
 import org.sagebionetworks.motorcontrol.utils.MotorControlVibrator
 
-class TremorState(
+class MotionSensorState(
     override val identifier: String,
     override val hand: HandSelection?,
     override val duration: Double,

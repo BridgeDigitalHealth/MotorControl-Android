@@ -63,6 +63,7 @@ internal fun OverviewStepUi(
     animationIndex: MutableState<Int>,
     imageTintColor: Color?,
     title: String?,
+    subtitle: String?,
     detail: String?,
     icons: List<Pair<Drawable?, String?>>,
     nextButtonText: String,
@@ -98,7 +99,7 @@ internal fun OverviewStepUi(
                             .background(Color.Cyan)
                     )
                 }
-                StepBodyTextUi(title, detail, modifier)
+                StepBodyTextUi(title, detail, subtitle, modifier)
                 if (icons.isNotEmpty()) {
                     IconsUi(icons = icons, imageTintColor = imageTintColor)
                 }
@@ -173,6 +174,7 @@ private fun OverviewStepPreview() {
             animationIndex = mutableStateOf(0),
             imageTintColor = null,
             title = "Title",
+            subtitle = "Subtitle",
             detail = "Details",
             icons = listOf(),
             nextButtonText = stringResource(R.string.start),

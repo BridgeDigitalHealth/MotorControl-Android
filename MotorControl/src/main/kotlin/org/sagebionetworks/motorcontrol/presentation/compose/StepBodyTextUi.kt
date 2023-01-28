@@ -44,7 +44,7 @@ import org.sagebionetworks.motorcontrol.presentation.theme.detailText
 import org.sagebionetworks.motorcontrol.presentation.theme.titleText
 
 @Composable
-fun StepBodyTextUi(title: String?, detail: String?, modifier: Modifier) {
+fun StepBodyTextUi(title: String?, detail: String?, subtitle: String?, modifier: Modifier) {
     title?.let {
         Text(
             text = it,
@@ -53,6 +53,17 @@ fun StepBodyTextUi(title: String?, detail: String?, modifier: Modifier) {
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(all = 20.dp)
+        )
+    }
+    subtitle?.let {
+        Text(
+            text = it,
+            style = detailText,
+            textAlign = TextAlign.Center,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 20.dp)
+                .padding(bottom = 20.dp)
         )
     }
     detail?.let {
