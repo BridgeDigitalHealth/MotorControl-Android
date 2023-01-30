@@ -38,5 +38,5 @@ subprojects {
 
 allprojects {
     group = "org.sagebionetworks.motorcontrol"
-    version = "0.0.2"
+    version = "0.0.3"
 }
