@@ -10,7 +10,7 @@
       },
       {
         "type": "transformableAssessment",
-        "identifier": "kinetic_tremor",
+        "identifier": "kinetic-tremor",
         "title": "Kinetic Tremor Assessment",
         "resourceName": "kinetic_tremor"
       },
@@ -22,13 +22,13 @@
       },
       {
         "type": "transformableAssessment",
-        "identifier": "walk_thirty_second",
+        "identifier": "walk-thirty-second",
         "title": "30 Second Walk Assessment",
         "resourceName": "walk_thirty_second"
       },
       {
         "type": "transformableAssessment",
-        "identifier": "walk_and_balance",
+        "identifier": "walk-and-balance",
         "title": "Walk and Balance Assessment",
         "resourceName": "walk_and_balance"
       }
