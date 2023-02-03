@@ -1,3 +1,8 @@
+//
+//  Color.kt
+//
+//
+
 package org.sagebionetworks.motorcontrol.presentation.theme
 
 import androidx.compose.ui.graphics.Color
