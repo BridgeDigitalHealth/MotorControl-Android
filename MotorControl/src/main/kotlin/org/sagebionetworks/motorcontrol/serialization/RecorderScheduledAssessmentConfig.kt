@@ -1,3 +1,8 @@
+//
+//  RecorderScheduledAssessmentConfig.kt
+//
+//
+
 package org.sagebionetworks.motorcontrol.serialization
 
 import kotlinx.serialization.Serializable
