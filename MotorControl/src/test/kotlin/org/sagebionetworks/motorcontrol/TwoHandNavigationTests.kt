@@ -34,7 +34,7 @@ class ExampleUnitTest: NavigationTestHelper() {
             val assessmentObject = TwoHandAssessmentObject("foo", nodeList)
             val nodeState = BranchNodeStateImpl(assessmentObject)
             val testRootNodeController = TestRootNodeController(
-                mapOf(NavigationPoint.Direction.Forward to "stepE"),
+                mapOf(Direction.Forward to "stepE"),
                 7
             )
             nodeState.rootNodeController = testRootNodeController
@@ -97,7 +97,7 @@ class ExampleUnitTest: NavigationTestHelper() {
 
         val point = navigator.nodeAfter(null, assessmentObject.createResult())
         assertEquals(nodeA, point.node)
-        assertEquals(NavigationPoint.Direction.Forward, point.direction)
+        assertEquals(Direction.Forward, point.direction)
 
         val result = point.branchResult
         assertTrue(result is AssessmentResultObject)
@@ -115,10 +115,10 @@ class ExampleUnitTest: NavigationTestHelper() {
 
         val point = navigator.nodeAfter(nodeC, assessmentObject.createResult())
         assertTrue(point.node?.identifier == "right" || point.node?.identifier == "completion")
-        assertEquals(NavigationPoint.Direction.Forward, point.direction)
+        assertEquals(Direction.Forward, point.direction)
         val point2 = navigator.nodeAfter(nodeD, assessmentObject.createResult())
         assertTrue(point2.node?.identifier == "left" || point2.node?.identifier == "completion")
-        assertEquals(NavigationPoint.Direction.Forward, point2.direction)
+        assertEquals(Direction.Forward, point2.direction)
 
         val result = point.branchResult
         assertTrue(result is AssessmentResultObject)
@@ -139,7 +139,7 @@ class ExampleUnitTest: NavigationTestHelper() {
 
         val point = navigator.nodeAfter(nodeE, result)
         assertNull(point.node)
-        assertEquals(NavigationPoint.Direction.Forward, point.direction)
+        assertEquals(Direction.Forward, point.direction)
         assertEquals(result, point.branchResult)
     }
 
@@ -157,7 +157,7 @@ class ExampleUnitTest: NavigationTestHelper() {
 
         val point = navigator.nodeBefore(nodeB, assessmentObject.createResult())
         assertEquals(nodeA, point.node)
-        assertEquals(NavigationPoint.Direction.Backward, point.direction)
+        assertEquals(Direction.Backward, point.direction)
 
         val result = point.branchResult
         assertTrue(result is AssessmentResultObject)
@@ -175,10 +175,10 @@ class ExampleUnitTest: NavigationTestHelper() {
 
         val point = navigator.nodeBefore(nodeC, assessmentObject.createResult())
         assertNull(point.node)
-        assertEquals(NavigationPoint.Direction.Backward, point.direction)
+        assertEquals(Direction.Backward, point.direction)
         val point2 = navigator.nodeBefore(nodeD, assessmentObject.createResult())
         assertNull(point2.node)
-        assertEquals(NavigationPoint.Direction.Backward, point2.direction)
+        assertEquals(Direction.Backward, point2.direction)
 
         val result = point.branchResult
         assertTrue(result is AssessmentResultObject)
@@ -199,7 +199,7 @@ class ExampleUnitTest: NavigationTestHelper() {
 
         val point = navigator.nodeBefore(nodeA, result)
         assertNull(point.node)
-        assertEquals(NavigationPoint.Direction.Backward, point.direction)
+        assertEquals(Direction.Backward, point.direction)
         assertEquals(result, point.branchResult)
     }
 
@@ -262,7 +262,7 @@ open class NavigationTestHelper {
         override fun copyResult(identifier: String): Result = copy(identifier = identifier)
     }
 
-    class TestRootNodeController(var stepTo: Map<NavigationPoint.Direction, String> = mapOf(), var expectedCount: Int) : NodeUIController,
+    class TestRootNodeController(var stepTo: Map<Direction, String> = mapOf(), var expectedCount: Int) : NodeUIController,
         RootNodeController {
 
         var infiniteLoop = false
@@ -280,11 +280,11 @@ open class NavigationTestHelper {
         }
 
         override fun handleGoBack(nodeState: NodeState) {
-            show(nodeState, NavigationPoint.Direction.Backward)
+            show(nodeState, Direction.Backward)
         }
 
         override fun handleGoForward(nodeState: NodeState) {
-            show(nodeState, NavigationPoint.Direction.Forward)
+            show(nodeState, Direction.Forward)
         }
 
         override fun handleReadyToSave(reason: FinishedReason, nodeState: NodeState) {
@@ -293,7 +293,7 @@ open class NavigationTestHelper {
             readyToSave_reason = reason
         }
 
-        private fun show(nodeState: NodeState, direction: NavigationPoint.Direction) {
+        private fun show(nodeState: NodeState, direction: Direction) {
             nodeChain.add(nodeState)
             if (nodeChain.count() > expectedCount) {
                 infiniteLoop = true
@@ -320,7 +320,7 @@ open class NavigationTestHelper {
     }
 
     fun addResults(result: BranchNodeResult, nodeList: List<Node>, fromIndex: Int, toIndex: Int) {
-        val direction = if (fromIndex <= toIndex) NavigationPoint.Direction.Forward else NavigationPoint.Direction.Backward
+        val direction = if (fromIndex <= toIndex) Direction.Forward else Direction.Backward
         val range = if (fromIndex < toIndex) (fromIndex..toIndex) else (fromIndex downTo toIndex)
         range.forEach {
             result.pathHistoryResults.add(nodeList[it].createResult())
@@ -329,5 +329,6 @@ open class NavigationTestHelper {
     }
 
     fun buildNodeList(nodeCount: Int, start: Int, prefix: String) : Sequence<InstructionStepObject>
-            = generateSequence(start, { if ((it + 1) < (nodeCount + start)) (it + 1) else null }).map { InstructionStepObject(identifier = "$prefix$it") }
+        = generateSequence(start) { if ((it + 1) < (nodeCount + start)) (it + 1) else null }
+            .map { InstructionStepObject(identifier = "$prefix$it") }
 }
