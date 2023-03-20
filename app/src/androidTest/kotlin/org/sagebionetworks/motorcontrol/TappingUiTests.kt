@@ -76,8 +76,9 @@ class TappingUiTests {
                 .fetchSemanticsNodes().size == 2
         }
 
-        //Unable to test rapid tapping due to recomposition caused by background
-        //timer for the CountdownDial arabara 3/15/23
+        // Unable to test rapid tapping due to recomposition caused by background
+        // timer for the CountdownDial. ComposeTestRule waits for app to be idle
+        // before executing next line in test code arabara 3/20/23
         val leftButton = composeTestRule.onNodeWithTag("LEFT_BUTTON")
         leftButton.performClick()
 
