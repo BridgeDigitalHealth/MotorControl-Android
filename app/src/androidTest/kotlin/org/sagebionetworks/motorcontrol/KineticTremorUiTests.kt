@@ -18,6 +18,7 @@ class KineticTremorUiTests {
     val composeTestRule = createAndroidComposeRule<ContainerActivity>()
     private val exit = "Exit"
     private val start = "Start"
+    private val gotIt = "Got it"
 
     @Before
     fun navigateToHandSelection() {
@@ -26,7 +27,7 @@ class KineticTremorUiTests {
         composeTestRule.onNodeWithText("Get started")
             .assertExists()
             .performClick()
-        composeTestRule.onNodeWithText("Got it")
+        composeTestRule.onNodeWithText(gotIt)
             .assertExists()
             .performClick()
     }
@@ -69,7 +70,7 @@ class KineticTremorUiTests {
         composeTestRule.onNodeWithText("Pointing index finger")
             .assertExists()
             .performClick()
-        composeTestRule.onNodeWithText("Got it")
+        composeTestRule.onNodeWithText(gotIt)
             .assertExists()
             .performClick()
         composeTestRule.onNodeWithText(start)

@@ -15,6 +15,7 @@ class TappingUiTests {
     @get:Rule
     val composeTestRule = createAndroidComposeRule<ContainerActivity>()
     private val exit = "Exit"
+    private val startTheTest = "Start the test"
 
     @Before
     fun navigateToHandSelection() {
@@ -46,7 +47,7 @@ class TappingUiTests {
     fun testTappingBothHands() {
         selectHand("BOTH")
         navigateThroughInstructions()
-        performTappingStep("Start the test")
+        performTappingStep(startTheTest)
         performTappingStep(exit)
     }
 
@@ -63,7 +64,7 @@ class TappingUiTests {
         composeTestRule.onNodeWithText("Did it", substring = true)
             .assertExists()
             .performClick()
-        composeTestRule.onNodeWithText("Start the test")
+        composeTestRule.onNodeWithText(startTheTest)
             .assertExists()
             .performClick()
     }
