@@ -21,7 +21,7 @@ class StepTimer(
     private var instructionsSpoken = mutableSetOf(0)
 
     fun startTimer(restartsOnPause: Boolean = true) {
-        // This is to account for tapping step that does not restart the timer on pause
+        // This accounts for tapping step that does not restart the timer on pause
         val countdownDuration = if (restartsOnPause) {
             stepDuration * 1000
         } else {

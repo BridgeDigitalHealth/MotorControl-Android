@@ -16,10 +16,7 @@ import org.sagebionetworks.assessmentmodel.presentation.ui.theme.SageSurveyTheme
 import org.sagebionetworks.assessmentmodel.serialization.loadDrawable
 import org.sagebionetworks.motorcontrol.navigation.hand
 import org.sagebionetworks.motorcontrol.presentation.compose.MotionSensorStepUi
-import org.sagebionetworks.motorcontrol.serialization.BalanceStepObject
 import org.sagebionetworks.motorcontrol.serialization.MotionSensorStepObject
-import org.sagebionetworks.motorcontrol.serialization.TremorStepObject
-import org.sagebionetworks.motorcontrol.serialization.WalkStepObject
 import org.sagebionetworks.motorcontrol.utils.MotorControlVibrator
 import org.sagebionetworks.motorcontrol.utils.SpokenInstructionsConverter
 import org.sagebionetworks.motorcontrol.state.MotionSensorState

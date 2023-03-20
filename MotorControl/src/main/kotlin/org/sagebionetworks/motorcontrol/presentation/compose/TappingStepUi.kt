@@ -11,10 +11,7 @@ import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
@@ -22,6 +19,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.positionInRoot
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import kotlinx.datetime.Clock
@@ -81,6 +79,7 @@ internal fun TappingStepUi(
                         tappingState.onFirstTap()
                     },
                     buttonRect = tappingState.buttonRectLeft,
+                    testTag = "LEFT_BUTTON",
                     onTap = { location, tapDurationInMillis ->
                         tappingState.addTappingSample(
                             currentButton = TappingButtonIdentifier.Left,
@@ -96,6 +95,7 @@ internal fun TappingStepUi(
                         tappingState.onFirstTap()
                     },
                     buttonRect = tappingState.buttonRectRight,
+                    testTag = "RIGHT_BUTTON",
                     onTap = { location, tapDurationInMillis ->
                         tappingState.addTappingSample(
                             currentButton = TappingButtonIdentifier.Right,
@@ -115,6 +115,7 @@ private fun TapButton(
     countdown: MutableState<Long>,
     onFirstTap: () -> Unit = {},
     buttonRect: MutableSet<List<Float>>,
+    testTag: String,
     onTap: (location: List<Float>, duration: Long) -> Unit
 ) {
     Box(
@@ -123,6 +124,7 @@ private fun TapButton(
             countdown = countdown,
             onFirstTap = onFirstTap,
             buttonRect = buttonRect,
+            testTag = testTag,
             onTap = onTap
         )
     ) {
@@ -173,12 +175,14 @@ fun tapButtonModifierWithTapGesture(
     countdown: MutableState<Long>,
     onFirstTap: () -> Unit = {},
     buttonRect: MutableSet<List<Float>>,
+    testTag: String,
     onTap: (location: List<Float>, tapDurationInMillis: Long) -> Unit
 ): Modifier {
     val xOffset: MutableState<Float> = remember { mutableStateOf(0F) }
     val yOffset: MutableState<Float> = remember { mutableStateOf(0F) }
     val buttonSize = 100F.dp
     return Modifier
+        .testTag(testTag)
         .padding(vertical = 48.dp)
         .background(TapButtonColor, shape = CircleShape)
         .size(buttonSize)
