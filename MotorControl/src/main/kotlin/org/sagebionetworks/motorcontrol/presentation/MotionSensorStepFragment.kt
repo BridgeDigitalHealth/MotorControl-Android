@@ -10,6 +10,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.compose.material.MaterialTheme
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import org.sagebionetworks.assessmentmodel.presentation.StepFragment
 import org.sagebionetworks.assessmentmodel.presentation.databinding.ComposeQuestionStepFragmentBinding
 import org.sagebionetworks.assessmentmodel.presentation.ui.theme.SageSurveyTheme
@@ -43,9 +45,11 @@ open class MotionSensorStepFragment: StepFragment() {
 
         val drawable = step.imageInfo?.loadDrawable(requireContext())
         val tint = step.imageInfo?.tint ?: false
+        val paused = mutableStateOf(false)
 
         binding.questionContent.setContent {
             val hand = stepViewModel.nodeState.parent?.node?.hand()
+
             motionSensorState = MotionSensorState(
                 identifier = step.identifier,
                 hand = hand,
@@ -67,13 +71,23 @@ open class MotionSensorStepFragment: StepFragment() {
             SageSurveyTheme {
                 MotionSensorStepUi(
                     assessmentViewModel = assessmentViewModel,
-                    motionSensorState = motionSensorState,
+                    title = motionSensorState.title,
+                    countdownString = motionSensorState.countdownString,
+                    countdownFinished = motionSensorState.timer.countdownFinished,
+                    duration = motionSensorState.duration,
+                    hand = motionSensorState.hand,
                     image = drawable,
                     imageTintColor = if (tint) {
                         MaterialTheme.colors.primary
                     } else {
                         null
-                    }
+                    },
+                    cancelCountdown = { motionSensorState.cancel() },
+                    resetCountdown = { motionSensorState.countdown.value =
+                        (motionSensorState.duration * 1000).toLong()},
+                    startCountdown = { motionSensorState.start() },
+                    stopTTS = { motionSensorState.textToSpeech.stop() },
+                    paused = paused
                 )
             }
         }

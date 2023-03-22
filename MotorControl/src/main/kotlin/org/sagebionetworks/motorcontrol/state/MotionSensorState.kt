@@ -31,6 +31,8 @@ class MotionSensorState(
     override lateinit var textToSpeech: TextToSpeech
     override lateinit var recorderRunnerFactory: RecorderRunner.RecorderRunnerFactory
     override lateinit var recorderRunner: RecorderRunner
+    var countdownString = mutableStateOf(duration.toString())
+    private val millisLeft = mutableStateOf(duration * 1000)
 
     init {
         createMotionSensor()
@@ -42,6 +44,8 @@ class MotionSensorState(
 
     override val timer = StepTimer(
         countdown = countdown,
+        countdownString = countdownString,
+        millisLeft = millisLeft,
         stepDuration = duration,
         finished = {
             stopRecorder()

@@ -46,6 +46,7 @@ class TappingState(
     private var startTime: Long = uptimeMillis()
     val tapCount: MutableState<Int> = mutableStateOf(0)
     val initialTapOccurred: MutableState<Boolean> = mutableStateOf(false)
+    private val millisLeft = mutableStateOf(duration * 1000)
 
     init {
         createMotionSensor()
@@ -56,6 +57,8 @@ class TappingState(
 
     override val timer = StepTimer(
         countdown = countdown,
+        millisLeft = millisLeft,
+        countdownString = mutableStateOf(""),
         stepDuration = duration,
         finished = {
             stopRecorder()

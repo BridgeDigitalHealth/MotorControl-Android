@@ -9,6 +9,9 @@ import android.graphics.drawable.Drawable
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
@@ -19,17 +22,26 @@ import org.sagebionetworks.assessmentmodel.presentation.AssessmentViewModel
 import org.sagebionetworks.assessmentmodel.presentation.ui.theme.*
 import org.sagebionetworks.motorcontrol.navigation.HandSelection
 import org.sagebionetworks.motorcontrol.presentation.theme.ImageBackgroundColor
-import org.sagebionetworks.motorcontrol.state.MotionSensorState
 
 @Composable
 internal fun MotionSensorStepUi(
     modifier: Modifier = Modifier,
     assessmentViewModel: AssessmentViewModel?,
-    motionSensorState: MotionSensorState,
+    title: String,
+    countdownString: MutableState<String>,
+    countdownFinished: MutableState<Boolean>,
+    duration: Double,
+    hand: HandSelection?,
     image: Drawable?,
-    imageTintColor: Color?
+    imageTintColor: Color?,
+    cancelCountdown: () -> Unit,
+    stopTTS: () -> Unit,
+    resetCountdown: () -> Unit,
+    startCountdown: () -> Unit,
+    paused: MutableState<Boolean>
 ) {
-    val imageModifier = if (motionSensorState.hand == HandSelection.RIGHT) {
+    println("RECOMPOSING")
+    val imageModifier = if (hand == HandSelection.RIGHT) {
         Modifier
             .fillMaxSize()
             .scale(-1F, 1F)
@@ -52,22 +64,29 @@ internal fun MotionSensorStepUi(
         Column {
             MotorControlPauseUi(
                 assessmentViewModel = assessmentViewModel,
-                stepCompleted = motionSensorState.countdown.value == 0L,
+                stepCompleted = countdownString.value == "0",
                 onPause = {
-                    motionSensorState.cancel()
-                    motionSensorState.textToSpeech.stop()
+                    cancelCountdown()
+                    stopTTS()
+                    paused.value = true
                 },
                 onUnpause = {
-                    motionSensorState.countdown.value = (motionSensorState.duration * 1000).toLong() // Resets countdown to initial value
-                    motionSensorState.start()
+                    paused.value = false
+                    resetCountdown()
+                    startCountdown()
                 }
             )
             Box(Modifier.padding(vertical = 10.dp)) {
-                StepBodyTextUi(motionSensorState.title, null, null, modifier)
+                StepBodyTextUi(title, null, null, modifier)
             }
             CountdownDial(
-                countdownDuration = motionSensorState.duration,
-                countdown = motionSensorState.countdown,
+                countdownDuration = duration,
+                countdownFinished = countdownFinished,
+                paused = paused,
+                millisLeft = remember { mutableStateOf(30000.0) },
+                canBeginCountdown = remember { mutableStateOf(true) },
+                timerStartsImmediately = true,
+                countdownString = countdownString,
                 dialSubText = stringResource(id = R.string.seconds)
             )
         }

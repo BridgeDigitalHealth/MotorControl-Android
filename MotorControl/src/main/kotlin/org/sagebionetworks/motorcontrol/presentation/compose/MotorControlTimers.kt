@@ -8,32 +8,41 @@ package org.sagebionetworks.motorcontrol.presentation.compose
 import android.os.CountDownTimer
 import android.speech.tts.TextToSpeech
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateOf
 import kotlin.math.ceil
 
 class StepTimer(
     val countdown: MutableState<Long>,
+    val millisLeft: MutableState<Double>,
+    val countdownString: MutableState<String>,
     val stepDuration: Double,
     val finished: () -> Unit,
     private val textToSpeech: TextToSpeech? = null,
     private val spokenInstructions: Map<Int, String>? = null,
 ) {
+    val countdownFinished = mutableStateOf(false)
     private var timer: CountDownTimer? = null
     private var instructionsSpoken = mutableSetOf(0)
 
     fun startTimer(restartsOnPause: Boolean = true) {
         // This accounts for tapping step that does not restart the timer on pause
-        val countdownDuration = if (restartsOnPause) {
-            stepDuration * 1000
-        } else {
-            countdown.value
+        if (!restartsOnPause) {
+            millisLeft.value = countdown.value.toDouble()
         }
-        timer = object: CountDownTimer(countdownDuration.toLong(), 10) {
+        countdownString.value = (millisLeft.value / 1000).toInt().toString()
+        timer = object: CountDownTimer(millisLeft.value.toLong(), 1000) {
             override fun onTick(millisUntilFinished: Long) {
-                speakAt(stepDuration.toInt() - ceil((millisUntilFinished.toDouble() / 1000)).toInt())
+                val second = ceil((millisUntilFinished.toDouble() / 1000)).toInt()
+                if(second.toString() != countdownString.value) {
+                    countdownString.value = second.toString()
+                }
+                speakAt(stepDuration.toInt() - second)
                 countdown.value = millisUntilFinished
             }
 
             override fun onFinish() {
+                countdownString.value = "0"
+                countdownFinished.value = true
                 finished()
                 this.cancel()
             }

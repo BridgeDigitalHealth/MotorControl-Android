@@ -81,7 +81,11 @@ class TappingUiTests {
         // timer for the CountdownDial. ComposeTestRule waits for app to be idle
         // before executing next line in test code arabara 3/20/23
         val leftButton = composeTestRule.onNodeWithTag("LEFT_BUTTON")
+        val rightButton = composeTestRule.onNodeWithTag("RIGHT_BUTTON")
         leftButton.performClick()
+        rightButton.performClick()
+        leftButton.performClick()
+        rightButton.performClick()
 
         composeTestRule.waitUntil(40000) {
             composeTestRule

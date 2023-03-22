@@ -10,7 +10,6 @@ import org.sagebionetworks.assessmentmodel.AssessmentRegistryProvider
 import org.sagebionetworks.assessmentmodel.presentation.AssessmentActivity
 import com.example.motorcontrol_android.databinding.AssessmentRowBinding
 import com.example.motorcontrol_android.databinding.ActivityContainerBinding
-import org.sagebionetworks.assessmentmodel.serialization.ModuleInfoObject
 import org.sagebionetworks.motorcontrol.serialization.MotorControlModuleInfoObject
 
 class ContainerActivity: AppCompatActivity() {

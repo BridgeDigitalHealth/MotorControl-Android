@@ -24,15 +24,18 @@ internal fun CountdownStepUi(
     assessmentViewModel: AssessmentViewModel?,
     duration: Double,
     countdown: MutableState<Long>,
-    timer: StepTimer?
+    timer: StepTimer,
+    paused: MutableState<Boolean>
 ) {
     Column(modifier = Modifier.background(BackgroundGray)) {
+        println("RECOMPOSING")
         MotorControlPauseUi(
             assessmentViewModel = assessmentViewModel,
-            onPause = { timer?.clear() },
+            onPause = { timer.clear() },
             onUnpause = {
-                countdown.value = (duration * 1000).toLong() // Resets countdown to initial value
-                timer?.startTimer()
+                // Resets countdown to initial value
+                countdown.value = (duration * 1000).toLong()
+                timer.startTimer()
             }
         )
         Column(
@@ -50,21 +53,16 @@ internal fun CountdownStepUi(
                     .fillMaxWidth()
                     .padding(16.dp)
             )
-            CountdownDial(countdownDuration = duration, countdown = countdown)
+            CountdownDial(
+                countdownDuration = duration,
+                canBeginCountdown = remember { mutableStateOf(true) },
+                paused = paused,
+                countdownFinished = timer.countdownFinished,
+                countdownString = timer.countdownString,
+                millisLeft = timer.millisLeft,
+                timerStartsImmediately = true
+            )
             Spacer(modifier = Modifier.weight(1f))
         }
-    }
-}
-
-@Preview
-@Composable
-private fun InstructionStepPreview() {
-    SageSurveyTheme {
-        CountdownStepUi(
-            assessmentViewModel = null,
-            duration = 5.0,
-            countdown = mutableStateOf(5),
-            timer = null
-        )
     }
 }

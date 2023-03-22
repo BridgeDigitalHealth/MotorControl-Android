@@ -27,7 +27,7 @@ open class CountdownStepFragment: StepFragment() {
 
     private lateinit var step: CountdownStep
 
-    private var timer: StepTimer? = null
+    private lateinit var timer: StepTimer
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -37,20 +37,24 @@ open class CountdownStepFragment: StepFragment() {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
         _binding = ComposeQuestionStepFragmentBinding.inflate(layoutInflater, container, false)
+        val paused = mutableStateOf(false)
         binding.questionContent.setContent {
             val countdown: MutableState<Long> = remember { mutableStateOf(step.duration.toLong() * 1000) }
             timer = StepTimer(
-                countdown,
-                step.duration,
-                assessmentViewModel::goForward
+                countdown = countdown,
+                countdownString = remember { mutableStateOf(step.duration.toInt().toString()) },
+                millisLeft = remember { mutableStateOf(5000.0) },
+                stepDuration = step.duration,
+                finished = assessmentViewModel::goForward
             )
-            timer?.startTimer()
+            timer.startTimer()
             SageSurveyTheme {
                 CountdownStepUi(
                     assessmentViewModel = assessmentViewModel,
                     duration = step.duration,
                     countdown = countdown,
-                    timer = timer
+                    timer = timer,
+                    paused = paused
                 )
             }
         }
@@ -58,7 +62,7 @@ open class CountdownStepFragment: StepFragment() {
     }
 
     override fun onDestroyView() {
-        timer?.clear()
+        timer.clear()
         super.onDestroyView()
         _binding = null
     }

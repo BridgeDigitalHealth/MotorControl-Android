@@ -10,6 +10,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.compose.material.MaterialTheme
+import androidx.compose.runtime.mutableStateOf
 import org.sagebionetworks.assessmentmodel.presentation.StepFragment
 import org.sagebionetworks.assessmentmodel.presentation.databinding.ComposeQuestionStepFragmentBinding
 import org.sagebionetworks.assessmentmodel.presentation.ui.theme.SageSurveyTheme
@@ -42,7 +43,7 @@ open class TappingStepFragment: StepFragment() {
         _binding = ComposeQuestionStepFragmentBinding.inflate(layoutInflater, container, false)
         val drawable = step.imageInfo?.loadDrawable(requireContext())
         val tint = step.imageInfo?.tint ?: false
-
+        val paused = mutableStateOf(false)
         binding.questionContent.setContent {
             val hand = stepViewModel.nodeState.parent?.node?.hand()
             tappingState = TappingState(
@@ -66,7 +67,12 @@ open class TappingStepFragment: StepFragment() {
             SageSurveyTheme {
                 TappingStepUi(
                     assessmentViewModel = assessmentViewModel,
-                    tappingState = tappingState,
+                    countdownTimer = tappingState.timer,
+                    countdownDuration = tappingState.duration,
+                    initialTapOccurred = tappingState.initialTapOccurred,
+                    tapCount = tappingState.tapCount,
+                    buttonRectLeft = tappingState.buttonRectLeft,
+                    buttonRectRight = tappingState.buttonRectRight,
                     image = drawable,
                     flippedImage = stepViewModel.nodeState.parent?.node?.hand()
                             == HandSelection.RIGHT,
@@ -74,7 +80,14 @@ open class TappingStepFragment: StepFragment() {
                         MaterialTheme.colors.primary
                     } else {
                         null
-                    }
+                    },
+                    addTappingSample = { currentButton, location, tapDurationMillis ->
+                        tappingState.addTappingSample(currentButton, location, tapDurationMillis)
+                    },
+                    onFirstTap = { tappingState.onFirstTap() },
+                    stopTimer = { tappingState.timer.stopTimer() },
+                    startTimer = { tappingState.timer.startTimer(false) },
+                    paused = paused
                 )
             }
         }
