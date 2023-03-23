@@ -25,7 +25,7 @@ class StepTimer(
     private var instructionsSpoken = mutableSetOf(0)
 
     fun startTimer(restartsOnPause: Boolean = true) {
-        // This accounts for tapping step that does not restart the timer on pause
+        // This accounts for steps that do not restart the timer on pause
         if (!restartsOnPause) {
             millisLeft.value = countdown.value.toDouble()
         }

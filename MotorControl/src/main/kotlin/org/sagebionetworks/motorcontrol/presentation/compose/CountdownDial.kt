@@ -40,8 +40,12 @@ fun CountdownDial(
     dialSubText: String? = null,
     backgroundColor: Color = BackgroundGray
 ) {
+    /**
+     * These values are to account for resuming animation when pausing on a measure that does not restart on pause
+     */
     val countdownDurationInMillis = (countdownDuration * 1000).toFloat()
     val initialValue = (countdownDurationInMillis - millisLeft.value) / countdownDurationInMillis
+
     val transition = rememberInfiniteTransition()
     val scale by transition.animateFloat(
         initialValue = if (
