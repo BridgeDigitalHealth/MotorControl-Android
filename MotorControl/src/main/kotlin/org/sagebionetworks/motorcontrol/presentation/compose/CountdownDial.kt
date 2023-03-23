@@ -40,16 +40,19 @@ fun CountdownDial(
     dialSubText: String? = null,
     backgroundColor: Color = BackgroundGray
 ) {
-    val countdownDurationMillis = (countdownDuration * 1000).toFloat()
-    val animationDurationMillis = (countdownDurationMillis - (countdownDurationMillis - millisLeft.value)).toInt()
-    val initialValue = (countdownDurationMillis - (millisLeft.value)) / countdownDurationMillis
+    val countdownDurationInMillis = (countdownDuration * 1000).toFloat()
+    val initialValue = (countdownDurationInMillis - millisLeft.value) / countdownDurationInMillis
     val transition = rememberInfiniteTransition()
     val scale by transition.animateFloat(
-        initialValue = if (canBeginCountdown.value && !timerStartsImmediately) initialValue.toFloat() else 0F,
+        initialValue = if (
+            canBeginCountdown.value &&
+            !timerStartsImmediately &&
+            !paused.value
+        ) initialValue.toFloat() else 0F,
         targetValue = if (canBeginCountdown.value && !paused.value) 1F else 0F,
         animationSpec = infiniteRepeatable(
             animation = tween(
-                durationMillis = if (timerStartsImmediately) countdownDurationMillis.toInt() else animationDurationMillis,
+                durationMillis = if (timerStartsImmediately) countdownDurationInMillis.toInt() else millisLeft.value.toInt(),
                 easing = LinearEasing
             ),
             repeatMode = RepeatMode.Reverse
