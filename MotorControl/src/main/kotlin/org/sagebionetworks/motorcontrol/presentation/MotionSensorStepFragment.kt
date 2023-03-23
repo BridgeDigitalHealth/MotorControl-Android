@@ -82,11 +82,11 @@ open class MotionSensorStepFragment: StepFragment() {
                     } else {
                         null
                     },
-                    cancelCountdown = { motionSensorState.cancel() },
+                    cancelCountdown = motionSensorState::cancel,
                     resetCountdown = { motionSensorState.countdown.value =
                         (motionSensorState.duration * 1000).toLong()},
-                    startCountdown = { motionSensorState.start() },
-                    stopTTS = { motionSensorState.textToSpeech.stop() },
+                    startCountdown = motionSensorState::start,
+                    stopTTS = motionSensorState.textToSpeech::stop,
                     paused = paused
                 )
             }

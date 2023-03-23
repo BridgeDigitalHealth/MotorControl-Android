@@ -40,7 +40,6 @@ internal fun MotionSensorStepUi(
     startCountdown: () -> Unit,
     paused: MutableState<Boolean>
 ) {
-    println("RECOMPOSING")
     val imageModifier = if (hand == HandSelection.RIGHT) {
         Modifier
             .fillMaxSize()

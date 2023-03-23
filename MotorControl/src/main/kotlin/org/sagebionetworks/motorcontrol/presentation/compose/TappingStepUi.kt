@@ -48,7 +48,6 @@ internal fun TappingStepUi(
     startTimer: (Boolean) -> Unit,
     paused: MutableState<Boolean>
 ) {
-    println("RECOMPOSING")
     val imageModifier = if (flippedImage) {
         Modifier
             .fillMaxSize()

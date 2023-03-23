@@ -84,8 +84,8 @@ open class TappingStepFragment: StepFragment() {
                     addTappingSample = { currentButton, location, tapDurationMillis ->
                         tappingState.addTappingSample(currentButton, location, tapDurationMillis)
                     },
-                    onFirstTap = { tappingState.onFirstTap() },
-                    stopTimer = { tappingState.timer.stopTimer() },
+                    onFirstTap = tappingState::onFirstTap,
+                    stopTimer = tappingState.timer::stopTimer,
                     startTimer = { tappingState.timer.startTimer(false) },
                     paused = paused
                 )

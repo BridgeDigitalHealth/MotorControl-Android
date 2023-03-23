@@ -28,7 +28,6 @@ internal fun CountdownStepUi(
     paused: MutableState<Boolean>
 ) {
     Column(modifier = Modifier.background(BackgroundGray)) {
-        println("RECOMPOSING")
         MotorControlPauseUi(
             assessmentViewModel = assessmentViewModel,
             onPause = { timer.clear() },
