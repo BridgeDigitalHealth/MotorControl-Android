@@ -56,6 +56,20 @@
             </AndroidTestResultsTableState>
           </value>
         </entry>
+        <entry key="-1320454847">
+          <value>
+            <AndroidTestResultsTableState>
+              <option name="preferredColumnWidths">
+                <map>
+                  <entry key="Duration" value="90" />
+                  <entry key="Tests" value="360" />
+                  <entry key="ZY22CCDGMW" value="120" />
+                  <entry key="motorola&#10; moto g power (2021)" value="120" />
+                </map>
+              </option>
+            </AndroidTestResultsTableState>
+          </value>
+        </entry>
         <entry key="-1282211429">
           <value>
             <AndroidTestResultsTableState>
@@ -123,6 +137,20 @@
             </AndroidTestResultsTableState>
           </value>
         </entry>
+        <entry key="-538838218">
+          <value>
+            <AndroidTestResultsTableState>
+              <option name="preferredColumnWidths">
+                <map>
+                  <entry key="Duration" value="90" />
+                  <entry key="Tests" value="360" />
+                  <entry key="ZY22CCDGMW" value="120" />
+                  <entry key="motorola&#10; moto g power (2021)" value="120" />
+                </map>
+              </option>
+            </AndroidTestResultsTableState>
+          </value>
+        </entry>
         <entry key="-422524112">
           <value>
             <AndroidTestResultsTableState>
@@ -162,6 +190,20 @@
             </AndroidTestResultsTableState>
           </value>
         </entry>
+        <entry key="140752594">
+          <value>
+            <AndroidTestResultsTableState>
+              <option name="preferredColumnWidths">
+                <map>
+                  <entry key="Duration" value="90" />
+                  <entry key="Tests" value="360" />
+                  <entry key="ZY22CCDGMW" value="120" />
+                  <entry key="motorola&#10; moto g power (2021)" value="120" />
+                </map>
+              </option>
+            </AndroidTestResultsTableState>
+          </value>
+        </entry>
         <entry key="354959106">
           <value>
             <AndroidTestResultsTableState>
@@ -196,6 +238,20 @@
                   <entry key="Duration" value="90" />
                   <entry key="Pixel_4_API_30" value="120" />
                   <entry key="Tests" value="360" />
+                </map>
+              </option>
+            </AndroidTestResultsTableState>
+          </value>
+        </entry>
+        <entry key="975378971">
+          <value>
+            <AndroidTestResultsTableState>
+              <option name="preferredColumnWidths">
+                <map>
+                  <entry key="Duration" value="90" />
+                  <entry key="Tests" value="360" />
+                  <entry key="ZY22CCDGMW" value="120" />
+                  <entry key="motorola&#10; moto g power (2021)" value="120" />
                 </map>
               </option>
             </AndroidTestResultsTableState>
@@ -258,6 +314,34 @@
                   <entry key="Duration" value="90" />
                   <entry key="Small" value="120" />
                   <entry key="Tests" value="360" />
+                </map>
+              </option>
+            </AndroidTestResultsTableState>
+          </value>
+        </entry>
+        <entry key="1816026473">
+          <value>
+            <AndroidTestResultsTableState>
+              <option name="preferredColumnWidths">
+                <map>
+                  <entry key="Duration" value="90" />
+                  <entry key="Tests" value="360" />
+                  <entry key="ZY22CCDGMW" value="120" />
+                  <entry key="motorola&#10; moto g power (2021)" value="120" />
+                </map>
+              </option>
+            </AndroidTestResultsTableState>
+          </value>
+        </entry>
+        <entry key="1857078632">
+          <value>
+            <AndroidTestResultsTableState>
+              <option name="preferredColumnWidths">
+                <map>
+                  <entry key="Duration" value="90" />
+                  <entry key="Tests" value="360" />
+                  <entry key="ZY22CCDGMW" value="120" />
+                  <entry key="motorola&#10; moto g power (2021)" value="120" />
                 </map>
               </option>
             </AndroidTestResultsTableState>

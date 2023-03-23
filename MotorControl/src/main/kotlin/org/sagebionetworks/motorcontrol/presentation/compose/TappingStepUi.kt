@@ -165,6 +165,7 @@ fun screenModifierWithTapGesture(
     addTappingSample: (TappingButtonIdentifier, List<Float>, Long) -> Unit
 ): Modifier {
     return Modifier
+        .testTag("TAP_SCREEN")
         .fillMaxHeight()
         .background(BackgroundGray)
         .pointerInput(Unit) {

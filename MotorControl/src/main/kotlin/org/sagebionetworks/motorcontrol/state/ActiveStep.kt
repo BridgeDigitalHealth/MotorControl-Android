@@ -41,12 +41,13 @@ interface ActiveStep {
     val inputResult: MutableSet<Result>?
 
     fun createMotionSensor() {
+        val filePrefix = if (hand != null) "${hand}_" else ""
         recorderRunnerFactory = RecorderRunner.RecorderRunnerFactory(context, null)
         recorderRunnerFactory.withConfig(
             listOf(
                 RecorderScheduledAssessmentConfig(
                     recorder = BackgroundRecordersConfigurationElement.Recorder(
-                        "${hand?.name?.lowercase()}_$identifier",
+                        "$filePrefix$identifier",
                         MotionRecorderConfiguration.TYPE
                     ),
                     disabledByAppForTaskIdentifiers = setOf(),

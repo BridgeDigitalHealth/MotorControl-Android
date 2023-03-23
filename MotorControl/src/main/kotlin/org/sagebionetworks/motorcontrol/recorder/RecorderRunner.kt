@@ -36,7 +36,7 @@ import org.sagebionetworks.motorcontrol.serialization.BackgroundRecordersConfigu
  * Does not implement the full feature set of AsyncActions and Recorders defined by AssessmentModel.
  */
 class RecorderRunner(
-    val context: Context,
+    private val context: Context,
     private val httpClient: HttpClient?,
     configs: List<RecorderScheduledAssessmentConfig>,
     private val taskIdentifier: String,
