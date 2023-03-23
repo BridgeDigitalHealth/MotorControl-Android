@@ -11,6 +11,7 @@ import android.os.Looper
 import android.speech.tts.TextToSpeech
 import android.speech.tts.UtteranceProgressListener
 import androidx.compose.runtime.MutableState
+import androidx.compose.ui.text.toLowerCase
 import co.touchlab.kermit.Logger
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -41,7 +42,7 @@ interface ActiveStep {
     val inputResult: MutableSet<Result>?
 
     fun createMotionSensor() {
-        val filePrefix = if (hand != null) "${hand}_" else ""
+        val filePrefix = if (hand != null) "${hand?.toString()?.lowercase()}_" else ""
         recorderRunnerFactory = RecorderRunner.RecorderRunnerFactory(context, null)
         recorderRunnerFactory.withConfig(
             listOf(
