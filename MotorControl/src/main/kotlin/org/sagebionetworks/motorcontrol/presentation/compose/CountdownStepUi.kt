@@ -12,12 +12,12 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import org.sagebionetworks.assessmentmodel.presentation.AssessmentViewModel
 import org.sagebionetworks.assessmentmodel.presentation.ui.theme.*
 import org.sagebionetworks.motorcontrol.R
 import org.sagebionetworks.motorcontrol.presentation.theme.countdownBeginText
+import org.sagebionetworks.motorcontrol.utils.StepTimer
 
 @Composable
 internal fun CountdownStepUi(

@@ -23,7 +23,7 @@ import org.sagebionetworks.assessmentmodel.serialization.AnimatedImage
 import org.sagebionetworks.assessmentmodel.serialization.FetchableImage
 import org.sagebionetworks.assessmentmodel.serialization.OverviewStepObject
 import org.sagebionetworks.assessmentmodel.serialization.loadDrawable
-import org.sagebionetworks.motorcontrol.presentation.compose.AnimationTimer
+import org.sagebionetworks.motorcontrol.utils.AnimationTimer
 import org.sagebionetworks.motorcontrol.presentation.compose.OverviewStepUi
 
 open class OverviewStepFragment: StepFragment() {

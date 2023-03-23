@@ -26,7 +26,7 @@ import org.sagebionetworks.assessmentmodel.serialization.FetchableImage
 import org.sagebionetworks.assessmentmodel.serialization.loadDrawable
 import org.sagebionetworks.motorcontrol.navigation.HandSelection
 import org.sagebionetworks.motorcontrol.navigation.hand
-import org.sagebionetworks.motorcontrol.presentation.compose.AnimationTimer
+import org.sagebionetworks.motorcontrol.utils.AnimationTimer
 import org.sagebionetworks.motorcontrol.presentation.compose.CompletionStepUi
 import org.sagebionetworks.motorcontrol.presentation.compose.InstructionStepUi
 

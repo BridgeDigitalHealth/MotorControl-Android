@@ -14,7 +14,7 @@ import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
 import org.sagebionetworks.assessmentmodel.Result
 import org.sagebionetworks.motorcontrol.navigation.HandSelection
-import org.sagebionetworks.motorcontrol.presentation.compose.StepTimer
+import org.sagebionetworks.motorcontrol.utils.StepTimer
 import org.sagebionetworks.motorcontrol.recorder.RecorderRunner
 import org.sagebionetworks.motorcontrol.serialization.TappingButtonIdentifier
 import org.sagebionetworks.motorcontrol.serialization.TappingResultObject

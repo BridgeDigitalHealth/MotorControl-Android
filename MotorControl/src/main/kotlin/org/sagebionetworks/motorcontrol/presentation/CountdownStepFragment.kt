@@ -17,7 +17,7 @@ import org.sagebionetworks.assessmentmodel.CountdownStep
 import org.sagebionetworks.assessmentmodel.presentation.StepFragment
 import org.sagebionetworks.assessmentmodel.presentation.databinding.ComposeQuestionStepFragmentBinding
 import org.sagebionetworks.assessmentmodel.presentation.ui.theme.SageSurveyTheme
-import org.sagebionetworks.motorcontrol.presentation.compose.StepTimer
+import org.sagebionetworks.motorcontrol.utils.StepTimer
 
 open class CountdownStepFragment: StepFragment() {
 

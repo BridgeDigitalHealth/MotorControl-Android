@@ -3,7 +3,7 @@
 //
 //
 
-package org.sagebionetworks.motorcontrol.presentation.compose
+package org.sagebionetworks.motorcontrol.utils
 
 import android.os.CountDownTimer
 import android.speech.tts.TextToSpeech

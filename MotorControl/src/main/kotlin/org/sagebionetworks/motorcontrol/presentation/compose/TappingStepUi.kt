@@ -29,6 +29,7 @@ import org.sagebionetworks.assessmentmodel.presentation.ui.theme.*
 import org.sagebionetworks.motorcontrol.R
 import org.sagebionetworks.motorcontrol.presentation.theme.*
 import org.sagebionetworks.motorcontrol.serialization.TappingButtonIdentifier
+import org.sagebionetworks.motorcontrol.utils.StepTimer
 
 @Composable
 internal fun TappingStepUi(
