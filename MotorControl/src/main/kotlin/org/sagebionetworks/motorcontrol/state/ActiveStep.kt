@@ -110,7 +110,7 @@ interface ActiveStep {
             ""
         )
         /**
-         * This is to keep the measure unblocked in the case that TTS does not work
+         * If active step is finished and TTS does not work then navigate forward
          */
         if (status == TextToSpeech.ERROR) {
             goForward()
