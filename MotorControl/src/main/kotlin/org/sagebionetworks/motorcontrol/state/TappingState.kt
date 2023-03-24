@@ -14,7 +14,7 @@ import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
 import org.sagebionetworks.assessmentmodel.Result
 import org.sagebionetworks.motorcontrol.navigation.HandSelection
-import org.sagebionetworks.motorcontrol.presentation.compose.StepTimer
+import org.sagebionetworks.motorcontrol.utils.StepTimer
 import org.sagebionetworks.motorcontrol.recorder.RecorderRunner
 import org.sagebionetworks.motorcontrol.serialization.TappingButtonIdentifier
 import org.sagebionetworks.motorcontrol.serialization.TappingResultObject
@@ -46,6 +46,7 @@ class TappingState(
     private var startTime: Long = uptimeMillis()
     val tapCount: MutableState<Int> = mutableStateOf(0)
     val initialTapOccurred: MutableState<Boolean> = mutableStateOf(false)
+    private val millisLeft = mutableStateOf(duration * 1000)
 
     init {
         createMotionSensor()
@@ -56,6 +57,8 @@ class TappingState(
 
     override val timer = StepTimer(
         countdown = countdown,
+        millisLeft = millisLeft,
+        countdownString = mutableStateOf(""),
         stepDuration = duration,
         finished = {
             stopRecorder()

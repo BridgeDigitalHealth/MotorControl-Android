@@ -11,10 +11,7 @@ import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
@@ -22,6 +19,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.positionInRoot
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import kotlinx.datetime.Clock
@@ -31,15 +29,25 @@ import org.sagebionetworks.assessmentmodel.presentation.ui.theme.*
 import org.sagebionetworks.motorcontrol.R
 import org.sagebionetworks.motorcontrol.presentation.theme.*
 import org.sagebionetworks.motorcontrol.serialization.TappingButtonIdentifier
-import org.sagebionetworks.motorcontrol.state.TappingState
+import org.sagebionetworks.motorcontrol.utils.StepTimer
 
 @Composable
 internal fun TappingStepUi(
     assessmentViewModel: AssessmentViewModel?,
-    tappingState: TappingState,
+    countdownTimer: StepTimer,
+    countdownDuration: Double,
+    initialTapOccurred: MutableState<Boolean>,
+    tapCount: MutableState<Int>,
+    buttonRectLeft: MutableSet<List<Float>>,
+    buttonRectRight: MutableSet<List<Float>>,
     image: Drawable?,
     flippedImage: Boolean,
     imageTintColor: Color?,
+    addTappingSample: (TappingButtonIdentifier, List<Float>, Long) -> Unit,
+    onFirstTap: () -> Unit,
+    stopTimer: () -> Unit,
+    startTimer: (Boolean) -> Unit,
+    paused: MutableState<Boolean>
 ) {
     val imageModifier = if (flippedImage) {
         Modifier
@@ -48,7 +56,8 @@ internal fun TappingStepUi(
     } else {
         Modifier.fillMaxSize()
     }
-    Box(modifier = screenModifierWithTapGesture(tappingState)) {
+    val canBeginCountdown = remember { mutableStateOf(false) }
+    Box(modifier = screenModifierWithTapGesture(countdownTimer.countdownFinished, initialTapOccurred, addTappingSample)) {
         if (image != null) {
             SingleImageUi(
                 image = image,
@@ -61,46 +70,57 @@ internal fun TappingStepUi(
         Column {
             MotorControlPauseUi(
                 assessmentViewModel = assessmentViewModel,
-                stepCompleted = tappingState.countdown.value == 0L,
-                onPause = { tappingState.timer.stopTimer() },
-                onUnpause = { tappingState.timer.startTimer(restartsOnPause = false)}
+                stepCompleted = countdownTimer.countdownFinished.value,
+                onPause = {
+                    stopTimer()
+                    paused.value = true
+                },
+                onUnpause = {
+                    paused.value = false
+                    startTimer(false)
+                }
             )
             Spacer(modifier = Modifier.weight(1F))
-            CountdownDial(
-                countdownDuration = tappingState.duration,
-                countdown = tappingState.countdown,
-                dialContent = tappingState.tapCount,
+            CountdownDialNoRestart(
+                countdownDuration = countdownDuration,
+                paused = paused,
+                millisLeft = countdownTimer.millisLeft,
+                countdownFinished = countdownTimer.countdownFinished,
+                canBeginCountdown = canBeginCountdown,
+                dialContent = tapCount,
                 dialSubText = stringResource(id = R.string.tap_count)
             )
             Spacer(modifier = Modifier.weight(1F))
             Row {
                 Spacer(modifier = Modifier.weight(1F))
+                val firstTap = {
+                    onFirstTap()
+                    canBeginCountdown.value = true
+                }
                 TapButton(
-                    countdown = tappingState.countdown,
-                    onFirstTap = {
-                        tappingState.onFirstTap()
-                    },
-                    buttonRect = tappingState.buttonRectLeft,
+                    countdownFinished = countdownTimer.countdownFinished,
+                    onFirstTap = firstTap,
+                    buttonRect = buttonRectLeft,
+                    testTag = "LEFT_BUTTON",
                     onTap = { location, tapDurationInMillis ->
-                        tappingState.addTappingSample(
-                            currentButton = TappingButtonIdentifier.Left,
-                            location = location,
-                            tapDurationInMillis = tapDurationInMillis
+                        addTappingSample(
+                            TappingButtonIdentifier.Left,
+                            location,
+                            tapDurationInMillis
                         )
                     }
                 )
                 Spacer(modifier = Modifier.weight(1F))
                 TapButton(
-                    countdown = tappingState.countdown,
-                    onFirstTap = {
-                        tappingState.onFirstTap()
-                    },
-                    buttonRect = tappingState.buttonRectRight,
+                    countdownFinished = countdownTimer.countdownFinished,
+                    onFirstTap = firstTap,
+                    buttonRect = buttonRectRight,
+                    testTag = "RIGHT_BUTTON",
                     onTap = { location, tapDurationInMillis ->
-                        tappingState.addTappingSample(
-                            currentButton = TappingButtonIdentifier.Right,
-                            location = location,
-                            tapDurationInMillis = tapDurationInMillis
+                        addTappingSample(
+                            TappingButtonIdentifier.Right,
+                            location,
+                            tapDurationInMillis
                         )
                     }
                 )
@@ -112,17 +132,19 @@ internal fun TappingStepUi(
 
 @Composable
 private fun TapButton(
-    countdown: MutableState<Long>,
+    countdownFinished: MutableState<Boolean>,
     onFirstTap: () -> Unit = {},
     buttonRect: MutableSet<List<Float>>,
+    testTag: String,
     onTap: (location: List<Float>, duration: Long) -> Unit
 ) {
     Box(
         contentAlignment = Alignment.Center,
         modifier = tapButtonModifierWithTapGesture(
-            countdown = countdown,
+            countdownFinished = countdownFinished,
             onFirstTap = onFirstTap,
             buttonRect = buttonRect,
+            testTag = testTag,
             onTap = onTap
         )
     ) {
@@ -136,16 +158,19 @@ private fun TapButton(
 
 @Composable
 fun screenModifierWithTapGesture(
-    tappingState: TappingState
+    countdownFinished: MutableState<Boolean>,
+    initialTapOccurred: MutableState<Boolean>,
+    addTappingSample: (TappingButtonIdentifier, List<Float>, Long) -> Unit
 ): Modifier {
     return Modifier
+        .testTag("TAP_SCREEN")
         .fillMaxHeight()
         .background(BackgroundGray)
         .pointerInput(Unit) {
             detectTapGestures(
                 onPress = { location ->
                     // Ignores tap on screen if countdown is done
-                    if (tappingState.countdown.value <= 0) {
+                    if (countdownFinished.value) {
                         return@detectTapGestures
                     }
                     lateinit var startOfTapDuration: Instant
@@ -154,11 +179,13 @@ fun screenModifierWithTapGesture(
                         startOfTapDuration = Clock.System.now()
                         awaitRelease()
                     } finally {
-                        if (tappingState.initialTapOccurred.value) {
-                            tappingState.addTappingSample(
-                                currentButton = TappingButtonIdentifier.None,
-                                location = listOf(location.x, location.y),
-                                tapDurationInMillis = Clock.System.now().toEpochMilliseconds()
+                        if (initialTapOccurred.value) {
+                            addTappingSample(
+                                TappingButtonIdentifier.None,
+                                listOf(location.x, location.y),
+                                Clock.System
+                                    .now()
+                                    .toEpochMilliseconds()
                                         - startOfTapDuration.toEpochMilliseconds()
                             )
                         }
@@ -170,15 +197,17 @@ fun screenModifierWithTapGesture(
 
 @Composable
 fun tapButtonModifierWithTapGesture(
-    countdown: MutableState<Long>,
+    countdownFinished: MutableState<Boolean>,
     onFirstTap: () -> Unit = {},
     buttonRect: MutableSet<List<Float>>,
+    testTag: String,
     onTap: (location: List<Float>, tapDurationInMillis: Long) -> Unit
 ): Modifier {
     val xOffset: MutableState<Float> = remember { mutableStateOf(0F) }
     val yOffset: MutableState<Float> = remember { mutableStateOf(0F) }
     val buttonSize = 100F.dp
     return Modifier
+        .testTag(testTag)
         .padding(vertical = 48.dp)
         .background(TapButtonColor, shape = CircleShape)
         .size(buttonSize)
@@ -194,7 +223,7 @@ fun tapButtonModifierWithTapGesture(
                 onPress = { location ->
                     var startOfTapDuration: Long = 0
                     // Ignores tap on screen if countdown is done
-                    if (countdown.value <= 0) {
+                    if (countdownFinished.value) {
                         return@detectTapGestures
                     }
                     // The try captures the moment of contact, finally captures moment of release
@@ -202,14 +231,19 @@ fun tapButtonModifierWithTapGesture(
                         buttonRect.add(listOf(xOffset.value, yOffset.value))
                         buttonRect.add(listOf(buttonSize.toPx(), buttonSize.toPx()))
                         onFirstTap()
-                        startOfTapDuration = Clock.System.now().toEpochMilliseconds()
+                        startOfTapDuration = Clock.System
+                            .now()
+                            .toEpochMilliseconds()
                         awaitRelease()
                     } finally {
                         onTap(
                             listOf(
                                 location.x + xOffset.value,
-                                location.y + yOffset.value),
-                            Clock.System.now().toEpochMilliseconds()
+                                location.y + yOffset.value
+                            ),
+                            Clock.System
+                                .now()
+                                .toEpochMilliseconds()
                                     - startOfTapDuration
                         )
                     }

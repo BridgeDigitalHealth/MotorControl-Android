@@ -11,7 +11,7 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import org.sagebionetworks.assessmentmodel.Result
 import org.sagebionetworks.motorcontrol.navigation.HandSelection
-import org.sagebionetworks.motorcontrol.presentation.compose.StepTimer
+import org.sagebionetworks.motorcontrol.utils.StepTimer
 import org.sagebionetworks.motorcontrol.recorder.RecorderRunner
 import org.sagebionetworks.motorcontrol.utils.MotorControlVibrator
 
@@ -31,6 +31,8 @@ class MotionSensorState(
     override lateinit var textToSpeech: TextToSpeech
     override lateinit var recorderRunnerFactory: RecorderRunner.RecorderRunnerFactory
     override lateinit var recorderRunner: RecorderRunner
+    var countdownString = mutableStateOf(duration.toString())
+    private val millisLeft = mutableStateOf(duration * 1000)
 
     init {
         createMotionSensor()
@@ -42,6 +44,8 @@ class MotionSensorState(
 
     override val timer = StepTimer(
         countdown = countdown,
+        countdownString = countdownString,
+        millisLeft = millisLeft,
         stepDuration = duration,
         finished = {
             stopRecorder()

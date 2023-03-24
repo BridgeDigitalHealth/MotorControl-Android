@@ -11,6 +11,7 @@ import android.os.Looper
 import android.speech.tts.TextToSpeech
 import android.speech.tts.UtteranceProgressListener
 import androidx.compose.runtime.MutableState
+import androidx.compose.ui.text.toLowerCase
 import co.touchlab.kermit.Logger
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -18,7 +19,7 @@ import kotlinx.coroutines.launch
 import org.sagebionetworks.assessmentmodel.Result
 import org.sagebionetworks.assessmentmodel.passivedata.recorder.motion.MotionRecorderConfiguration
 import org.sagebionetworks.motorcontrol.navigation.HandSelection
-import org.sagebionetworks.motorcontrol.presentation.compose.StepTimer
+import org.sagebionetworks.motorcontrol.utils.StepTimer
 import org.sagebionetworks.motorcontrol.recorder.RecorderRunner
 import org.sagebionetworks.motorcontrol.recorder.RecorderScheduledAssessmentConfig
 import org.sagebionetworks.motorcontrol.serialization.BackgroundRecordersConfigurationElement
@@ -41,12 +42,13 @@ interface ActiveStep {
     val inputResult: MutableSet<Result>?
 
     fun createMotionSensor() {
+        val filePrefix = if (hand != null) "${hand?.toString()?.lowercase()}_" else ""
         recorderRunnerFactory = RecorderRunner.RecorderRunnerFactory(context, null)
         recorderRunnerFactory.withConfig(
             listOf(
                 RecorderScheduledAssessmentConfig(
                     recorder = BackgroundRecordersConfigurationElement.Recorder(
-                        "${hand?.name?.lowercase()}_$identifier",
+                        "$filePrefix$identifier",
                         MotionRecorderConfiguration.TYPE
                     ),
                     disabledByAppForTaskIdentifiers = setOf(),

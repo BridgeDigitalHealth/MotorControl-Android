@@ -27,7 +27,7 @@
                 "actions":{
                     "goForward":{
                         "type":"default",
-                        "buttonTitle":"Get Started"
+                        "buttonTitle":"Get started"
                     }
                  }
              },
