@@ -30,9 +30,13 @@ internal fun CountdownStepUi(
     Column(modifier = Modifier.background(BackgroundGray)) {
         MotorControlPauseUi(
             assessmentViewModel = assessmentViewModel,
-            onPause = { timer.clear() },
+            onPause = {
+                timer.clear()
+                paused.value = true
+            },
             onUnpause = {
                 // Resets countdown to initial value
+                paused.value = false
                 countdown.value = (duration * 1000).toLong()
                 timer.startTimer()
             }
@@ -52,14 +56,14 @@ internal fun CountdownStepUi(
                     .fillMaxWidth()
                     .padding(16.dp)
             )
-            CountdownDial(
+            CountdownDialRestart(
                 countdownDuration = duration,
                 canBeginCountdown = remember { mutableStateOf(true) },
                 paused = paused,
                 countdownFinished = timer.countdownFinished,
                 countdownString = timer.countdownString,
                 millisLeft = timer.millisLeft,
-                timerStartsImmediately = true
+                dialSubText = null
             )
             Spacer(modifier = Modifier.weight(1f))
         }

@@ -22,15 +22,67 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import org.sagebionetworks.assessmentmodel.presentation.ui.theme.BackgroundGray
+import org.sagebionetworks.motorcontrol.R
 import org.sagebionetworks.motorcontrol.presentation.theme.*
+
+@Composable
+fun CountdownDialRestart(
+    countdownDuration: Double,
+    countdownString: MutableState<String>?,
+    paused: MutableState<Boolean>,
+    millisLeft: MutableState<Double>,
+    countdownFinished: MutableState<Boolean>,
+    canBeginCountdown: MutableState<Boolean>,
+    dialSubText: String? = stringResource(id = R.string.seconds),
+    backgroundColor: Color = BackgroundGray
+) {
+    CountdownDial(
+        countdownDuration = countdownDuration,
+        countdownString = countdownString,
+        paused = paused,
+        millisLeft = millisLeft,
+        countdownFinished = countdownFinished,
+        canBeginCountdown = canBeginCountdown,
+        timerStartsImmediately = true,
+        dialSubText = dialSubText,
+        backgroundColor = backgroundColor
+    )
+}
+
+@Composable
+fun CountdownDialNoRestart(
+    countdownDuration: Double,
+    paused: MutableState<Boolean>,
+    millisLeft: MutableState<Double>,
+    countdownFinished: MutableState<Boolean>,
+    canBeginCountdown: MutableState<Boolean>,
+    dialContent: MutableState<Int>? = null,
+    countdownString: MutableState<String>? = null,
+    dialSubText: String? = null,
+    backgroundColor: Color = BackgroundGray
+) {
+    CountdownDial(
+        countdownDuration = countdownDuration,
+        countdownString = countdownString,
+        paused = paused,
+        millisLeft = millisLeft,
+        countdownFinished = countdownFinished,
+        canBeginCountdown = canBeginCountdown,
+        timerStartsImmediately = false,
+        dialContent = dialContent,
+        dialSubText = dialSubText,
+        backgroundColor = backgroundColor
+    )
+}
 
 @Composable
 fun CountdownDial(
     countdownDuration: Double,
-    countdownString: MutableState<String>?,
+    countdownString: MutableState<String>? = null,
     paused: MutableState<Boolean>,
     millisLeft: MutableState<Double>,
     countdownFinished: MutableState<Boolean>,

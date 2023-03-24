@@ -78,15 +78,13 @@ internal fun MotionSensorStepUi(
             Box(Modifier.padding(vertical = 10.dp)) {
                 StepBodyTextUi(title, null, null, modifier)
             }
-            CountdownDial(
+            CountdownDialRestart(
                 countdownDuration = duration,
-                countdownFinished = countdownFinished,
-                paused = paused,
-                millisLeft = remember { mutableStateOf(30000.0) },
-                canBeginCountdown = remember { mutableStateOf(true) },
-                timerStartsImmediately = true,
                 countdownString = countdownString,
-                dialSubText = stringResource(id = R.string.seconds)
+                paused = paused,
+                millisLeft = remember { mutableStateOf(duration * 1000) },
+                countdownFinished = countdownFinished,
+                canBeginCountdown = remember { mutableStateOf(true) }
             )
         }
     }

@@ -81,14 +81,12 @@ internal fun TappingStepUi(
                 }
             )
             Spacer(modifier = Modifier.weight(1F))
-            CountdownDial(
+            CountdownDialNoRestart(
                 countdownDuration = countdownDuration,
-                countdownFinished = countdownTimer.countdownFinished,
                 paused = paused,
                 millisLeft = countdownTimer.millisLeft,
+                countdownFinished = countdownTimer.countdownFinished,
                 canBeginCountdown = canBeginCountdown,
-                timerStartsImmediately = false,
-                countdownString = null,
                 dialContent = tapCount,
                 dialSubText = stringResource(id = R.string.tap_count)
             )
