@@ -11,7 +11,6 @@ import android.os.Looper
 import android.speech.tts.TextToSpeech
 import android.speech.tts.UtteranceProgressListener
 import androidx.compose.runtime.MutableState
-import androidx.compose.ui.text.toLowerCase
 import co.touchlab.kermit.Logger
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -104,11 +103,17 @@ interface ActiveStep {
             override fun onError(utteranceId: String?) {}
         }
         textToSpeech.setOnUtteranceProgressListener(speechListener)
-        textToSpeech.speak(
+        val status = textToSpeech.speak(
             spokenInstructions[duration.toInt()],
             TextToSpeech.QUEUE_ADD,
             null,
             ""
         )
+        /**
+         * This is to keep the measure unblocked in the case that TTS does not work
+         */
+        if (status == TextToSpeech.ERROR) {
+            goForward()
+        }
     }
 }
