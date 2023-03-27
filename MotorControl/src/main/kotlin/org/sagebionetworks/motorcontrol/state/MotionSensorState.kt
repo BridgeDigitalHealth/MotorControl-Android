@@ -37,8 +37,14 @@ class MotionSensorState(
     init {
         createMotionSensor()
         title = title.replace("%@", hand?.name ?: "")
+        /**
+         * This implementation of TTS does not work on Android 11. Versions before and
+         * after Android 11 do work.
+         */
         textToSpeech = TextToSpeech(context) {
-            textToSpeech.speak(spokenInstructions[0], TextToSpeech.QUEUE_ADD, null, "")
+            if (it == TextToSpeech.SUCCESS) {
+                textToSpeech.speak(spokenInstructions[0], TextToSpeech.QUEUE_ADD, null, "")
+            }
         }
     }
 
