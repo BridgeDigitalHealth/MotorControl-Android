@@ -51,12 +51,12 @@ open class InstructionStepFragment: StepFragment() {
         val drawable = step.imageInfo?.loadDrawable(requireContext())
         val drawables = ArrayList<Drawable>()
         val animatedImageInfo = step.imageInfo as? AnimatedImage
-
         // Aaron - Have to start currentImage on -1 since overhead between start of animationTimer and
         // displaying of animationImages causes currentImage to be advanced by one on frame
         val animationIndex: MutableState<Int> = mutableStateOf(-1)
-
+        var imageName = step.imageInfo?.imageName
         animatedImageInfo?.let { imageInfo ->
+            imageName = imageInfo.imageNames[0]
             for (animatedImage in imageInfo.imageNames) {
                 FetchableImage(animatedImage).loadDrawable(requireContext())?.let {
                     drawables.add(it)
@@ -86,6 +86,7 @@ open class InstructionStepFragment: StepFragment() {
                     InstructionStepUi(
                         assessmentViewModel = assessmentViewModel,
                         image = if(drawables.isEmpty()) drawable else null,
+                        imageName = imageName ?: "IMAGE",
                         animations = drawables,
                         animationIndex = animationIndex,
                         flippedImage = stepViewModel.nodeState.parent?.node?.hand()

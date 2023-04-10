@@ -1,127 +1,73 @@
 package org.sagebionetworks.motorcontrol
 
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
-import androidx.compose.ui.test.onAllNodesWithText
-import androidx.compose.ui.test.onNodeWithText
-import androidx.compose.ui.test.performClick
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.matcher.ViewMatchers.withText
 import com.example.motorcontrol_android.ContainerActivity
-import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.decodeFromJsonElement
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.sagebionetworks.assessmentmodel.presentation.AssessmentActivity
-import org.sagebionetworks.assessmentmodel.serialization.AnswerResultObject
-import org.sagebionetworks.assessmentmodel.serialization.AssessmentResultObject
-import org.sagebionetworks.assessmentmodel.serialization.BranchNodeResultObject
 
 class KineticTremorUiTests {
 
     @get:Rule
     val composeTestRule = createAndroidComposeRule<ContainerActivity>()
     lateinit var currentActivity : AssessmentActivity
-    private val kineticTremor = "kinetic-tremor"
+    private val measureId = "kinetic-tremor"
+    private val uiTestHelper = MotorControlUITestHelper(composeTestRule, measureId = measureId)
     private val exit = "Exit"
     private val start = "Start"
     private val gotIt = "Got it"
+    private val holdPhoneLeft = "kinetic_hold_phone_left"
+    private val fingerToNose1 = "finger_to_nose_1"
+    private val fingerToNose2 = "finger_to_nose_2"
+    private val spaceToMoveArms = "space_to_move_your_arms"
+    private val placeToSit = "comfortable_place_to_sit"
 
     @Before
     fun navigateToHandSelection() {
-        onView(withText("kinetic-tremor"))
+        onView(withText(measureId))
             .perform(click())
         currentActivity = ActivityGetter.getActivityInstance() as AssessmentActivity
-        composeTestRule.onNodeWithText("Get started")
-            .assertExists()
-            .performClick()
-        composeTestRule.onNodeWithText(gotIt)
-            .assertExists()
-            .performClick()
+        uiTestHelper.currentActivity = currentActivity
+        uiTestHelper.assertAndClick("Get started", imageNames = listOf(holdPhoneLeft, spaceToMoveArms, placeToSit))
+        uiTestHelper.assertAndClick(gotIt, imageNames = listOf(holdPhoneLeft))
     }
 
     @Test
     fun testKineticTremorRightHand() {
         selectHand("RIGHT")
         navigateThroughInstructions()
-        performKineticTremorStep(exit)
+        uiTestHelper.performMotionStep(exit, holdPhoneLeft)
     }
 
     @Test
     fun testKineticTremorLeftHand() {
         selectHand("LEFT")
         navigateThroughInstructions()
-        performKineticTremorStep(exit)
+        uiTestHelper.performMotionStep(exit, holdPhoneLeft)
     }
 
     @Test
     fun testKineticTremorBothHands() {
         selectHand("BOTH")
         navigateThroughInstructions()
-        performKineticTremorStep(start)
-        performKineticTremorStep(exit)
+        uiTestHelper.performMotionStep(start, holdPhoneLeft)
+        uiTestHelper.performMotionStep(exit, holdPhoneLeft)
     }
 
     private fun selectHand(hand: String) {
-        composeTestRule.onNodeWithText(hand, substring = true)
-            .assertExists()
-            .performClick()
-        composeTestRule.onNodeWithText("Next", substring = true)
-            .assertExists()
-            .performClick()
+        uiTestHelper.assertAndClick(hand, true)
+        uiTestHelper.assertAndClick("Next", true)
     }
 
     private fun navigateThroughInstructions() {
-        composeTestRule.onNodeWithText("Got a spot")
-            .assertExists()
-            .performClick()
-        composeTestRule.onNodeWithText("Pointing index finger")
-            .assertExists()
-            .performClick()
-        composeTestRule.onNodeWithText(gotIt)
-            .assertExists()
-            .performClick()
-        composeTestRule.onNodeWithText(start)
-            .assertExists()
-            .performClick()
+        uiTestHelper.assertAndClick("Got a spot", imageNames = listOf(fingerToNose1))
+        uiTestHelper.assertAndClick("Pointing index finger", imageNames = listOf(fingerToNose2))
+        uiTestHelper.assertAndClick(gotIt, imageNames = listOf(holdPhoneLeft))
+        uiTestHelper.assertAndClick(start, imageNames = listOf(holdPhoneLeft))
     }
 
-    private fun performKineticTremorStep(nextButtonToPress: String) {
-        composeTestRule.waitUntil(40000) {
-            composeTestRule
-                .onAllNodesWithText(nextButtonToPress)
-                .fetchSemanticsNodes().size == 1
-        }
-
-        // Test that the expected data was generated into currentResults
-        if (nextButtonToPress == exit) {
-            val result = currentActivity.viewModel.assessmentNodeState?.currentResult
-            result?.let { branchNodeResult ->
-                val assessmentResult = branchNodeResult as AssessmentResultObject
-                val handSelectionStep = result.pathHistoryResults.filter { it ->
-                    it.identifier == "handSelection"
-                }[0] as AnswerResultObject
-                val activeSteps = result.pathHistoryResults.filter{
-                        it -> it.identifier == "right" || it.identifier == "left"
-                }
-                // Assert that the identifiers are as expected
-                assert(assessmentResult.assessmentIdentifier == kineticTremor
-                        && assessmentResult.identifier == kineticTremor)
-                val hand = handSelectionStep.jsonValue?.let {
-                    Json.decodeFromJsonElement<String>(it)
-                }
-                // Assert the amount of active steps is accurate
-                assert(activeSteps.size == if (hand == "both") 2 else 1)
-                activeSteps.forEach { tremorStepResult ->
-                    val casted = tremorStepResult as BranchNodeResultObject
-                    // Assert that the results of each active step were recorded
-                    assert(casted.inputResults.size == 1)
-                }
-            }
-        }
-
-        composeTestRule.onNodeWithText(nextButtonToPress)
-            .performClick()
-    }
 }
