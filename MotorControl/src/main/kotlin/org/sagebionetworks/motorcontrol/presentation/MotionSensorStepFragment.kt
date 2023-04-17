@@ -11,7 +11,6 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import org.sagebionetworks.assessmentmodel.presentation.StepFragment
 import org.sagebionetworks.assessmentmodel.presentation.databinding.ComposeQuestionStepFragmentBinding
 import org.sagebionetworks.assessmentmodel.presentation.ui.theme.SageSurveyTheme
@@ -77,6 +76,7 @@ open class MotionSensorStepFragment: StepFragment() {
                     duration = motionSensorState.duration,
                     hand = motionSensorState.hand,
                     image = drawable,
+                    imageName = step.imageInfo?.imageName ?: "IMAGE",
                     imageTintColor = if (tint) {
                         MaterialTheme.colors.primary
                     } else {

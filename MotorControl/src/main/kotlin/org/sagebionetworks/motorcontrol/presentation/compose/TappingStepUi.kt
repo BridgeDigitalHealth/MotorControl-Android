@@ -41,6 +41,7 @@ internal fun TappingStepUi(
     buttonRectLeft: MutableSet<List<Float>>,
     buttonRectRight: MutableSet<List<Float>>,
     image: Drawable?,
+    imageName: String,
     flippedImage: Boolean,
     imageTintColor: Color?,
     addTappingSample: (TappingButtonIdentifier, List<Float>, Long) -> Unit,
@@ -61,6 +62,7 @@ internal fun TappingStepUi(
         if (image != null) {
             SingleImageUi(
                 image = image,
+                imageName = imageName,
                 surveyTint = ImageBackgroundColor,
                 imageModifier = imageModifier,
                 imageTintColor = imageTintColor,

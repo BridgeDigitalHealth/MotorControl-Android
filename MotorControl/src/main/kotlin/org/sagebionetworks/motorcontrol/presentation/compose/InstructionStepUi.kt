@@ -31,6 +31,7 @@ internal fun InstructionStepUi(
     modifier: Modifier = Modifier,
     assessmentViewModel: AssessmentViewModel?,
     image: Drawable?,
+    imageName: String,
     animations: ArrayList<Drawable>,
     animationIndex: MutableState<Int>,
     flippedImage: Boolean,
@@ -57,6 +58,7 @@ internal fun InstructionStepUi(
                 if (image != null) {
                     SingleImageUi(
                         image = image,
+                        imageName = imageName,
                         surveyTint = ImageBackgroundColor,
                         imageModifier = imageModifier,
                         imageTintColor = imageTintColor
@@ -65,6 +67,7 @@ internal fun InstructionStepUi(
                 if (animations.isNotEmpty()) {
                     AnimationImageUi(
                         animations = animations,
+                        firstImageName = imageName,
                         surveyTint = ImageBackgroundColor,
                         currentImage = animationIndex,
                         imageTintColor = imageTintColor,
@@ -96,8 +99,9 @@ private fun InstructionStepPreview() {
         InstructionStepUi(
             assessmentViewModel = null,
             image = null,
+            imageName = "IMAGE",
             animations = ArrayList(),
-            animationIndex = mutableStateOf(0),
+            animationIndex = remember { mutableStateOf(0) },
             flippedImage = false,
             imageTintColor = null,
             title = "Title",
