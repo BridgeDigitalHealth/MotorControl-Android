@@ -51,8 +51,9 @@ open class OverviewStepFragment: StepFragment() {
         // Aaron - Have to start currentImage on -1 since overhead between start of animationTimer and
         // displaying of animationImages causes currentImage to be advanced by one on frame
         val animationIndex: MutableState<Int> = mutableStateOf(-1)
-
+        var imageName = step.imageInfo?.imageName
         animatedImageInfo?.let { imageInfo ->
+            imageName = imageInfo.imageNames[0]
             for (animatedImage in imageInfo.imageNames) {
                 FetchableImage(animatedImage).loadDrawable(requireContext())?.let {
                     drawables.add(it) }
@@ -66,9 +67,11 @@ open class OverviewStepFragment: StepFragment() {
         }
         val tint = step.imageInfo?.tint ?: false
         val icons = ArrayList<Pair<Drawable?, String?>>()
+        val iconNames = ArrayList<String?>()
         for(iconIndex in 0 until (step.icons?.size ?: 0)) {
             step.icons?.get(iconIndex).let {
                 icons.add(Pair(it?.loadDrawable(requireContext()), it?.label))
+                iconNames.add(it?.imageName)
             }
         }
         val buttonTextResource = stepViewModel.nodeState.node
@@ -77,6 +80,7 @@ open class OverviewStepFragment: StepFragment() {
             SageSurveyTheme {
                 OverviewStepUi(
                     image = if (drawables.isEmpty()) drawable else null,
+                    imageName = imageName ?: "IMAGE",
                     animations = drawables,
                     animationIndex = animationIndex,
                     imageTintColor = if (tint) {
@@ -88,6 +92,7 @@ open class OverviewStepFragment: StepFragment() {
                     subtitle = step.subtitle,
                     detail = step.detail,
                     icons = icons,
+                    iconNames = iconNames,
                     nextButtonText = buttonTextResource ?: stringResource(R.string.start),
                     next = {
                         assessmentViewModel.goForward()

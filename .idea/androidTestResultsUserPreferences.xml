@@ -90,6 +90,7 @@
               <option name="preferredColumnWidths">
                 <map>
                   <entry key="Duration" value="90" />
+                  <entry key="Galaxy_Nexus_API_31" value="120" />
                   <entry key="Tests" value="360" />
                   <entry key="ZY22CCDGMW" value="120" />
                   <entry key="motorola&#10; moto g power (2021)" value="120" />
@@ -117,6 +118,7 @@
               <option name="preferredColumnWidths">
                 <map>
                   <entry key="Duration" value="90" />
+                  <entry key="Galaxy_Nexus_API_31" value="120" />
                   <entry key="Tests" value="360" />
                   <entry key="ZY22CCDGMW" value="120" />
                   <entry key="motorola&#10; moto g power (2021)" value="120" />
@@ -193,6 +195,19 @@
             </AndroidTestResultsTableState>
           </value>
         </entry>
+        <entry key="-485549559">
+          <value>
+            <AndroidTestResultsTableState>
+              <option name="preferredColumnWidths">
+                <map>
+                  <entry key="Duration" value="90" />
+                  <entry key="Galaxy_Nexus_API_31" value="120" />
+                  <entry key="Tests" value="360" />
+                </map>
+              </option>
+            </AndroidTestResultsTableState>
+          </value>
+        </entry>
         <entry key="-422524112">
           <value>
             <AndroidTestResultsTableState>
@@ -238,6 +253,7 @@
               <option name="preferredColumnWidths">
                 <map>
                   <entry key="Duration" value="90" />
+                  <entry key="Galaxy_Nexus_API_31" value="120" />
                   <entry key="Tests" value="360" />
                   <entry key="ZY22CCDGMW" value="120" />
                   <entry key="motorola&#10; moto g power (2021)" value="120" />
@@ -291,6 +307,7 @@
               <option name="preferredColumnWidths">
                 <map>
                   <entry key="Duration" value="90" />
+                  <entry key="Galaxy_Nexus_API_31" value="120" />
                   <entry key="Tests" value="360" />
                   <entry key="ZY22CCDGMW" value="120" />
                   <entry key="motorola&#10; moto g power (2021)" value="120" />
@@ -305,6 +322,7 @@
               <option name="preferredColumnWidths">
                 <map>
                   <entry key="Duration" value="90" />
+                  <entry key="Galaxy_Nexus_API_31" value="120" />
                   <entry key="Pixel_4_API_30" value="120" />
                   <entry key="Tests" value="360" />
                   <entry key="ZY22CCDGMW" value="120" />
@@ -321,6 +339,7 @@
                 <map>
                   <entry key="7.6_Fold-in_with_outer_display_API_33" value="120" />
                   <entry key="Duration" value="90" />
+                  <entry key="Galaxy_Nexus_API_31" value="120" />
                   <entry key="Nexus_5_API_27" value="120" />
                   <entry key="Nexus_5_API_30" value="120" />
                   <entry key="Pixel_3a_API_33_x86_64" value="120" />
@@ -341,6 +360,7 @@
               <option name="preferredColumnWidths">
                 <map>
                   <entry key="Duration" value="90" />
+                  <entry key="Galaxy_Nexus_API_31" value="120" />
                   <entry key="Tests" value="360" />
                   <entry key="ZY22CCDGMW" value="120" />
                   <entry key="motorola&#10; moto g power (2021)" value="120" />
@@ -356,6 +376,19 @@
                 <map>
                   <entry key="Duration" value="90" />
                   <entry key="Pixel_4_API_30" value="120" />
+                  <entry key="Tests" value="360" />
+                </map>
+              </option>
+            </AndroidTestResultsTableState>
+          </value>
+        </entry>
+        <entry key="1634966687">
+          <value>
+            <AndroidTestResultsTableState>
+              <option name="preferredColumnWidths">
+                <map>
+                  <entry key="Duration" value="90" />
+                  <entry key="Galaxy_Nexus_API_31" value="120" />
                   <entry key="Tests" value="360" />
                 </map>
               </option>
@@ -381,6 +414,7 @@
               <option name="preferredColumnWidths">
                 <map>
                   <entry key="Duration" value="90" />
+                  <entry key="Galaxy_Nexus_API_31" value="120" />
                   <entry key="Tests" value="360" />
                   <entry key="ZY22CCDGMW" value="120" />
                   <entry key="motorola&#10; moto g power (2021)" value="120" />
@@ -424,6 +458,19 @@
                   <entry key="Duration" value="90" />
                   <entry key="Pixel_4_API_30" value="120" />
                   <entry key="Small" value="120" />
+                  <entry key="Tests" value="360" />
+                </map>
+              </option>
+            </AndroidTestResultsTableState>
+          </value>
+        </entry>
+        <entry key="2118958543">
+          <value>
+            <AndroidTestResultsTableState>
+              <option name="preferredColumnWidths">
+                <map>
+                  <entry key="Duration" value="90" />
+                  <entry key="Galaxy_Nexus_API_31" value="120" />
                   <entry key="Tests" value="360" />
                 </map>
               </option>

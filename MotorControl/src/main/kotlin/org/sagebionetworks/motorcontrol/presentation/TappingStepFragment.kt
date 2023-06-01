@@ -74,6 +74,7 @@ open class TappingStepFragment: StepFragment() {
                     buttonRectLeft = tappingState.buttonRectLeft,
                     buttonRectRight = tappingState.buttonRectRight,
                     image = drawable,
+                    imageName = step.imageInfo?.imageName ?: "IMAGE",
                     flippedImage = stepViewModel.nodeState.parent?.node?.hand()
                             == HandSelection.RIGHT,
                     imageTintColor = if (tint) {

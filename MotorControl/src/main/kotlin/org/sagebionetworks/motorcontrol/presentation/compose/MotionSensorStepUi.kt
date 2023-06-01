@@ -15,9 +15,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import org.sagebionetworks.motorcontrol.R
 import org.sagebionetworks.assessmentmodel.presentation.AssessmentViewModel
 import org.sagebionetworks.assessmentmodel.presentation.ui.theme.*
 import org.sagebionetworks.motorcontrol.navigation.HandSelection
@@ -33,6 +31,7 @@ internal fun MotionSensorStepUi(
     duration: Double,
     hand: HandSelection?,
     image: Drawable?,
+    imageName: String,
     imageTintColor: Color?,
     cancelCountdown: () -> Unit,
     stopTTS: () -> Unit,
@@ -54,6 +53,7 @@ internal fun MotionSensorStepUi(
         if (image != null) {
             SingleImageUi(
                 image = image,
+                imageName = imageName,
                 surveyTint = ImageBackgroundColor,
                 imageModifier = imageModifier,
                 imageTintColor = imageTintColor,

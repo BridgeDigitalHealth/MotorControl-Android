@@ -15,11 +15,13 @@ import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.testTag
 import com.google.accompanist.drawablepainter.rememberDrawablePainter
 
 @Composable
 fun SingleImageUi(
     image: Drawable,
+    imageName: String = "IMAGE",
     surveyTint: Color = Color.Transparent,
     imageModifier: Modifier,
     imageTintColor: Color?,
@@ -27,7 +29,9 @@ fun SingleImageUi(
     Image(
         painter = rememberDrawablePainter(drawable = image),
         contentDescription = null,
-        modifier = imageModifier.background(surveyTint),
+        modifier = imageModifier
+            .testTag(imageName)
+            .background(surveyTint),
         alpha = alpha,
         contentScale = ContentScale.FillHeight,
         colorFilter = if (imageTintColor != null) {
@@ -44,6 +48,7 @@ fun SingleImageUi(
 @Composable
 fun AnimationImageUi(
     animations: ArrayList<Drawable>,
+    firstImageName: String,
     surveyTint: Color = Color(0xFF8FD6FF),
     currentImage: MutableState<Int>,
     imageTintColor: Color?,
@@ -52,7 +57,9 @@ fun AnimationImageUi(
         // Logic within the getter for animations accounts for currentImage.value starting at -1
         painter = rememberDrawablePainter(drawable = animations[ if (currentImage.value >= 0) currentImage.value else 0 ]),
         contentDescription = null,
-        modifier = imageModifier.background(surveyTint),
+        modifier = imageModifier
+            .testTag(firstImageName)
+            .background(surveyTint),
         contentScale = ContentScale.FillHeight,
         colorFilter = if (imageTintColor != null) {
             ColorFilter.tint(
