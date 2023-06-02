@@ -19,6 +19,15 @@ import org.sagebionetworks.assessmentmodel.serialization.*
 import kotlinx.serialization.modules.polymorphic
 import kotlinx.serialization.modules.subclass
 
+object JsonCoder {
+    val default = Json {
+        serializersModule = motorControlNodeSerializersModule +
+                Serialization.SerializersModule.default
+        ignoreUnknownKeys = true
+        isLenient = true
+    }
+}
+
 val motorControlModuleInfoSerializersModule = SerializersModule {
     polymorphic(JsonModuleInfo::class) {
         subclass(MotorControlModuleInfoObject::class)
@@ -36,12 +45,7 @@ data class MotorControlModuleInfoObject(
         get() = this
     override val jsonCoder: Json
         get() {
-            return Json {
-                serializersModule = motorControlNodeSerializersModule +
-                        Serialization.SerializersModule.default
-                ignoreUnknownKeys = true
-                isLenient = true
-            }
+            return JsonCoder.default
         }
 
     @Transient
