@@ -36,6 +36,8 @@ android {
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8
+
+        isCoreLibraryDesugaringEnabled = true
     }
     kotlinOptions {
         jvmTarget = "1.8"
@@ -74,7 +76,7 @@ dependencies {
     // Sage
     implementation("org.sagebionetworks.assessmentmodel:presentation:$assessmentVersion")
     implementation("org.sagebionetworks.assessmentmodel:assessmentModel:$assessmentVersion")
-    implementation("org.sagebionetworks.research.kmm:passiveData:0.5.0")
+    implementation("org.sagebionetworks.research.kmm:passiveData:0.5.2")
 
     // Kermit
     implementation("co.touchlab:kermit:$kermitVersion")
@@ -83,6 +85,8 @@ dependencies {
     // Koin
     implementation("io.insert-koin:koin-core:$koinVersion")
     implementation("io.insert-koin:koin-android:$koinVersion")
+
+    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:1.1.5")
 
     // JUnit and testing
     testImplementation("junit:junit:4.13.2")
