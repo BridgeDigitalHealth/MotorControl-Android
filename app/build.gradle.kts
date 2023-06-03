@@ -75,4 +75,5 @@ dependencies {
     androidTestImplementation("androidx.compose.ui:ui-test-junit4:$composeUiVersion")
     debugImplementation("androidx.compose.ui:ui-test-manifest:$composeUiVersion")
     implementation(project(":MotorControl"))
+    androidTestImplementation("com.networknt:json-schema-validator:1.0.82")
 }

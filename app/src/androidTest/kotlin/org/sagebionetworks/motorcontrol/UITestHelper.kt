@@ -1,15 +1,30 @@
 package org.sagebionetworks.motorcontrol
 
+import android.util.Log
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.AndroidComposeTestRule
 import androidx.test.ext.junit.rules.ActivityScenarioRule
 import com.example.motorcontrol_android.ContainerActivity
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.networknt.schema.JsonSchemaFactory
+import com.networknt.schema.SpecVersion
+import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.decodeFromJsonElement
+import org.junit.Assert
+import org.junit.Assert.assertNotNull
+import org.sagebionetworks.assessmentmodel.AssessmentResult
+import org.sagebionetworks.assessmentmodel.BranchNodeResult
+import org.sagebionetworks.assessmentmodel.CollectionResult
+import org.sagebionetworks.assessmentmodel.FileResult
+import org.sagebionetworks.assessmentmodel.JsonFileArchivableResult
+import org.sagebionetworks.assessmentmodel.Result
 import org.sagebionetworks.assessmentmodel.presentation.AssessmentActivity
 import org.sagebionetworks.assessmentmodel.serialization.AnswerResultObject
-import org.sagebionetworks.assessmentmodel.serialization.AssessmentResultObject
-import org.sagebionetworks.assessmentmodel.serialization.BranchNodeResultObject
+import org.sagebionetworks.motorcontrol.serialization.JsonCoder
+import java.io.File
+import java.io.FileReader
+import java.net.URI
 
 class MotorControlUITestHelper(
     private val composeTestRule: AndroidComposeTestRule<ActivityScenarioRule<ContainerActivity>, ContainerActivity>,
@@ -89,18 +104,22 @@ class MotorControlUITestHelper(
     private fun checkCurrentResults(isTwoHand: Boolean = true) {
         // Test that the expected data was generated into currentResults
         val result = currentActivity.viewModel.assessmentNodeState?.currentResult
+        assertNotNull(result)
         result?.let { branchNodeResult ->
-            val assessmentResult = branchNodeResult as AssessmentResultObject
+            val assessmentResult = branchNodeResult as AssessmentResult
             if (isTwoHand) {
                 twoHandAssertions(assessmentResult)
             } else {
                 walkAndBalanceAssertions(assessmentResult)
             }
+            val resultJson = JsonCoder.default.encodeToString(assessmentResult)
+            validateJson(resultJson, assessmentResult.jsonSchema!!)
+            recursiveCheckResults(assessmentResult)
         }
     }
 
 
-    private fun twoHandAssertions(assessmentResult: AssessmentResultObject) {
+    private fun twoHandAssertions(assessmentResult: AssessmentResult) {
         val handSelectionStep = assessmentResult.pathHistoryResults.filter {
             it.identifier == "handSelection"
         }[0] as AnswerResultObject
@@ -117,14 +136,14 @@ class MotorControlUITestHelper(
         // Assert the amount of active steps is accurate
         assert(activeSteps.size == if (hand == "both") 2 else 1)
         activeSteps.forEach { motionStepResult ->
-            val casted = motionStepResult as BranchNodeResultObject
+            val casted = motionStepResult as BranchNodeResult
             // Assert that the results of each active step were recorded
             assert(casted.inputResults.size == 1)
         }
     }
 
 
-    private fun walkAndBalanceAssertions(assessmentResult: AssessmentResultObject) {
+    private fun walkAndBalanceAssertions(assessmentResult: AssessmentResult) {
         val activeSteps = assessmentResult.pathHistoryResults.filter{
             it.identifier == "walk" || it.identifier == "balance"
         }
@@ -132,9 +151,48 @@ class MotorControlUITestHelper(
                 && assessmentResult.identifier == measureId)
         assert(activeSteps.size == (if (measureId == "walk-thirty-second") 1 else 2))
         activeSteps.forEach { walkStepResult ->
-            val casted = walkStepResult as BranchNodeResultObject
+            val casted = walkStepResult as BranchNodeResult
             assert(casted.inputResults.size == 1)
         }
+    }
+
+    private fun recursiveCheckResults(result: Result, stepPath: String? = null) {
+        val pathSuffix = stepPath?.let { "$it/" } ?: ""
+        val identifier = result.identifier
+        val path = "$pathSuffix$identifier"
+        if (result is BranchNodeResult) {
+            recursiveCheckFiles(result.pathHistoryResults, stepPath)
+        }
+        if (result is CollectionResult) {
+            recursiveCheckFiles(result.inputResults)
+        }
+        if (result is JsonFileArchivableResult) {
+            val jsonFileArchivable = result.getJsonArchivableFile(path)
+            validateJson(jsonFileArchivable.json, jsonFileArchivable.jsonSchema!!)
+        }
+        if (result is FileResult) {
+            val file = File(result.path!!)
+            val jsonString = file.readText(Charsets.UTF_8)
+            validateJson(jsonString, result.jsonSchema!!)
+        }
+    }
+
+    private fun recursiveCheckFiles(results: Collection<Result>, stepPath: String? = null)  {
+        results.forEach {
+            recursiveCheckResults(it, stepPath)
+        }
+    }
+
+
+    fun validateJson(jsonString: String, schemaUrl: String) {
+        val jsonSchema = JsonSchemaFactory.getInstance(SpecVersion.VersionFlag.V7).getSchema(
+            URI(schemaUrl)
+        )
+        jsonSchema.initializeValidators()
+        val jsonNode = ObjectMapper().readTree(jsonString)
+        val errors = jsonSchema.validate(jsonNode)
+        Log.d("SCHEMA", jsonString)
+        Assert.assertTrue("Error validating against: $schemaUrl Errors: $errors", errors.isEmpty())
     }
 
 }

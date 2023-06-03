@@ -76,7 +76,7 @@ dependencies {
     // Sage
     implementation("org.sagebionetworks.assessmentmodel:presentation:$assessmentVersion")
     implementation("org.sagebionetworks.assessmentmodel:assessmentModel:$assessmentVersion")
-    implementation("org.sagebionetworks.research.kmm:passiveData:0.5.2")
+    implementation("org.sagebionetworks.research.kmm:passiveData:0.5.3")
 
     // Kermit
     implementation("co.touchlab:kermit:$kermitVersion")

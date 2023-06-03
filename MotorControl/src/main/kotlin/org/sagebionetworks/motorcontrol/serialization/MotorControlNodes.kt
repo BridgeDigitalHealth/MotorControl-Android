@@ -165,7 +165,9 @@ data class TappingStepObject(
 @SerialName("tapping")
 data class TappingResultObject(
     override val identifier: String,
+    @SerialName("startDate")
     override var startDateTime: Instant = Clock.System.now(),
+    @SerialName("endDate")
     override var endDateTime: Instant? = null,
     var hand: String? = null,
     var buttonRectLeft: String = "",
@@ -180,8 +182,8 @@ data class TappingResultObject(
     override fun getJsonArchivableFile(stepPath: String): JsonArchivableFile {
         return JsonArchivableFile(
             filename = "${hand}_$identifier",
-            json = Json.encodeToString(this),
-            jsonSchema = "https://sage-bionetworks.github.io/mobile-client-json/schemas/v1/TappingResultObject.json"
+            json = JsonCoder.default.encodeToString(this as Result),
+            jsonSchema = "https://sage-bionetworks.github.io/mobile-client-json/schemas/v2/TappingResultObject.json"
         )
     }
 }
