@@ -14,10 +14,10 @@ class WalkThirtySecondUiTests {
 
     @get:Rule
     val composeTestRule = createAndroidComposeRule<ContainerActivity>()
-    lateinit var currentActivity : AssessmentActivity
+    private lateinit var currentActivity: AssessmentActivity
+    private lateinit var uiTestHelper: MotorControlUITestHelper
+
     private val measureId = "walk-thirty-second"
-    private val uiTestHelper = MotorControlUITestHelper(composeTestRule, measureId = measureId)
-    private val exit = "Exit"
     private val walk1 = "walking_1"
     private val turnVolumeUp = "turn_up_volume"
     private val pantsWithPocket = "pants_w_pocket"
@@ -32,18 +32,18 @@ class WalkThirtySecondUiTests {
         onView(withText(measureId))
             .perform(click())
         currentActivity = ActivityGetter.getActivityInstance() as AssessmentActivity
-        uiTestHelper.currentActivity = currentActivity
-        uiTestHelper.assertAndClick("Get started", imageNames = listOf(
+        uiTestHelper = MotorControlUITestHelper(composeTestRule, measureId = measureId, currentActivity)
+        uiTestHelper.assertAndClick(uiTestHelper.getString(R.string.get_started), imageNames = listOf(
             walk1, smoothSurface, pantsWithPocketsIcon, walkingShoes))
-        uiTestHelper.assertAndClick("Got it", imageNames = listOf(walk1))
-        uiTestHelper.assertAndClick("The phone’s volume is up", imageNames = listOf(turnVolumeUp))
-        uiTestHelper.assertAndClick("Got front pockets", imageNames = listOf(pantsWithPocket))
-        uiTestHelper.assertAndClick("Putting it in my pocket", imageNames = listOf(phoneInPocket))
+        uiTestHelper.assertAndClick(uiTestHelper.getString(R.string.got_it), imageNames = listOf(walk1))
+        uiTestHelper.assertAndClick(uiTestHelper.getString(R.string.volume_up), imageNames = listOf(turnVolumeUp))
+        uiTestHelper.assertAndClick(uiTestHelper.getString(R.string.front_pockets), imageNames = listOf(pantsWithPocket))
+        uiTestHelper.assertAndClick(uiTestHelper.getString(R.string.put_in_pocket), imageNames = listOf(phoneInPocket))
     }
 
     @Test
     fun testWalkThirtySeconds() {
-        uiTestHelper.performMotionStep(exit, walk10, false)
+        uiTestHelper.performMotionStep(uiTestHelper.getString(R.string.exit), walk10, false)
     }
 
 }

@@ -15,55 +15,49 @@ class TremorUiTests {
 
     @get:Rule
     val composeTestRule = createAndroidComposeRule<ContainerActivity>()
+    private lateinit var currentActivity : AssessmentActivity
+    private lateinit var uiTestHelper: MotorControlUITestHelper
+
     private val measureId = "tremor"
-    private val uiTestHelper = MotorControlUITestHelper(composeTestRule, measureId = measureId)
-    private val holdPhone = "Hold phone"
-    private val exit = "Exit"
     private val holdPhoneLeft = "hold_phone_left"
     private val tremorHoldPhone = "tremor_hold_phone"
     private val sitting = "sitting"
     private val comfortablePlaceToSit = "comfortable_place_to_sit"
-    lateinit var currentActivity : AssessmentActivity
 
     @Before
     fun navigateToHandSelection() {
         onView(withText(measureId))
             .perform(click())
         currentActivity = ActivityGetter.getActivityInstance() as AssessmentActivity
-        uiTestHelper.currentActivity = currentActivity
-        uiTestHelper.assertAndClick("Get started", imageNames = listOf(holdPhoneLeft, comfortablePlaceToSit))
+        uiTestHelper = MotorControlUITestHelper(composeTestRule, measureId = measureId, currentActivity)
+        uiTestHelper.assertAndClick(uiTestHelper.getString(R.string.get_started), imageNames = listOf(holdPhoneLeft, comfortablePlaceToSit))
     }
 
     @Test
     fun testTremorRightHand() {
-        selectHand("RIGHT")
+        uiTestHelper.selectHand(uiTestHelper.getString(R.string.right))
         navigateThroughInstructions()
-        uiTestHelper.performMotionStep(exit, holdPhoneLeft)
+        uiTestHelper.performMotionStep(uiTestHelper.getString(R.string.exit), holdPhoneLeft)
     }
 
     @Test
     fun testTremorLeftHand() {
-        selectHand("LEFT")
+        uiTestHelper.selectHand(uiTestHelper.getString(R.string.left))
         navigateThroughInstructions()
-        uiTestHelper.performMotionStep(exit, holdPhoneLeft)
+        uiTestHelper.performMotionStep(uiTestHelper.getString(R.string.exit), holdPhoneLeft)
     }
 
     @Test
     fun testTremorBothHands() {
-        selectHand("BOTH")
+        uiTestHelper.selectHand(uiTestHelper.getString(R.string.both))
         navigateThroughInstructions()
-        uiTestHelper.performMotionStep(holdPhone, holdPhoneLeft)
-        uiTestHelper.performMotionStep(exit, holdPhoneLeft)
-    }
-
-    private fun selectHand(hand: String) {
-        uiTestHelper.assertAndClick(hand, true)
-        uiTestHelper.assertAndClick("Next", true)
+        uiTestHelper.performMotionStep(uiTestHelper.getString(R.string.hold_phone), holdPhoneLeft)
+        uiTestHelper.performMotionStep(uiTestHelper.getString(R.string.exit), holdPhoneLeft)
     }
 
     private fun navigateThroughInstructions() {
-        uiTestHelper.assertAndClick("Got it", imageNames = listOf(tremorHoldPhone))
-        uiTestHelper.assertAndClick("Got a spot", imageNames = listOf(sitting))
-        uiTestHelper.assertAndClick(holdPhone, imageNames = listOf(holdPhoneLeft))
+        uiTestHelper.assertAndClick(uiTestHelper.getString(R.string.got_it), imageNames = listOf(tremorHoldPhone))
+        uiTestHelper.assertAndClick(uiTestHelper.getString(R.string.got_a_spot), imageNames = listOf(sitting))
+        uiTestHelper.assertAndClick(uiTestHelper.getString(R.string.hold_phone), imageNames = listOf(holdPhoneLeft))
     }
 }

@@ -28,11 +28,9 @@ import java.net.URI
 
 class MotorControlUITestHelper(
     private val composeTestRule: AndroidComposeTestRule<ActivityScenarioRule<ContainerActivity>, ContainerActivity>,
-    private val measureId: String
+    private val measureId: String,
+    private val currentActivity: AssessmentActivity
 ) {
-    lateinit var currentActivity: AssessmentActivity
-    private val exit = "Exit"
-
 
     fun assertAndClick(buttonText: String,
                        isSubstring: Boolean = false,
@@ -51,6 +49,10 @@ class MotorControlUITestHelper(
         }
     }
 
+    fun selectHand(hand: String) {
+        assertAndClick(hand, true)
+        assertAndClick(getString(R.string.next), true)
+    }
 
     fun performMotionStep(nextButtonToPress: String, currentImage: String, isTwoHand: Boolean = true) {
         composeTestRule.waitUntil(6000) {
@@ -63,7 +65,7 @@ class MotorControlUITestHelper(
                 .onAllNodesWithText(nextButtonToPress)
                 .fetchSemanticsNodes().size == 1
         }
-        if (nextButtonToPress == exit) {
+        if (nextButtonToPress == currentActivity.getString(R.string.exit)) {
             checkCurrentResults(isTwoHand)
         }
         assertAndClick(nextButtonToPress)
@@ -74,7 +76,7 @@ class MotorControlUITestHelper(
         assertImages(listOf(currentImage))
         composeTestRule.waitUntil(1000) {
             composeTestRule
-                .onAllNodesWithText("Tap")
+                .onAllNodesWithText(getString(R.string.tap_button))
                 .fetchSemanticsNodes().size == 2
         }
 
@@ -94,7 +96,7 @@ class MotorControlUITestHelper(
         }
 
         // Test that the expected data was generated into currentResults
-        if (nextButtonToPress == exit) {
+        if (nextButtonToPress == currentActivity.getString(R.string.exit)) {
             checkCurrentResults()
         }
         assertAndClick(nextButtonToPress)
@@ -193,6 +195,10 @@ class MotorControlUITestHelper(
         val errors = jsonSchema.validate(jsonNode)
         Log.d("SCHEMA", jsonString)
         Assert.assertTrue("Error validating against: $schemaUrl Errors: $errors", errors.isEmpty())
+    }
+
+    fun getString(resId: Int): String {
+        return currentActivity.getString(resId)
     }
 
 }
