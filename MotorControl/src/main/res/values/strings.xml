@@ -3,12 +3,9 @@
     <string name="begin">Begin in…</string>
     <string name="back">Back</string>
     <string name="next">Next</string>
+    <string name="did_it">Did it</string>
     <string name="skip_button">Skip question</string>
-    <string name="seconds">seconds</string>
-    <string name="tap_button">Tap</string>
-    <string name="tap_count">Tap count</string>
     <string name="testing">testing button</string>
-    <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="skip_question">Skip question</string>
     <string name="pause">Pause</string>
@@ -20,14 +17,29 @@
     <string name="skip_this_survey">Skip this activity</string>
     <string name="continue_later">Continue later</string>
     <string name="start">Start</string>
+    <string name="get_started">Get started</string>
     <string name="done">Done</string>
+    <string name="got_it">Got it</string>
     <string name="exit">Exit</string>
     <string name="on_a_scale">"On a scale of %1$d to %2$d"</string>
     <string name="maximum_characters">"(Maximum %1$d characters)"</string>
     <string name="tap_to_respond">Tap to respond</string>
+    <string name="icon_header">This is what you\'ll need</string>
+    <string name="volume_up">The phone’s volume is up</string>
+    <string name="front_pockets">Got front pockets</string>
+    <string name="put_in_pocket">Putting it in my pocket</string>
+    <string name="got_a_spot">Got a spot</string>
+    <string name="hold_phone">Hold phone</string>
+    <string name="pointing">Pointing index finger</string>
+    <string name="start_test">Start the test</string>
+    <string name="seconds">seconds</string>
+    <string name="tap_button">Tap</string>
+    <string name="tap_count">Tap count</string>
+    <string name="left">LEFT</string>
+    <string name="right">RIGHT</string>
+    <string name="both">BOTH</string>
     <string name="click_to_pick_time">Click to pick time</string>
     <string name="please_select_a_time">Please select a time within the requested range</string>
     <string name="well_done">Well done!</string>
     <string name="thank_you_for">Thank you for being part of our study.</string>
-    <string name="icon_header">This is what you\'ll need</string>
 </resources>
