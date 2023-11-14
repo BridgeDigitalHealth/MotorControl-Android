@@ -20,5 +20,5 @@ tasks.dokkaHtmlMultiModule {
 
 allprojects {
     group = "org.sagebionetworks.motorcontrol"
-    version = "0.0.3"
+    version = "0.0.4"
 }
