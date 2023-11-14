@@ -5,12 +5,12 @@ plugins {
 
 android {
     namespace = "com.example.motorcontrol_android"
-    compileSdk = 33
+    compileSdk = libs.versions.compileSdk.get().toInt()
 
     defaultConfig {
         applicationId = "com.example.motorcontrol_android"
-        minSdk = 21
-        targetSdk = 33
+        minSdk = libs.versions.minSdk.get().toInt()
+        targetSdk = libs.versions.targetSdk.get().toInt()
         versionCode = 1
         versionName = "1.0"
 
@@ -43,7 +43,7 @@ android {
         viewBinding = true
     }
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.2.0"
+        kotlinCompilerExtensionVersion = libs.versions.composeCompiler.get()
     }
     packagingOptions {
         resources {
@@ -52,28 +52,30 @@ android {
     }
 }
 
-val composeUiVersion: String by rootProject.extra
-val assessmentVersion: String by rootProject.extra
-val koinVersion: String by rootProject.extra
 dependencies {
-    implementation("androidx.core:core-ktx:1.7.0")
-    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.3.1")
-    implementation("androidx.activity:activity-compose:1.3.1")
-    implementation("androidx.compose.ui:ui:$composeUiVersion")
-    implementation("androidx.compose.ui:ui-tooling-preview:$composeUiVersion")
-    implementation("androidx.compose.material:material:$composeUiVersion")
-    implementation("org.sagebionetworks.assessmentmodel:presentation:$assessmentVersion")
-    implementation("org.sagebionetworks.assessmentmodel:assessmentModel:$assessmentVersion")
-    implementation("io.insert-koin:koin-core:$koinVersion")
-    implementation("io.insert-koin:koin-android:$koinVersion")
-    implementation("com.google.android.material:material:1.6.1")
-    implementation("androidx.appcompat:appcompat:1.5.1")
-    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:1.1.5")
-    androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
-    androidTestImplementation("androidx.test:runner:1.5.2")
-    androidTestImplementation("androidx.test:rules:1.5.0")
-    androidTestImplementation("androidx.compose.ui:ui-test-junit4:$composeUiVersion")
-    debugImplementation("androidx.compose.ui:ui-test-manifest:$composeUiVersion")
+    implementation(libs.androidx.core.ktx)
+    implementation(libs.androidx.lifecycle.runtime.ktx)
+    implementation(libs.androidx.activity.compose)
+    // Compose
+    val composeBom = platform(libs.androidx.compose.bom)
+    implementation(composeBom)
+    implementation(libs.androidx.compose.ui)
+    implementation(libs.androidx.compose.material)
+    implementation(libs.androidx.compose.uiToolingPreview)
+
+    implementation(libs.assessmentmodel.presentation)
+    implementation(libs.assessmentmodel)
+    implementation(libs.koin.core)
+    implementation(libs.koin.android)
+    implementation(libs.androidx.material)
+    implementation(libs.androidx.appcompat)
+    coreLibraryDesugaring(libs.android.desugar)
+    androidTestImplementation(composeBom)
+    androidTestImplementation(libs.androidx.espresso.core)
+    androidTestImplementation(libs.androidx.runner)
+    androidTestImplementation(libs.androidx.rules)
+    androidTestImplementation(libs.androidx.compose.uiTest)
+    debugImplementation(libs.androidx.ui.test.manifest)
     implementation(project(":MotorControl"))
-    androidTestImplementation("com.networknt:json-schema-validator:1.0.82")
+    androidTestImplementation(libs.json.schema.validator)
 }

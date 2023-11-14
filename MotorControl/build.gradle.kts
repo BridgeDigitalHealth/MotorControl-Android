@@ -8,17 +8,17 @@ plugins {
 
 android {
     namespace = "org.sagebionetworks.motorcontrol"
-    compileSdk = 33
+    compileSdk = libs.versions.compileSdk.get().toInt()
     buildFeatures {
         compose = true
     }
     buildFeatures.viewBinding = true
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.2.0"
+        kotlinCompilerExtensionVersion = libs.versions.composeCompiler.get()
     }
     defaultConfig {
-        minSdk = 21
-        targetSdk = 33
+        minSdk = libs.versions.minSdk.get().toInt()
+        targetSdk = libs.versions.targetSdk.get().toInt()
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles("consumer-rules.pro")
@@ -51,69 +51,51 @@ android {
     }
 }
 
-val composeUiVersion: String by rootProject.extra
-val assessmentVersion: String by rootProject.extra
-val kermitVersion: String by rootProject.extra
-val koinVersion: String by rootProject.extra
 dependencies {
     // Kotlinx Serialization
-    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.4.0")
+    implementation(libs.kotlinx.serialization)
 
     // Google
-    implementation("com.google.android.material:material:1.6.1")
-    implementation("com.google.accompanist:accompanist-drawablepainter:0.16.0")
+    implementation(libs.androidx.material)
+    implementation(libs.google.accompanist)
 
     // Android
-    implementation("androidx.core:core-ktx:1.7.0")
-    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.3.1")
-    implementation("androidx.activity:activity-compose:1.3.1")
+    implementation(libs.androidx.core.ktx)
+    implementation(libs.androidx.lifecycle.runtime.ktx)
+    implementation(libs.androidx.activity.compose)
 
     // Compose
-    implementation("androidx.compose.ui:ui:$composeUiVersion")
-    implementation("androidx.compose.ui:ui-tooling-preview:$composeUiVersion")
-    implementation("androidx.compose.material:material:$composeUiVersion")
+    val composeBom = platform(libs.androidx.compose.bom)
+    implementation(composeBom)
+    implementation(libs.androidx.compose.ui)
+    implementation(libs.androidx.compose.material)
+    implementation(libs.androidx.compose.uiToolingPreview)
 
     // Sage
-    implementation("org.sagebionetworks.assessmentmodel:presentation:$assessmentVersion")
-    implementation("org.sagebionetworks.assessmentmodel:assessmentModel:$assessmentVersion")
-    implementation("org.sagebionetworks.research.kmm:passiveData:0.5.3")
+    implementation(libs.assessmentmodel.presentation)
+    implementation(libs.assessmentmodel)
+    implementation(libs.passiveData)
 
     // Kermit
-    implementation("co.touchlab:kermit:$kermitVersion")
-    implementation("co.touchlab:kermit-crashlytics:$kermitVersion")
+    implementation(libs.touchlab.kermit)
+    //implementation("co.touchlab:kermit-crashlytics:$kermitVersion")
 
     // Koin
-    implementation("io.insert-koin:koin-core:$koinVersion")
-    implementation("io.insert-koin:koin-android:$koinVersion")
+    implementation(libs.koin.core)
+    implementation(libs.koin.android)
 
-    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:1.1.5")
+    coreLibraryDesugaring(libs.android.desugar)
 
     // JUnit and testing
-    testImplementation("junit:junit:4.13.2")
-    debugImplementation("androidx.compose.ui:ui-tooling:$composeUiVersion")
-    debugImplementation("androidx.compose.ui:ui-test-manifest:$composeUiVersion")
-    androidTestImplementation("androidx.test.ext:junit:1.1.3")
-    androidTestImplementation("androidx.test.espresso:espresso-core:3.4.0")
-    androidTestImplementation("androidx.compose.ui:ui-test-junit4:$composeUiVersion")
+    androidTestImplementation(composeBom)
+    testImplementation(libs.junit)
+    debugImplementation(libs.androidx.compose.uiTooling)
+    debugImplementation(libs.androidx.ui.test.manifest)
+    androidTestImplementation(libs.androidx.junit)
+    androidTestImplementation(libs.androidx.espresso.core)
+    androidTestImplementation(libs.androidx.compose.uiTest)
 }
 
-afterEvaluate {
-
-    tasks.register<Jar>("sourcesJar") {
-        from(android.sourceSets["main"].java.srcDirs)
-        classifier = "sources"
-    }
-
-    publishing {
-        publications {
-            create<MavenPublication>("motorcontrol") {
-                from(components.getByName("release"))
-//                artifact(tasks.getByName("releaseSourcesJar"))
-//                artifact(tasks.getByName<Jar>("javadocJar"))
-            }
-        }
-    }
-}
 publishing {
     repositories {
         maven {
