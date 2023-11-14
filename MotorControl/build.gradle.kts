@@ -96,23 +96,6 @@ dependencies {
     androidTestImplementation(libs.androidx.compose.uiTest)
 }
 
-//afterEvaluate {
-//
-//    tasks.register<Jar>("sourcesJar") {
-//        from(android.sourceSets["main"].java.srcDirs)
-//        classifier = "sources"
-//    }
-//
-//    publishing {
-//        publications {
-//            create<MavenPublication>("motorcontrol") {
-//                from(components.getByName("release"))
-////                artifact(tasks.getByName("releaseSourcesJar"))
-////                artifact(tasks.getByName<Jar>("javadocJar"))
-//            }
-//        }
-//    }
-//}
 publishing {
     repositories {
         maven {
